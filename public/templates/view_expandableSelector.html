@@ -1,0 +1,8 @@
+<div class="flexbox flexbox-vertical" ng-style="style">
+	<div expandable-item item-type="topStyle" module-index="{{itemSelect}}"></div>
+	<div ng-style="gapStyle"></div>
+	<div id="slideable" slideable style="width: 100%">
+		<div ng-repeat="module in itemModules" expandable-item item-type="childStyle" module-index="{{$index}}">
+  		</div>
+	</div>
+</div>
