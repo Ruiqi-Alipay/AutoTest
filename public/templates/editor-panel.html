@@ -14,11 +14,12 @@
                 导入脚本 <span class="caret"></span>
               </button>
               <ul class="dropdown-menu" role="menu">
-                <li><a>Action</a></li>
-                <li><a>Another action</a></li>
-                <li><a>Something else here</a></li>
+                <li role="presentation" class="dropdown-header">服务器脚本</li>
+                <li ng-repeat="item in scripts" ng-click="loadScriptFromServer($index)"><a>{{item.title}}</a></li>
                 <li class="divider"></li>
-                <li><a>本地导入</a></li>
+                <li><a ng-click="loadScriptFromLocal()">本地导入</a></li>
+                <li class="divider"></li>
+                <li><a ng-click="newScript()">新建</a></li>
               </ul>
             </div>
             <button ng-disabled="scriptForm.$invalid" type="button"

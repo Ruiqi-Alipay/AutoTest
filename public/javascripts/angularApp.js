@@ -12,11 +12,11 @@ autotestApp.config(function($routeProvider) {
             })
             .when('/report', {
                 templateUrl : 'templates/report-panel.html',
-                controller  : 'aboutController'
+                controller  : 'reportController'
             })
             .when('/guide', {
                 templateUrl : 'templates/guide-panel.html',
-                controller  : 'contactController'
+                controller  : 'guideController'
             })
             .otherwise({
                 redirectTo: '/'

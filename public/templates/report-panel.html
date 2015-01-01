@@ -1,10 +1,10 @@
-      <div class="row">
+      <div class="row" style="padding-top: 20px;">
         <div class="col-md-8 col-md-offset-1 col-sm-8 col-sm-offset-1">
-          <ul class="nav nav-tabs" ng-init="panelState.reportNavSelect=1">
-            <li role="presentation" ng-click="panelState.reportNavSelect=1"
-                    ng-class="{'active' : panelState.reportNavSelect==1}"><a href="#">性能监控报告</a></li>
-            <li role="presentation" ng-click="panelState.reportNavSelect=2"
-                    ng-class="{'active' : panelState.reportNavSelect==2}"><a href="#">脚本执行报告</a></li>
+          <ul class="nav nav-tabs">
+            <li role="presentation" ng-click="reportNavSelect=1"
+                    ng-class="{'active' : reportNavSelect==1}"><a>性能监控报告</a></li>
+            <li role="presentation" ng-click="reportNavSelect=2"
+                    ng-class="{'active' : reportNavSelect==2}"><a>脚本执行报告</a></li>
           </ul>
         </div>
         <div class="col-md-2 col-sm-2">
@@ -12,7 +12,7 @@
         </div>
       </div>
 
-      <div class="col-md-6 col-md-offset-3 col-sm-6 col-sm-offset-3" ng-show="panelState.reportNavSelect==2">
+      <div class="col-md-6 col-md-offset-3 col-sm-6 col-sm-offset-3" ng-show="reportNavSelect==2">
           <div class="panel panel-default tb-padding">
             <div class="panel-heading">测试报告</div>
             <div class="panel-body">
@@ -21,7 +21,7 @@
           </div>
       </div>
 
-      <div class="col-md-10 col-md-offset-1 col-sm-10 col-sm-offset-1" ng-show="panelState.reportNavSelect==1">
+      <div class="col-md-10 col-md-offset-1 col-sm-10 col-sm-offset-1" ng-show="reportNavSelect==1">
         <div class="page-header">
           <h1>内存使用报告<small>Dalvik Heap</small></h1>
         </div>

@@ -19,9 +19,11 @@
     <script src="bower_components/angular-nvd3/dist/angular-nvd3.js"></script>
     <script src="javascripts/angularApp.js"></script>
     <script src="javascripts/services/dataService.js"></script>
+    <script src="javascripts/directives/toastDialog.js"></script>
     <script src="javascripts/controllers/editorController.js"></script>
     <script src="javascripts/controllers/guideController.js"></script>
     <script src="javascripts/controllers/reportController.js"></script>
+    <script src="javascripts/controllers/manageController.js"></script>
     <title>自动化测试控制台</title>
 
     <style type="text/css">
@@ -68,29 +70,22 @@
 
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-          <ul class="nav navbar-nav" ng-init="panelState.tabSelect=1">
-            <li ng-click="panelState.tabSelect=1"
-                ng-class="{'active' : panelState.tabSelect==1}"><a href="#/">脚本编辑</a></li>
-            <li ng-click="panelState.tabSelect=2"
-                ng-class="{'active' : panelState.tabSelect==2}"><a href="#manage">脚本管理</a></li>
-            <li ng-click="panelState.tabSelect=3"
-                ng-class="{'active' : panelState.tabSelect==3}"><a href="#report">测试报告</a></li>
-            <li ng-click="panelState.tabSelect=4"
-                ng-class="{'active' : panelState.tabSelect==4}"><a href="#guide">使用手册</a></li>
+          <ul class="nav navbar-nav" ng-init="tabSelect=1">
+            <li ng-click="tabSelect=1"
+                ng-class="{'active' : tabSelect==1}"><a href="#/">脚本编辑</a></li>
+            <li ng-click="tabSelect=2"
+                ng-class="{'active' : tabSelect==2}"><a href="#manage">脚本管理</a></li>
+            <li ng-click="tabSelect=3"
+                ng-class="{'active' : tabSelect==3}"><a href="#report">测试报告</a></li>
+            <li ng-click="tabSelect=4"
+                ng-class="{'active' : tabSelect==4}"><a href="#guide">使用手册</a></li>
           </ul>
         </div><!-- /.navbar-collapse -->
       </div><!-- /.container-fluid -->
     </nav>
 
-    <div ng-view></div>
+    <div id="viewRoot" ng-view></div>
 
-    <div id="toastDialog" class="modal fade" tabindex="-1" role="dialog"
-        aria-hidden="true">
-      <div class="modal-dialog modal-sm">
-        <div class="modal-content case-padding">
-            {{toastMessage}}
-        </div>
-      </div>
-    </div>
+    <div toast-dialog></div>
   </body>
 </html>

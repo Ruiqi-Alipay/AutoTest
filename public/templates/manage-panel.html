@@ -1,0 +1,20 @@
+<div class="col-sm-6 col-sm-offset-3" style="padding-top: 20px;">
+	<table class="table table-striped">
+		<tr class="active">
+			<td>#</td>
+			<td>脚本标示</td>
+			<td>最近修改</td>
+			<td>操作</td>
+		</tr>
+		<tr ng-repeat="item in scripts">
+			<td>{{$index + 1}}</td>
+			<td>{{item.title}}</td>
+			<td>{{item.date}}</td>
+			<td>
+				<button type="button" class="btn btn-sm btn-danger" ng-click="deleteScript($index)">删除</button>
+				<button type="button" class="btn btn-sm btn-success" ng-click="editScript($index)">编辑</button>
+				<button type="button" class="btn btn-sm btn-primary" ng-click="downloadScript($index)">下载</button>
+			</td>
+		</tr>
+	</table>
+</div>
