@@ -9,47 +9,46 @@ router.get('/', function(req, res) {
 module.exports = router;
 
 var mongoose = require('mongoose');
-var Post = mongoose.model('Post');
-var Comment = mongoose.model('Comment');
+var TestScript = mongoose.model('TestScript');
 
-router.get('/posts', function(req, res, next) {
-  Post.find(function(err, posts){
+router.get('/api/scripts', function(req, res, next) {
+  TestScript.find(function(err, scripts){
     if(err){ return next(err); }
 
-    res.json(posts);
+    res.json(scripts);
   });
 });
 
-router.post('/posts', function(req, res, next) {
-  var post = new Post(req.body);
+router.post('/api/script', function(req, res, next) {
+  var script = new TestScript(req.body);
 
-  post.save(function(err, post){
+  script.save(function(err, script){
     if(err){ return next(err); }
 
-    res.json(post);
+    res.json(script);
   });
 });
 
-router.param('post', function(req, res, next, id) {
-  var query = Post.findById(id);
+router.param('script', function(req, res, next, id) {
+  var query = TestScript.findById(id);
 
-  query.exec(function (err, post){
+  query.exec(function (err, script){
     if (err) { return next(err); }
-    if (!post) { return next(new Error("can't find post")); }
+    if (!script) { return next(new Error("can't find script")); }
 
-    req.post = post;
+    req.script = script;
     return next();
   });
 });
 
-router.get('/posts/:post', function(req, res) {
+router.get('/api/scripts/:script', function(req, res) {
   res.json(req.post);
 });
 
-router.put('/posts/:post/upvote', function(req, res, next) {
-  req.post.upvote(function(err, post){
+router.put('/api/scripts/:script/download', function(req, res, next) {
+  req.script.download(function(err, script){
     if (err) { return next(err); }
 
-    res.json(post);
+    res.json(script);
   });
 });
