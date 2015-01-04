@@ -8,8 +8,11 @@ var mongoose = require('mongoose');
 
 mongoose.connect('mongodb://localhost/news');
 require('./models/TestScript');
+require('./models/Scripts');
 
-var routes = require('./routes/index');
+var rootRoutes = require('./routes/rootIndex')
+var autotestRoutes = require('./routes/autotestIndex');
+var sdkeditorRoutes = require('./routes/sdkeditorIndex');
 var users = require('./routes/users');
 
 var app = express();
@@ -24,10 +27,15 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use('/autotest', express.static(path.join(__dirname, '/public/autotest')));
+app.use('/autotest/bower_components',  express.static(path.join(__dirname, '/bower_components')));
+app.use('/sdkeditor', express.static(path.join(__dirname, '/public/sdkeditor')));
+app.use('/sdkeditor/bower_components',  express.static(path.join(__dirname, '/bower_components')));
 app.use('/bower_components',  express.static(path.join(__dirname, '/bower_components')));
 
-app.use('/', routes);
+app.use('/', rootRoutes);
+app.use('/autotest', autotestRoutes);
+app.use('/sdkeditor', sdkeditorRoutes);
 app.use('/users', users);
 
 // catch 404 and forward to error handler
