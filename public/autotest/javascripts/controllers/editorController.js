@@ -114,6 +114,7 @@ autotestApp.controller("editorController", function($scope, $rootScope, $http, d
 	        var jsonObject = JSON.parse(result);
 	        if (jsonObject) {
 	        	$scope.$apply(function() {
+	        		jsonObject.category = file.name.slice(0, file.name.indexOf('.json'));
 	        		$scope.selectScript = jsonObject;
 	        	});
 	        }

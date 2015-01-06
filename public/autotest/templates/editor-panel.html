@@ -2,25 +2,7 @@
   <div class="row" style="padding: 40px 0px;">
     <div class="col-sm-6 col-sm-offset-1">
       <div class="panel panel-default">
-        <div class="panel-heading"><span class="label label-success r-padding">Step 1</span>配置脚本标识信息</div>
-        <div class="panel-body">
-          <form name="stepOneForm" novalidate>
-            <div class="input-group"
-              ng-class="{'has-error': stepOneForm.category.$dirty && stepOneForm.category.$invalid}">
-              <span class="input-group-addon">脚本标识</span>
-              <input name="category" type="text" class="form-control" ng-model="selectScript.category" required>
-            </div>
-            <div class="input-group"
-              ng-class="{'has-error': stepOneForm.title.$dirty && stepOneForm.title.$invalid}">
-              <span class="input-group-addon">生成用例标识</span>
-              <input name="title" type="text" class="form-control" ng-model="selectScript.title" required>
-            </div>
-          </form>
-        </div>
-      </div>
-
-      <div class="panel panel-default">
-        <div class="panel-heading"><span class="label label-success r-padding">Step 2</span>配置测试行为</div>
+        <div class="panel-heading"><span class="label label-success r-padding">Step 1</span>配置测试行为</div>
         <div class="panel-body">
           <div class="row case-padding" ng-repeat="action in selectScript.actions track by $index">
             <div class="col-sm-1">
@@ -144,7 +126,7 @@
       </div>
 
       <div class="panel panel-default">
-        <div class="panel-heading"><span class="label label-success r-padding">Step 3</span>配置成功判定规范</div>
+        <div class="panel-heading"><span class="label label-success r-padding">Step 2</span>配置成功判定规范</div>
         <div class="panel-body">
           <div class="row case-padding" ng-repeat="verify in selectScript.verifies track by $index">
             <div class="col-sm-1">
@@ -184,7 +166,7 @@
       </div>
 
       <div class="panel panel-default">
-        <div class="panel-heading"><span class="label label-success r-padding">Step 4</span>返回起始页行为设定</div>
+        <div class="panel-heading"><span class="label label-success r-padding">Step 3</span>返回起始页行为设定</div>
         <div class="panel-body">
           <div class="row case-padding" ng-repeat="action in selectScript.rollback track by $index">
             <div class="col-sm-1">
@@ -230,7 +212,7 @@
       </div>
 
       <div class="panel panel-default">
-        <div class="panel-heading"><span class="label label-success r-padding">Step 5</span>配置起始界面判定</div>
+        <div class="panel-heading"><span class="label label-success r-padding">Step 4</span>配置起始界面判定</div>
         <div class="panel-body">
           <div class="row case-padding" ng-repeat="verify in selectScript.rollbackVerifies track by $index">
             <div class="col-sm-1">
@@ -292,24 +274,35 @@
               class="btn btn-primary" ng-click="downloadScript()">下载脚本</button>
         </div>
         <div class="panel panel-default">
+          <div class="panel-heading">基本信息</div>
+          <div class="panel-body">
+            <form name="stepOneForm" novalidate>
+              <div class="input-group">
+                <span class="input-group-addon">脚本名</span>
+                <input type="text" class="form-control" ng-model="selectScript.category" required>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="panel panel-default">
           <div class="panel-heading">配置交易ID</div>
           <div class="panel-body">
             <form name="stepOneForm" novalidate>
               <div class="input-group">
                 <span class="input-group-addon">交易ID参数名</span>
-                <input name="category" type="text" class="form-control" ng-model="selectScript.recurParam" required>
+                <input type="text" class="form-control" ng-model="selectScript.recurParam" required>
               </div>
               <div class="input-group">
                 <span class="input-group-addon">买家ID</span>
-                <input name="category" type="text" class="form-control" ng-model="selectScript.buyerId" required>
+                <input type="text" class="form-control" ng-model="selectScript.buyerId" required>
               </div>
               <div class="input-group">
                 <span class="input-group-addon">迭代数量</span>
-                <input name="title" type="number" class="form-control" ng-model="selectScript.recurNum" required>
+                <input type="number" class="form-control" ng-model="selectScript.recurNum" required>
               </div>
               <div class="input-group">
                 <span class="input-group-addon">迭代合并</span>
-                <input name="title" type="number" class="form-control" ng-model="selectScript.recurCombine" required>
+                <input type="number" class="form-control" ng-model="selectScript.recurCombine" required>
               </div>
             </form>
           </div>
