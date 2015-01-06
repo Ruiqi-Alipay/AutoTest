@@ -103,7 +103,7 @@ autotestApp.controller("editorController", function($scope, $rootScope, $http, d
 	}
 
 	$scope.localReadFile = function(event) {
-		var files = event.target.files;
+		var files = event.files;
         var file = files[0];
         var reader = new FileReader();
 
