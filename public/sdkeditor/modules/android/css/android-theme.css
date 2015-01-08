@@ -1,0 +1,20 @@
+.android {
+	position: fixed;
+	background-repeat: no-repeat;
+	background-image: url(../res/devices.png);
+	background-position: -888px -40px;
+	background-size: 300%;
+	padding: 90px 0px 0px 33px;
+	display: block;
+	width: 440px;
+	height: 813px;
+	margin-left: -20px;
+}
+
+.screen {
+	overflow: auto;
+	background: #eee;
+	position: relative;
+	width: 360px;
+	height: 634px;
+}

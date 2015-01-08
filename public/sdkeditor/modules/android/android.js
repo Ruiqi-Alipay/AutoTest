@@ -1,44 +1,37 @@
-var app = angular.module("sdkApp");
+var device = angular.module('mobile-simulater', ['colorpicker.module', 'data-holder']);
 
-app.directive("deviceAndroid", function($compile, $rootScope, dataService) {
+device.directive("android", function($compile, $rootScope, styleService) {
   	return {
     	restrict: "A",
     	replace: true,
-    	templateUrl: "templates/device_android.html",
+    	templateUrl: "modules/android/templates/android.html",
     	link: function (scope, element, attr) {
-            var bottomBar = element.find('.bottom-bar');
-            dataService.setBottombar(bottomBar);
-            scope.style = dataService.getModuleCssStyle('root');
+            scope.style = styleService.getWidgetStyle('root');
 
-            scope.$on('sdk:newScriptLoaded', function(event) {
-                var target = element.find(".activity");
-                target.html('');
-                bottomBar.html('');
+            scope.$on('display:refresh', function(event, actionBar, moduleHierarchy) {
+                var activity = element.find(".activity");
+                activity.html('');
                 scope.style = dataService.getModuleCssStyle('root');
-                scope.formParameters = dataService.getSelectedFormParameters();
-                $rootScope.$broadcast('sdk:actionBarChange');
+                styleService.refresh(moduleHierarchy);
+                dataService.recursiveProcessView($compile, scope, activity, moduleTree.value);
             });
-            scope.$on('sdk:panelSelectionChange', function(event) {
-                var target = element.find(".activity");
-                target.html('');
-                bottomBar.html('');
-                scope.style = dataService.getModuleCssStyle('root');
-                scope.formParameters = dataService.getSelectedFormParameters();
-                $rootScope.$broadcast('sdk:actionBarChange');
-            });
-            scope.$on('append:root', function(event, elementId) {
+
+            scope.$on('display:append:root', function(event, elementId) {
                 var target = element.find(".activity");
                 dataService.createView($compile, scope, target, true, elementId);
             });
-            scope.$on('delete:root', function(event) {
+
+            scope.$on('display:delete:root', function(event) {
                 var target = element.find(".activity");
                 target.html('');
             });
+
             scope.$on('sdk:moduleLoaded', function(event) {
                 var target = element.find(".activity");
                 dataService.recursiveProcessView($compile, scope, target, 'root');
                 scope.formParameters = dataService.getSelectedFormParameters();
             });
+
             scope.$watch('formParameters', function(newValue, oldValue) {
                 if (!newValue || !newValue.form) {
                     return;
@@ -72,24 +65,6 @@ app.directive("deviceAndroid", function($compile, $rootScope, dataService) {
                     }
                 }
                 
-            }, true);
-	    }
-  	};
-});
-
-app.directive("actionBar", function(dataService) {
-  	return {
-    	restrict: "A",
-    	replace: true,
-    	templateUrl: "templates/action_bar.html",
-    	link: function (scope, element, attr) {
-    		scope.$on('sdk:actionBarChange', function(event) {
-                var data = dataService.getSelectedFormParameters();
-                if (data.form) {
-                    scope.bar = data.form.actionBar;
-                } else {
-                    scope.bar = undefined;
-                }
             }, true);
 	    }
   	};

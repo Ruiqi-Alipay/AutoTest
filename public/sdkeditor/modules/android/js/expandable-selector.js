@@ -1,11 +1,9 @@
-var app = angular.module("sdkApp");
-
-app.directive("expandableSelector", function($location, $anchorScroll, dataService) {
+device.directive("expandableSelector", function($location, $anchorScroll, dataService) {
 	return {
 		testrict: "A",
 		replace: true,
 		scope: true,
-		templateUrl: "templates/view_expandableSelector.html",
+		templateUrl: "modules/android/templates/view_expandableSelector.html",
 		link: function(scope, element, attr) {
     		$anchorScroll.yOffset = 250;
     		scope.module = dataService.getModuleBlock(attr.elementId);

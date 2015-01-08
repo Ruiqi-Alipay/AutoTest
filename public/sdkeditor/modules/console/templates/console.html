@@ -1,0 +1,45 @@
+<div>
+  <div class="btn-group btn-group-justified" role="group" aria-label="...">
+    <div class="btn-group" role="group">
+      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+        Select Script
+        <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" role="menu">
+        <li><a ng-click="selectFragment(-1)">Main Script</a></li>
+        <li role="presentation" class="dropdown-header" ng-show="actionList.length > 0">Actions</li>
+        <li ng-repeat="action in actionList"><a ng-click="selectFragment($index)">{{action.name}}</a></li>
+        <li class="divider"></li>
+        <li><a ng-click="newAction()">New action</a></li>
+      </ul>
+    </div>
+    <div class="btn-group" role="group">
+      <button type="button" class="btn btn-default">Script Root</button>
+    </div>
+    <div class="btn-group" role="group">
+      <button type="button" class="btn btn-default">Blocks</button>
+    </div>
+    <div class="btn-group" role="group">
+      <button type="button" class="btn btn-success" ng-click="saveScript()">保存</button>
+    </div>
+    <div class="btn-group" role="group">
+      <button type="button" class="btn btn-primary" ng-click="downloadScript()">下载</button>
+    </div>
+    <div class="btn-group">
+      <button type="button" class="btn btn-info dropdown-toggle navbar-btn" data-toggle="dropdown" aria-expanded="false">
+        导入 <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" role="menu">
+        <li role="presentation" class="dropdown-header">服务器脚本</li>
+        <li ng-repeat="item in scripts"><a ng-click="loadFromServer($index)">{{item.title}}</a></li>
+        <li class="divider"></li>
+        <li><a ng-click="loadFromLocal()">从本地导入</a></li>
+        <li class="divider"></li>
+        <li><a ng-click="newScript()">新建</a></li>
+      </ul>
+    </div>
+  </div>
+  <div style="padding-top: 20px;">
+    <div module-panel></div>
+  </div>
+</div>
