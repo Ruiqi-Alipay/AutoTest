@@ -1,4 +1,7 @@
 dataCenter.factory("dataService", function($rootScope, protocolService) {
+	var hierarchyColor = ['#428bca', '#5cb85c', '#5bc0de', '#f0ad4e', '#d9534f',
+							'#428bca', '#5cb85c', '#5bc0de', '#f0ad4e', '#d9534f'];
+							
 	var newEelementId = function() {
 		return protocolService.generateUuid() + '-' + protocolService.generateUuid() + '-' + protocolService.generateUuid();
 	};
@@ -260,25 +263,13 @@ dataCenter.factory("dataService", function($rootScope, protocolService) {
 			$rootScope.$broadcast('property:change:' + parentId);
 		},
 		deleteModule: function(elementId) {
-			delete moduleMap[elementId];
-			if (elementId === 'root') {
-				var deleteArray = findPositionArray(blockPositionTree, elementId);
-				deleteArray.forEach(function(item) {
-					delete moduleMap[item.name];
-					if (item.array) {
-						deleteBlockModule(item.childs);
-					}
-				});
-
-				delete blockPositionTree[0]['array'];
-			} else {
-				var parentId = findParentId(blockPositionTree, elementId);
-				var changeArray = findPositionArray(blockPositionTree, parentId);
-				var deleteInedx = findBlockPosition(changeArray, elementId);
-				var deleteItem = changeArray.splice(deleteInedx, 1);
-				if (deleteItem.childs) {
-					deleteBlockModule(deleteItem.childs);
-				}
+			delete moduleDataMap[elementId];
+			var parentId = findParentIdInHierarchy(moduleHierarchy, elementId);
+			var parent = findHierarchyItem(moduleHierarchy, parentId);
+			var deleteInedx = findSlibingIndexInHierarchy(parent.childs, elementId);
+			var deleteItem = parent.childs.splice(deleteInedx, 1);
+			if (deleteItem[0].childs) {
+				deleteBlockModule(deleteItem[0].childs);
 			}
 		},
 		assembleScript: function() {
@@ -310,6 +301,10 @@ dataCenter.factory("dataService", function($rootScope, protocolService) {
 		},
 		getProperty: function(propertyId) {
 			return propertyDataMap[propertyId];
-		}
+		},
+		getHierarchyColor: function(elementId) {
+			var hierarchy = getHierarchyLevel(moduleHierarchy, elementId);
+			return hierarchyColor[hierarchy];
+		},
 	}
 });

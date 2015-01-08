@@ -1,4 +1,4 @@
-console.factory('restService', function ($http) {
+consoleModule.factory('restService', function ($http) {
 	var listServerScripts = function(success, error) {
 		$http.get('/sdkeditor/api/scripts').success(function(array) {
 			if (array) {

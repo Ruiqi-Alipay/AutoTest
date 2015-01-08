@@ -20,7 +20,6 @@ blockPanel.directive("modulePanel", function ($compile, $rootScope, moduleServic
             
             scope.appendChildPanel = function(type) {
                 var elementId = moduleService.createModulePanel($compile, scope, childRoot, -1, type, 'root');
-                $rootScope.$broadcast('display:append:root', elementId);
             };
 
             scope.clearAllPanel = function() {

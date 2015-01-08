@@ -1,42 +1,14 @@
-var device = angular.module('mobile-simulater', ['colorpicker.module', 'data-holder']);
+var device = angular.module('mobile-simulater', ['colorpicker.module', 'data-center']);
 
 device.directive("android", function($compile, $rootScope, styleService) {
   	return {
     	restrict: "A",
     	replace: true,
+        scope: true,
     	templateUrl: "modules/android/templates/android.html",
     	link: function (scope, element, attr) {
-            scope.style = styleService.getWidgetStyle('root');
-
-            scope.$on('display:refresh', function(event, actionBar, moduleHierarchy) {
-                var activity = element.find(".activity");
-                activity.html('');
-                scope.style = dataService.getModuleCssStyle('root');
-                styleService.refresh(moduleHierarchy);
-                dataService.recursiveProcessView($compile, scope, activity, moduleTree.value);
-            });
-
-            scope.$on('display:append:root', function(event, elementId) {
-                var target = element.find(".activity");
-                dataService.createView($compile, scope, target, true, elementId);
-            });
-
-            scope.$on('display:delete:root', function(event) {
-                var target = element.find(".activity");
-                target.html('');
-            });
-
-            scope.$on('sdk:moduleLoaded', function(event) {
-                var target = element.find(".activity");
-                dataService.recursiveProcessView($compile, scope, target, 'root');
-                scope.formParameters = dataService.getSelectedFormParameters();
-            });
-
-            scope.$watch('formParameters', function(newValue, oldValue) {
-                if (!newValue || !newValue.form) {
-                    return;
-                }
-                if (newValue.form.type === "popupwin") {
+            var updateActivityStyle = function(popupwin) {
+                if (popupwin) {
                     scope.style['width'] = '80%';
                     scope.style['height'] = '';
                     scope.style['align-self'] = 'center';
@@ -48,9 +20,10 @@ device.directive("android", function($compile, $rootScope, styleService) {
                     scope.style['margin'] = 'auto auto';
                     scope.style['padding-top'] = '0px';
                 } else {
-                    scope.style['width'] = '360px';
-                    scope.style['max-width'] = '360px';
-                    scope.style['height'] = '';
+                    scope.style['width'] = '100%';
+                    scope.style['max-width'] = '100%';
+                    scope.style['height'] = '100%';
+                    scope.style['max-height'] = '100%';
                     scope.style['background'] = '#eee';
                     scope.style['border-radius'] = '';
                     scope.style['-moz-box-shadow'] = '';
@@ -58,14 +31,28 @@ device.directive("android", function($compile, $rootScope, styleService) {
                     scope.style['box-shadow'] = '';
                     scope.style['margin'] = '';
                     scope.style['padding-bottom'] = '58px';
-                    if (newValue.form.actionBar) {
-                        scope.style['padding-top'] = '48px';
-                    } else {
-                        scope.style['padding-top'] = '0px';
-                    }
                 }
-                
-            }, true);
+            };
+            scope.style = styleService.getWidgetStyle('root');
+            styleService.setupViewListener($compile, scope, element.find(".activity"), 'root', 'block');
+            scope.$on('display:refresh', function(event, actionBar, moduleHierarchy) {
+                var activity = element.find(".activity");
+                activity.html('');
+                scope.style = dataService.getModuleCssStyle('root');
+                styleService.refresh(moduleHierarchy);
+                dataService.recursiveProcessView($compile, scope, activity, moduleTree.value);
+            });
+            scope.$on('display:highlisht', function(event, elementId) {
+
+            });
+
+            scope.$on('sdk:moduleLoaded', function(event) {
+                var target = element.find(".activity");
+                dataService.recursiveProcessView($compile, scope, target, 'root');
+                scope.formParameters = dataService.getSelectedFormParameters();
+            });
+
+            updateActivityStyle(false);
 	    }
   	};
 });

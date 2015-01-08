@@ -1,7 +1,10 @@
-blockPanel.factory('moduleService', function (dataService, protocolService) {
+blockPanel.factory('moduleService', function ($rootScope, dataService, protocolService) {
 	var createModulePanel = function(compile, scope, target, position, type, parentId, module) {
+		if (!module) {
+			module = protocolService.getDefaultModule(type);
+		}
         var elemetId = dataService.newModule(parentId, module, position);
-		var	newElement = compile("<div module-panel-item element-id='" + elemetId + "' view-type='" + type + "'></div>")(scope);
+		var	newElement = compile("<div module-item element-id='" + elemetId + "' view-type='" + type + "'></div>")(scope);
 		if (position < 0) {
             target.append(newElement);
         } else {
@@ -12,6 +15,7 @@ blockPanel.factory('moduleService', function (dataService, protocolService) {
 	};
 
 	var creatingPanel = 0;
+	var manualCreateId;
 
 	return {
 		branchCreateModulePanel: function(compile, scope, container, parentId, values) {
@@ -28,8 +32,16 @@ blockPanel.factory('moduleService', function (dataService, protocolService) {
 	        });
 		},
 		createModulePanel: function(compile, scope, target, position, type, parentId, module) {
-			createModulePanel(compile, scope, target, position, type, parentId, module);
+			manualCreateId = createModulePanel(compile, scope, target, position, type, parentId, module);
+			if (position >= 0) {
+				var parent = dataService.findHierarchyItem(parentId);
+				var insertPositionEelement = parent.childs[position + 1];
+			}
 			creatingPanel++
+		},
+		deletemodulePanel: function(elementId) {
+			dataService.deleteModule(elementId);
+            $rootScope.$broadcast('display:delete:' + elementId);
 		},
         panelCreated: function() {
             creatingPanel--;
@@ -51,12 +63,15 @@ blockPanel.factory('moduleService', function (dataService, protocolService) {
 	                continue;
 	            }
 
-	            if (property in scope.block) {
+	            if (property in block) {
 	                properties.push(property);
 	            } else {
 	                unuseProperties.push(property);
 	            }
 	        }
+	    },
+	    isManualCreated: function(elementId) {
+	    	return elementId === manualCreateId;
 	    }
 	};
 });

@@ -1,5 +1,8 @@
-device.factory("styleService", function($rootScope, $timeout, dataService) {
-    var createView = function(compile, scope, target, append, elementId, type) {
+device.factory("styleService", function($rootScope, $timeout, dataService, protocolService) {
+	var dpiRatio = 2 / 3;
+
+    var createWidget = function(compile, scope, target, append, elementId) {
+    	var type = dataService.getModule(elementId).type;
 		var directive = 'system-widget';
 	    if (type === 'expandableSelector') {
 	    	directive = 'expandable-selector';
@@ -16,17 +19,17 @@ device.factory("styleService", function($rootScope, $timeout, dataService) {
    	};
 	var processFilter = function(filter) {
 		var result = {};
-			if (filter) {
-                var start = filter.indexOf('(');
-                var end = filter.indexOf(')')
-                if (start > 0 && end > start + 1) {
-                    var filterName = filter.slice(0, start);
-                    var filterValue = filter.slice(start + 1, end);
-                    if (filterName === 'corner') {
-                    	result[filterName] = filterValue * dpiRatio + 'px';
-                    }
+		if (filter) {
+            var start = filter.indexOf('(');
+            var end = filter.indexOf(')')
+            if (start > 0 && end > start + 1) {
+                var filterName = filter.slice(0, start);
+                var filterValue = filter.slice(start + 1, end);
+                if (filterName === 'corner') {
+                	result[filterName] = filterValue * dpiRatio + 'px';
                 }
             }
+        }
         return result;
 	};
 	var processAlign = function(align, verticlAlign) {
@@ -133,8 +136,28 @@ device.factory("styleService", function($rootScope, $timeout, dataService) {
         }
         return result;
 	};
-	var updateStyle = function(style, elementId) {
+	var updateStyle = function(elementId) {
+		var style = widgetStyleMap[elementId];
 		var module = dataService.getModule(elementId);
+
+		var hvAlign = processAlign(module.align, module['vertical-align']);
+		var parentId = dataService.findParentIdInHierarchy(elementId);
+		var parent = dataService.getModule(parentId);
+		var parentStyle = widgetStyleMap[parentId];
+		if (parentId == 'root' || parent.type === 'block') {
+			style['align-self'] = hvAlign[0];
+			parentStyle['justify-content'] = hvAlign[1];
+		} else if (parent.type === 'component') {
+			style['align-self'] = hvAlign[1];
+			if ((parentStyle['justify-content'] === 'space-between') || (parentStyle['justify-content'] === 'flex-start' && hvAlign[0] === 'flex-end')
+				|| (parentStyle['justify-content'] === 'flex-end' && hvAlign[0] === 'flex-start')) {
+				parentStyle['justify-content'] = 'space-between';
+			} else {
+				parentStyle['justify-content'] = hvAlign[0];
+			}
+		}
+		style['text-align'] = module['text-align'];
+
 		var width = processWidth(module.width, module.type);
 		var height = processHeight(module.height, module.type);
 		var margin = processPadding(module.margin);
@@ -142,16 +165,25 @@ device.factory("styleService", function($rootScope, $timeout, dataService) {
         style['margin-left'] = margin[1];
         style['margin-bottom']  = margin[2];
         style['margin-right'] = margin[3];
-        if (width.indexOf('%') > 0) {
-        	var marginLR = parseInt(margin[1].slice(0, margin[1].indexOf('px')))
-        			+ parseInt(margin[3].slice(0, margin[3].indexOf('px')));
-        	width = 'calc(' + width + ' - ' + marginLR + 'px)';
+
+        if (parent && parent.type === 'component' && width === '100%') {
+        	delete style['width'];
+        	delete style['max-width'];
+        	style['flex-grow'] = 2;
+        } else {
+	        if (width.indexOf('%') > 0) {
+	        	var marginLR = parseInt(margin[1].slice(0, margin[1].indexOf('px')))
+	        			+ parseInt(margin[3].slice(0, margin[3].indexOf('px')));
+	        	width = 'calc(' + width + ' - ' + marginLR + 'px)';
+	        }
+
+	        style['width'] = width;
+	        style['max-width'] = width;
+	        delete style['flex-grow'];
         }
 
 		style['font-size'] = module.size * dpiRatio;
-		style['width'] = width;
 		style['height'] = height;
-		style['max-width'] = width;
 		style['max-height'] = height;
 		if (module.type === 'img' || module.type === 'icon') {
 			style['min-width'] = width;
@@ -162,26 +194,6 @@ device.factory("styleService", function($rootScope, $timeout, dataService) {
 		if (text) {
 			style['text'] = text;
 		}
-
-		if (elementId) {
-			var hvAlign = processAlign(module.align, module['vertical-align']);
-			var parentId = dataService.findhierarchyParentId(loadingHierarchy, elementId);
-			var parent = dataService.findHierarchyContent(loadingHierarchy, parentId);
-			var parentStyle = widgetStyleMap[parentId];
-			if (parentId == 'root' || parent.type === 'block') {
-				style['align-self'] = hvAlign[0];
-				parentStyle['justify-content'] = hvAlign[1];
-			} else if (parent.type === 'component') {
-				style['align-self'] = hvAlign[1];
-				if ((parentStyle['justify-content'] === 'space-between') || (parentStyle['justify-content'] === 'flex-start' && hvAlign[0] === 'flex-end')
-					|| (parentStyle['justify-content'] === 'flex-end' && hvAlign[0] === 'flex-start')) {
-					parentStyle['justify-content'] = 'space-between';
-				} else {
-					parentStyle['justify-content'] = hvAlign[0];
-				}
-			}
-			style['text-align'] = module['text-align'];
-		}
 		
 		if (module.html === 'true' && module.text) {
 			// element.html(module.text);
@@ -190,7 +202,7 @@ device.factory("styleService", function($rootScope, $timeout, dataService) {
 		if (module.type === 'block' || module.type === 'component'
 				|| module.type === 'line' || module.type === 'button') {
 			if (module.image) {
-				style['background'] = parseBackground(module.image);	
+				protocolService.parseBackground(style, module.image);	
 			} else if (module.color) {
 				style['background'] = module.color;
 			}
@@ -234,8 +246,24 @@ device.factory("styleService", function($rootScope, $timeout, dataService) {
         	style['placeholder'] = module.hint;
         }
 	};
+	var highlightWidget = function(elementId) {
+		if (priviousHighlishtElement) {
+			if (elementId === priviousHighlishtElement) {
+				return;
+			}
+			var previousStyle = widgetStyleMap[priviousHighlishtElement];
+			previousStyle.border = priviousHighlishtElementBorder;
+		}
+
+		var style = widgetStyleMap[elementId];
+		priviousHighlishtElement = elementId;
+		priviousHighlishtElementBorder = style.border;
+		style['border'] = '2px dashed red';
+	};
 
 	var widgetStyleMap = {};
+	var priviousHighlishtElement;
+	var priviousHighlishtElementBorder;
 
 	return {
 		refersh: function(loadingHierarchy) {
@@ -244,15 +272,13 @@ device.factory("styleService", function($rootScope, $timeout, dataService) {
 		getWidgetStyle: function(elementId) {
 			var style = widgetStyleMap[elementId];
 			if (!style) {
-				style = {
-					'box-sizing': 'border-box'
-				};
+				style = {'box-sizing': 'border-box'};
 				widgetStyleMap[elementId] = style;
+				if (elementId != 'root') {
+					updateStyle(elementId);
+				}
 			}
 			return style;
-		},
-		createWidget: function(compile, scope, target, append, elementId, type) {
-			createView(compile, scope, target, append, elementId, type);
 		},
     	branchCreateWidget: function(compile, scope, target, values) {
     		if (!values) {
@@ -260,18 +286,40 @@ device.factory("styleService", function($rootScope, $timeout, dataService) {
     		}
 
 	    	values.forEach(function (value, index) {
-	    		createView(compile, scope, target, true, value.name, value.type);
+	    		createWidget(compile, scope, target, true, value.id);
 	    	});
     	},
     	highlightWidget: function(elementId) {
-    		for (var key in widgetStyleMap) {
-    			var style = widgetStyleMap[key];
-    			if (key === elementId) {
-    				style['border'] = '2px dashed red';
-                } else {
-					style['border'] = '';
-                }
-    		}
+    		highlightWidget(elementId);
+    	},
+    	setupViewListener: function(compile, scope, element, elementId, type) {
+    		scope.$on('display:change:' + elementId, function(event) {
+    			updateStyle(elementId);
+    			if (elementId === priviousHighlishtElement) {
+    				widgetStyleMap[elementId]['border'] = '2px dashed red';
+    			}
+    		});
+
+            scope.$on('display:delete:' + elementId, function(event) {
+                element.remove();
+            });
+
+            scope.$on('display:insert:' + elementId, function(event, name) {
+                createWidget(compile, scope, element, false, name);
+            });
+
+            if (type === "component" || type === "block") {
+                scope.$on('display:append:' + elementId, function(event, name) {
+                    createWidget(compile, scope, element, true, name);
+                });
+            }
+
+            element.bind('click', function (event) {
+            	event.stopPropagation();
+            	scope.$apply(function() {
+			    	highlightWidget(elementId);
+			    });
+            });
     	}
 	};
 });

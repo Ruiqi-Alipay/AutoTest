@@ -158,7 +158,7 @@ dataCenter.factory("protocolService", function() {
 				module.width = -1;
 				module.height = -2;
 			} else if (type === "button") {
-				module.width = -2;
+				module.width = -1;
 				module.height = -2;
 				module.text = 'Button';
 				module.size = 34;
@@ -184,19 +184,30 @@ dataCenter.factory("protocolService", function() {
 
 			return module;
 		},
-		parseBackground: function(imageCode) {
+		parseBackground: function(style, imageCode) {
 			if (imageCode === 'local:middle_line') {
-				return '#C0C0C0';
+				style['background'] = '#C0C0C0';
 			} else if (imageCode === 'local:normal;local:hover;local:disable') {
-				return 'rgb(214,15,15)';
+				style['-webkit-border-radius'] = 4;
+				style['-moz-border-radius'] = 4;
+				style['border-radius'] = '4px';
+				style['color'] = '#000000';
+				style['background'] = '#ffffff';
+				style['text-decoration'] = 'none';
+				style['border'] = 'solid #c2c2c2 1px';
 			} else if (imageCode === 'local:normal;local:disable;local:hover') {
-				return 'rgb(163, 163, 163)';
+				style['-webkit-border-radius'] = 4;
+				style['-moz-border-radius'] = 4;
+				style['border-radius'] = '4px';
+				style['color'] = '#ffffff';
+				style['background'] = '#e82e2e';
+				style['text-decoration'] = 'none';
 			} else if (imageCode === 'local:normal_second;local:hover_second;local:disable_second') {
-				return 'rgb(255, 255, 255)';
+				style['background'] = 'rgb(255, 255, 255)';
 			} else if (imageCode.slice(0, 6) === 'local:') {
-				return 'url(res/' + imageCode.slice(6) + '.png) no-repeat';
+				style['background'] = 'url(res/' + imageCode.slice(6) + '.png) no-repeat';
 			} else {
-				return imageCode;
+				style['background'] = imageCode;
 			}
 		},
 		generateUuid: function() {

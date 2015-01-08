@@ -1,7 +1,6 @@
 var app = angular.module("sdkApp");
 
 app.factory("dataService", function($rootScope, $timeout) {
-	var dpiRatio = 2 / 3;
 
 		var saveCurrentForm = function() {
 			if (selectedForm && blockPositionTree[0].array) {
@@ -9,8 +8,6 @@ app.factory("dataService", function($rootScope, $timeout) {
 				assembleBlocks(selectedForm.blocks, blockPositionTree[0].array);
 			}
 		};
-	var hierarchyColor = ['#428bca', '#5cb85c', '#5bc0de', '#f0ad4e', '#d9534f',
-							'#428bca', '#5cb85c', '#5bc0de', '#f0ad4e', '#d9534f'];
 
 	return {
 		createNewAction: function() {
@@ -81,10 +78,6 @@ app.factory("dataService", function($rootScope, $timeout) {
 		},
 		getModuleProperties: function() {
 			return fullProperites;
-		},
-		getHierarchyColor: function(elementId) {
-			var hierarchy = getBlockHierarchyLevel(blockPositionTree, elementId);
-			return hierarchyColor[hierarchy];
 		},
 		getPosition: function(elementId) {
 			return findPosition(blockPositionTree, elementId);

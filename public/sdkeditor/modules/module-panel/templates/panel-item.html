@@ -5,18 +5,27 @@
     <div id="body" class="panel-collapse collapse" role="tabpanel">
       <div class="panel-body">
         <div class="row" style="padding: 0px 14px 14px 14px">
+          <div class="btn-group btn-group-sm">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+              Add property <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+              <li role="presentation" class="dropdown-header">Click property name to add</li>
+              <li ng-repeat="name in panel.unuseProperties"><a ng-click="addNewProperty(name)">{{name}}</a></li>
+            </ul>
+          </div>
           <div class="btn-group btn-group-sm pull-right">
             <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-expanded="false" ng-class="{'btn-primary': panel.background=='#428bca', 'btn-success': panel.background=='#5cb85c', 'btn-info': panel.background=='#5bc0de', 'btn-warning': panel.background=='#f0ad4e', 'btn-danger': panel.background=='#d9534f'}">
                   Insert sibling<span class="caret"></span>
             </button>
             <ul class="dropdown-menu" role="menu">
               <li role="presentation" class="dropdown-header">Choose new child type</li>
-              <li ng-repeat="type in panel.typeArray"><a ng-click="insetSlibing(type)">{{type}}</a></li>
+              <li ng-repeat="type in panel.typeArray"><a ng-click="insertSlibingBefore(type)">{{type}}</a></li>
             </ul>
           </div>
         </div>
         <div class="row block-item">
-          <div class="block-item" ng-class="{'col-md-12 col-sm-12': property==='action' || property==='image', 'col-md-6 col-sm-12': property!='action'}" ng-repeat="property in properties">
+          <div class="block-item" ng-class="{'col-md-12 col-sm-12': property==='action' || property==='image', 'col-md-6 col-sm-12': property!='action'}" ng-repeat="property in panel.properties">
               <div class="input-group">
                 <div class="input-group-btn">
                   <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">{{property}} <span class="caret"></span></button>
@@ -25,32 +34,21 @@
                     <li><a ng-click="deleteProperty(property)">Delete</a></li>
                   </ul>
                 </div>
-                <span ng-switch on="getPropertyProtocolType(property)">
-                  <input ng-switch-when="color" type="text" name="value" class="form-control" colorpicker="rgb" ng-model="block[property]">
-                  <select ng-switch-when="array" class="form-control form-control-sm" ng-model="block[property]">
+                <span ng-switch on="getPropertyType(property)">
+                  <input ng-switch-when="color" type="text" name="value" class="form-control" colorpicker="rgb" ng-change="propertyChange()" ng-model="block[property]">
+                  <select ng-switch-when="array" class="form-control form-control-sm" ng-change="propertyChange()" ng-model="block[property]">
                     <option ng-repeat="item in getPropertyProtocolValue(property)">{{item}}</option>
                   </select>
-                  <input ng-switch-default type="text" name="value" class="form-control" ng-model="block[property]">
+                  <input ng-switch-default type="text" name="value" class="form-control" ng-change="propertyChange()" ng-model="block[property]">
                 </span>
               </div>
-          </div>
-          <div class="col-sm-6 block-item" ng-show="panel.unuse">
-            <div class="btn-group btn-group-sm">
-              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                Add property <span class="caret"></span>
-              </button>
-              <ul class="dropdown-menu" role="menu">
-                <li role="presentation" class="dropdown-header">Click property name to add</li>
-                <li ng-repeat="name in panel.unuse"><a ng-click="addNewProperty(name)">{{name}}</a></li>
-              </ul>
-            </div>
           </div>
         </div>
         <div id="container" class="panel-group" role="tablist" aria-multiselectable="true">
         </div>
         <div class="row" style="padding: 0px 14px 0px 14px">
           <button type="button" class="btn btn-sm btn-danger" ng-click="deleteElement()">Delete</button>
-          <div class="btn-group btn-group-sm pull-right">
+          <div class="btn-group btn-group-sm pull-right" ng-show="block.type=='block' || block.type=='component'">
             <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-expanded="false" ng-class="{'btn-primary': panel.background=='#428bca', 'btn-success': panel.background=='#5cb85c', 'btn-info': panel.background=='#5bc0de', 'btn-warning': panel.background=='#f0ad4e', 'btn-danger': panel.background=='#d9534f'}">
                   Add Child <span class="caret"></span>
             </button>

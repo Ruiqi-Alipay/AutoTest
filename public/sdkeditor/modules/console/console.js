@@ -1,6 +1,6 @@
-var console = angular.module('console', ['data-center', 'property-panel', 'module-panel']);
+var consoleModule = angular.module('console', ['data-center', 'property-panel', 'module-panel']);
 
-console.directive('console', function ($rootScope, restService, dataService) {
+consoleModule.directive('console', function ($rootScope, restService, dataService) {
 	return {
 		restrict: 'A',
 		replace: true,
