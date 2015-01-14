@@ -1,4 +1,7 @@
 dataCenter.factory("protocolService", function() {
+	var getRandomInt = function (min, max) {
+	    return Math.floor(Math.random() * (max - min + 1)) + min;
+	};
 	var moduleProtocol = {
 		root: {
 			digest: 'text',
@@ -7,7 +10,8 @@ dataCenter.factory("protocolService", function() {
 			success: ['true', 'false'],
 			tid: 'text',
 			tv: 'text',
-			cmd: 'object'
+			cmd: 'object',
+			form: 'object'
 		},
 		parameter: {
 			name: 'text',
@@ -64,7 +68,7 @@ dataCenter.factory("protocolService", function() {
 			line: ['width','height', 'align', 'vertical-align', 'margin', 'padding', 'color', 'size',
 						'image', 'text', 'text-align', 'filter', 'html', 'underline', 'css', 'display'],
 			input: ['width','height', 'align', 'vertical-align', 'margin', 'padding', 'display', 'imeAct',
-						'hint', 'empty_msg', 'keyboard'],
+						'hint', 'empty_msg', 'keyboard', 'format_msg', 'size'],
 			checkbox: ['width','height', 'align', 'vertical-align', 'margin', 'padding', 'display',
 						'format_msg', 'must'],
 			password: ['width','height', 'align', 'vertical-align', 'margin', 'padding', 'display', 'imeAct',
@@ -72,7 +76,8 @@ dataCenter.factory("protocolService", function() {
 			expandableSelector: ['width','height', 'align', 'vertical-align', 'margin', 'padding', 'color', 'size',
 						'image', 'text', 'text-align', 'filter', 'html', 'underline', 'css', 'display'],
 			spassword: ['width','height', 'align', 'vertical-align', 'margin', 'padding',
-						'css', 'display', 'cursor', 'auto', 'keyboard', 'action']
+						'css', 'display', 'cursor', 'auto', 'keyboard', 'action'],
+			combox: ['name', 'cascade', 'onSelect', 'combox-type', 'value', 'vertical-align', 'align', 'width', 'height', 'image']
 		},
 		actionBar: {
 			title: 'text',
@@ -91,8 +96,33 @@ dataCenter.factory("protocolService", function() {
 			name: ['pc', 'mobile'],
 			exitOnBack: 'text',
 			whitelist: 'array'
+		},
+		cascade: {
+			action: 'text',
+			nextelement: 'text'
+		},
+		onSelect: {
+			action: 'text'
+		},
+		'combox-type': {
+			bottom: 'text',
+			title: 'text',
+			type: 'text',
+			height: 'text',
+			width: 'text',
+			style: 'text',
+			margin: 'text'
+		},
+		'combox-value': {
+			countryCode: 'text',
+			image: 'text',
+			name: 'text',
+			attr: 'text',
+			value: 'text',
+			format: 'text'
 		}
 	};
+
 	var moduleProtocolValues = {
 		width: 'text',
 		height: 'text',
@@ -121,7 +151,8 @@ dataCenter.factory("protocolService", function() {
 		must: ['true', 'false'],
 		format_msg: 'text',
 		submit: ['true', 'false'],
-		checkInput: ['true', 'false']
+		checkInput: ['true', 'false'],
+		format_msg: 'text'
 	};
 
 	return {
@@ -134,7 +165,7 @@ dataCenter.factory("protocolService", function() {
 		getProtocolValue: function(protocol) {
 			return moduleProtocolValues[protocol];
 		},
-		getProtocolDefaultValue: function(protocol) {
+		getProtocolDefaultValue: function(name) {
             if (name === 'align' || name === 'text-align') {
                 return 'left';
             } else if (name === 'width') {
@@ -147,6 +178,9 @@ dataCenter.factory("protocolService", function() {
                 return 'true';
             } else if (name === 'content') {
                 return 'bottomView';
+            } else if (name === 'image') {
+            	var value = getRandomInt(1, 255);
+            	return 'rgb(' + value + ',' + value + ',' + value + ')';
             } else {
             	return '';
             }
@@ -185,33 +219,28 @@ dataCenter.factory("protocolService", function() {
 			return module;
 		},
 		parseBackground: function(style, imageCode) {
-			if (imageCode === 'local:middle_line') {
-				style['background'] = '#C0C0C0';
-			} else if (imageCode === 'local:normal;local:hover;local:disable') {
+			var normalCode = imageCode.indexOf('local:normal');
+			if (normalCode >= 0) {
 				style['-webkit-border-radius'] = 4;
 				style['-moz-border-radius'] = 4;
 				style['border-radius'] = '4px';
 				style['color'] = '#000000';
-				style['background'] = '#ffffff';
+				style['background'] = '#E62E04';
 				style['text-decoration'] = 'none';
 				style['border'] = 'solid #c2c2c2 1px';
-			} else if (imageCode === 'local:normal;local:disable;local:hover') {
-				style['-webkit-border-radius'] = 4;
-				style['-moz-border-radius'] = 4;
-				style['border-radius'] = '4px';
-				style['color'] = '#ffffff';
-				style['background'] = '#e82e2e';
-				style['text-decoration'] = 'none';
+			} else if (imageCode === 'local:middle_line') {
+				style['background'] = '#C0C0C0';
 			} else if (imageCode === 'local:normal_second;local:hover_second;local:disable_second') {
 				style['background'] = 'rgb(255, 255, 255)';
 			} else if (imageCode.slice(0, 6) === 'local:') {
-				style['background'] = 'url(res/' + imageCode.slice(6) + '.png) no-repeat';
+				style['background'] = 'url(modules/android/res/' + imageCode.slice(6) + '.png) no-repeat';
 			} else {
 				style['background'] = imageCode;
 			}
 		},
 		generateUuid: function() {
     		return (((1+Math.random())*0x10000)|0).toString(16).substring(1); 
-		}
+		},
+
 	};
 });

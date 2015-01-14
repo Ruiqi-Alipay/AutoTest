@@ -17,6 +17,15 @@ device.factory("styleService", function($rootScope, $timeout, dataService, proto
             element.insertBefore(target);
         }
    	};
+   	var branchCreateWidget = function(compile, scope, target, values) {
+		if (!values) {
+			return;
+		}
+
+    	values.forEach(function (value, index) {
+    		createWidget(compile, scope, target, true, value.id);
+    	});
+	};
 	var processFilter = function(filter) {
 		var result = {};
 		if (filter) {
@@ -85,7 +94,12 @@ device.factory("styleService", function($rootScope, $timeout, dataService, proto
 					if (pxIndex > 0) {
 						width = width.slice(0, pxIndex);
 					}
-					return width * dpiRatio +'px';
+
+					if (moduleType === 'icon') {
+						return width / dpiRatio +'px';
+					} else {
+						return width * dpiRatio +'px';
+					}
 				} else {
 					return width;
 				}
@@ -111,7 +125,12 @@ device.factory("styleService", function($rootScope, $timeout, dataService, proto
 					if (pxIndex > 0) {
 						height = height.slice(0, pxIndex);
 					}
-					return height * dpiRatio +'px';
+
+					if (moduleType === 'icon') {
+						return height / dpiRatio +'px';
+					} else {
+						return height * dpiRatio +'px';
+					}
 				} else {
 					return height;
 				}
@@ -138,6 +157,7 @@ device.factory("styleService", function($rootScope, $timeout, dataService, proto
 	};
 	var updateStyle = function(elementId) {
 		var style = widgetStyleMap[elementId];
+		delete style['regex'];
 		var module = dataService.getModule(elementId);
 
 		var hvAlign = processAlign(module.align, module['vertical-align']);
@@ -182,7 +202,12 @@ device.factory("styleService", function($rootScope, $timeout, dataService, proto
 	        delete style['flex-grow'];
         }
 
-		style['font-size'] = module.size * dpiRatio;
+        if (module.type === 'input') {
+        	style['font-size'] = module.size;
+        } else {
+        	style['font-size'] = module.size * dpiRatio;
+        }
+
 		style['height'] = height;
 		style['max-height'] = height;
 		if (module.type === 'img' || module.type === 'icon') {
@@ -209,9 +234,9 @@ device.factory("styleService", function($rootScope, $timeout, dataService, proto
 		} else if (module.type === 'img' || module.type === 'icon') {
 			if (module.image) {
 				if (module.image.slice(0, 6) === 'local:') {
-					style['src'] = 'res/' + module.image.slice(6) + '.png';
+					style['src'] = 'modules/android/res/' + module.image.slice(6) + '.png';
 				} else {
-					style['src'] = 'res/' + module.image + '.png';
+					style['src'] = 'modules/android/res/' + module.image + '.png';
 				}
 			}
 		}
@@ -245,6 +270,22 @@ device.factory("styleService", function($rootScope, $timeout, dataService, proto
         if (module.hint) {
         	style['placeholder'] = module.hint;
         }
+
+        if (module.type === 'button') {
+        	style['text-align'] = 'center';
+        	style['vertical-align'] = 'middle';
+        } else if (module.type === 'combox') {
+        	if (!style.height) {
+        		style.height = processHeight('60', module.type);
+        	}
+        	style['background-size'] = '78px 40px';
+        } else if (module.type === 'img') {
+        	if (!style.width && !style.height) {
+        		style['-webkit-transform'] = 'scale(0.66)';
+        	}
+        }
+
+        style['background-size'] = style.width + ' ' + style.height;
 	};
 	var highlightWidget = function(elementId) {
 		if (priviousHighlishtElement) {
@@ -260,14 +301,57 @@ device.factory("styleService", function($rootScope, $timeout, dataService, proto
 		priviousHighlishtElementBorder = style.border;
 		style['border'] = '2px dashed red';
 	};
+    var newActivityStyle = function(actionBar, popupwin) {
+    	var style = {};
+        if (popupwin) {
+            style['width'] = '80%';
+            style['height'] = '';
+            style['align-self'] = 'center';
+            style['background'] = 'white';
+            style['border-radius'] = '4px';
+            style['-moz-box-shadow'] = '0 0 5px 5px #C0C0C0';
+            style['-webkit-box-shadow'] = '0 0 5px 5px #C0C0C0';
+            style['box-shadow'] = '0 0 5px 5px #C0C0C0';
+            style['margin'] = 'auto auto';
+            style['padding-top'] = '0px';
+        } else {
+        	if (actionBar) {
+        		style['padding-top'] = '48px';
+        	}
+            style['width'] = '100%';
+            style['max-width'] = '100%';
+            style['background'] = '#eee';
+            style['border-radius'] = '';
+            style['-moz-box-shadow'] = '';
+            style['-webkit-box-shadow'] = '';
+            style['box-shadow'] = '';
+            style['margin'] = '';
+            style['padding-bottom'] = '';
+        }
+
+        return style;
+    };
 
 	var widgetStyleMap = {};
 	var priviousHighlishtElement;
 	var priviousHighlishtElementBorder;
 
 	return {
-		refersh: function(loadingHierarchy) {
-			widgetStyleMap = {};
+		refreshActivity: function(compile, scope, target) {
+			var actionBar = dataService.getActionbar();
+			widgetStyleMap = {'root': newActivityStyle(actionBar, false)};
+			var root = dataService.findHierarchyItem('root');
+			branchCreateWidget(compile, scope, target, root.childs);
+			return widgetStyleMap['root'];
+		},
+		refreshActionbar: function() {
+			var actionbar = dataService.getActionbar();
+			if (actionbar) {
+				widgetStyleMap['actionbar'] = actionbar;
+				return actionbar;
+			} else {
+				delete widgetStyleMap['actionbar'];
+			}
 		},
 		getWidgetStyle: function(elementId) {
 			var style = widgetStyleMap[elementId];
@@ -280,14 +364,9 @@ device.factory("styleService", function($rootScope, $timeout, dataService, proto
 			}
 			return style;
 		},
-    	branchCreateWidget: function(compile, scope, target, values) {
-    		if (!values) {
-    			return;
-    		}
-
-	    	values.forEach(function (value, index) {
-	    		createWidget(compile, scope, target, true, value.id);
-	    	});
+    	branchCreateWidget: function(compile, scope, target, elementId) {
+    		var node = dataService.findHierarchyItem(elementId);
+    		branchCreateWidget(compile, scope, target, node.childs);
     	},
     	highlightWidget: function(elementId) {
     		highlightWidget(elementId);
@@ -318,6 +397,7 @@ device.factory("styleService", function($rootScope, $timeout, dataService, proto
             	event.stopPropagation();
             	scope.$apply(function() {
 			    	highlightWidget(elementId);
+			    	dataService.onSelectPanel(elementId);
 			    });
             });
     	}

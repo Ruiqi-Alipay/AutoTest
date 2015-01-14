@@ -1,9 +1,9 @@
 blockPanel.factory('moduleService', function ($rootScope, dataService, protocolService) {
-	var createModulePanel = function(compile, scope, target, position, type, parentId, module) {
+	var createModulePanel = function(compile, scope, target, position, type, parentId, module, broadcast) {
 		if (!module) {
 			module = protocolService.getDefaultModule(type);
 		}
-        var elemetId = dataService.newModule(parentId, module, position);
+        var elemetId = dataService.newModule(parentId, module, position, broadcast);
 		var	newElement = compile("<div module-item element-id='" + elemetId + "' view-type='" + type + "'></div>")(scope);
 		if (position < 0) {
             target.append(newElement);
@@ -13,26 +13,55 @@ blockPanel.factory('moduleService', function ($rootScope, dataService, protocolS
 
         return elemetId;
 	};
+	var banchCreateModulePanel = function(compile, scope, container, parentId, values) {
+		values.forEach(function (value, index) {
+			if (value.type) {
+            	createModulePanel(compile, scope, container, -1, value.type, parentId, value);
+            	creatingPanel++;
+        	}
+        });
+	};
+	var createPropertyPanel = function(compile, scope, element, parentid, propertyName, property) {
+		var elementId = dataService.newModuleProperty(property);
+        var container = element.find('#proeprty-container');
+        var background = dataService.getHierarchyColor(parentid);
+        var propertyPanelType = 'property-panel-item';
+        if (propertyName === 'value' && dataService.getModule(parentid).type === 'combox') {
+        	propertyName = 'combox-value';
+        	propertyPanelType = 'property-list-item';
+        }
+	    container.append(compile("<div " + propertyPanelType + " propertyname='" + propertyName + "' propertyid='" + elementId + "' parentid='" + parentid + "' background='" + background + "'></div>")(scope));
+		return elementId;
+	};
 
 	var creatingPanel = 0;
 	var manualCreateId;
 
 	return {
+		onNewScriptLoaded: function(compile, scope, container) {
+        	var selectFragment = dataService.getSelectFragment();
+            if (selectFragment.form && selectFragment.form.blocks) {
+            	banchCreateModulePanel(compile, scope, container, 'root', selectFragment.form.blocks);
+            }
+		},
 		branchCreateModulePanel: function(compile, scope, container, parentId, values) {
-			values.forEach(function (value, index) {
-				var type;
-	            if ('type' in value) {
-	                type = value.type;
-	            } else if ('name' in value) {
-	                type = value.name;
-	            }
-
-	            createModulePanel(compile, scope, container, -1, type, parentId, value);
-	            creatingPanel++;
-	        });
+			banchCreateModulePanel(compile, scope, container, parentId, values);
+		},
+		banchCreatePropertyPanel: function(compile, scope, element, parentid, module) {
+			var createdProperty = {};
+			for (var key in module) {
+				if (protocolService.isModuleProperty(key)) {
+					var elementId = createPropertyPanel(compile, scope, element, parentid, key, module[key]);
+					createdProperty[key] = elementId;
+				}
+			}
+			return createdProperty;
+		},
+		createPropertypanel: function(compile, scope, element, parentid, propertyname, property) {
+			return createPropertyPanel(compile, scope, element, parentid, propertyname, property);
 		},
 		createModulePanel: function(compile, scope, target, position, type, parentId, module) {
-			manualCreateId = createModulePanel(compile, scope, target, position, type, parentId, module);
+			manualCreateId = createModulePanel(compile, scope, target, position, type, parentId, module, true);
 			if (position >= 0) {
 				var parent = dataService.findHierarchyItem(parentId);
 				var insertPositionEelement = parent.childs[position + 1];
@@ -45,12 +74,8 @@ blockPanel.factory('moduleService', function ($rootScope, dataService, protocolS
 		},
         panelCreated: function() {
             creatingPanel--;
-            return creatingPanel;
-        },
-        getSelectPanelModules: function() {
-        	var selectFragment = dataService.getSelectFragment();
-            if (selectFragment.form && selectFragment.form.blocks) {
-            	return selectFragment.form.blocks;
+            if (creatingPanel === 0) {
+            	$rootScope.$broadcast('display:refresh');
             }
         },
 	    resetModuleProperties: function(properties, unuseProperties, block) {
@@ -64,7 +89,9 @@ blockPanel.factory('moduleService', function ($rootScope, dataService, protocolS
 	            }
 
 	            if (property in block) {
-	                properties.push(property);
+	            	if (!protocolService.isModuleProperty(property)) {
+	                	properties.push(property);
+	            	}
 	            } else {
 	                unuseProperties.push(property);
 	            }

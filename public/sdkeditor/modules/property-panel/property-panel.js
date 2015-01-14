@@ -20,15 +20,3 @@ propertyPanel.directive("propertyPanel", function($compile, dataService) {
         }
     };
 });
-
-propertyPanel.filter('onlySimpleProperty', function () {
-  return function (item) {
-    var filtered = {};
-    for (var key in item) {
-        if (typeof item[key] != 'object') {
-            filtered[key] = item[key];
-        }
-    }
-    return filtered;
-  };
-});

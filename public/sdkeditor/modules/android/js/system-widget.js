@@ -27,6 +27,7 @@ device.directive("systemWidget", function($compile, styleService) {
     	link: function (scope, element, attr) {
     		scope.style = styleService.getWidgetStyle(attr.elementId);
             styleService.setupViewListener($compile, scope, element, attr.elementId, attr.type);
+            styleService.branchCreateWidget($compile, scope, element, attr.elementId);
 	    }
   	};
 });

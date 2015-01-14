@@ -44,7 +44,10 @@
               </div>
           </div>
         </div>
-        <div id="container" class="panel-group" role="tablist" aria-multiselectable="true">
+        <div id="proeprty-container" class="panel-group" role="tablist" aria-multiselectable="true">
+        </div>
+        <span class="label label-default" ng-class="{'btn-primary': panel.childbackground=='#428bca', 'btn-success': panel.childbackground=='#5cb85c', 'btn-info': panel.childbackground=='#5bc0de', 'btn-warning': panel.childbackground=='#f0ad4e', 'btn-danger': panel.childbackground=='#d9534f'}" ng-show="hierarchyItem.childs">Childs</span>
+        <div id="container" class="panel-group" role="tablist" aria-multiselectable="true" style="padding-top: 6px;" ng-show="hierarchyItem.childs">
         </div>
         <div class="row" style="padding: 0px 14px 0px 14px">
           <button type="button" class="btn btn-sm btn-danger" ng-click="deleteElement()">Delete</button>

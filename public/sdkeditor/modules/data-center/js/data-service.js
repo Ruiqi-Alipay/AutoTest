@@ -1,4 +1,4 @@
-dataCenter.factory("dataService", function($rootScope, protocolService) {
+dataCenter.factory("dataService", function($rootScope, $timeout, protocolService) {
 	var hierarchyColor = ['#428bca', '#5cb85c', '#5bc0de', '#f0ad4e', '#d9534f',
 							'#428bca', '#5cb85c', '#5bc0de', '#f0ad4e', '#d9534f'];
 							
@@ -124,39 +124,16 @@ dataCenter.factory("dataService", function($rootScope, protocolService) {
 
 		if (script && script.form) {
 			extractActions(actionFragmentList, script);
-			mainFragment = script
+			mainFragment = script;
+			selectFragment = mainFragment;
 		}
 
 		propertyDataMap['root'] = mainFragment;
 	};
-	var assembleScript = function() {
-		saveCurrentForm();
-
-		var script = {};
-		jQuery.extend(script, scriptRoot);
-		script.form = {};
-		jQuery.extend(script.form, mainForm.parameter.form);
-		script.form.blocks = [];
-		for (var index in mainForm.blocks) {
-			script.form.blocks[index] = {};
-			jQuery.extend(script.form.blocks[index], mainForm.blocks[index]);
-		}
-
-		for (var index in actionList) {
-			var actionCopy = {};
-			jQuery.extend(actionCopy, actionList[index].parameter);
-			if (actionList[index].blocks) {
-				actionCopy.form.blocks = actionList[index].blocks;
-			}
-			assenbleAction(actionCopy, script.form.blocks);
-		}
-
-		return script;
-	};
-	var assenbleAction = function(action, script) {
+	var findItemParent = function(script, name) {
 		if (script instanceof Array) {
 			for (var index in script) {
-				var result = assenbleAction(action, script[index]);
+				var result = findItemParent(script[index], name);
 				if (result) {
 					return result;
 				}
@@ -165,34 +142,35 @@ dataCenter.factory("dataService", function($rootScope, protocolService) {
 			for (var key in script) {
 				var content = script[key];
 
-				if (key === 'action') {
-					var ss = 'sss';
-					if (ss != key) {
-						var f = parseInt(1);
-					}
-				}
-
-				if (typeof content === 'object' || content instanceof Array) {
-					var result = assenbleAction(action, content);
+				if (key === 'action' && typeof content === name) {
+					return script;
+				} else {
+					var result = findItemParent(content, name);
 					if (result) {
 						return result;
 					}
-				} else if (key === 'action' && content === action.name) {
-					script[key] = action;
-					return true;
 				}
 			}
 		}
 	};
-
-	var assembleBlocks = function(resultArray, sourceArray) {
-		sourceArray.forEach(function(value, index) {
-			resultArray[index] = moduleMap[value.name];
-			if (value.array) {
-				resultArray[index].value = [];
-				assembleBlocks(resultArray[index].value, value.array);
-			}
+	var onSelectPanel = function(elementId) {
+		var selectBranch = getHierarchyList(moduleHierarchy, elementId);
+		var selectHash = {};
+		selectBranch.forEach(function(value) {
+			selectHash[value] = '';
 		});
+
+		for (var i = selectBranch.length - 1; i >= 0; i--) {
+			$rootScope.$broadcast('module:open-' + selectBranch[i]);
+		}
+		for (var element in moduleDataMap) {
+			if (!(element in selectHash)) {
+				$rootScope.$broadcast('module:close-' + element);
+			}
+		}
+	    $timeout(function() {
+			$rootScope.$broadcast('module:open-' + elementId + '-finished');
+	    }, 500);
 	};
 		
    	var moduleHierarchy = [{id: 'root'}];
@@ -212,7 +190,7 @@ dataCenter.factory("dataService", function($rootScope, protocolService) {
 			loadNewScript(script);
 			$rootScope.$broadcast('dataService:newScriptLoaded');
 		},
-		newModule: function(parentId, module, position) {
+		newModule: function(parentId, module, position, broadcast) {
 			var newItemId = newEelementId();
 			moduleDataMap[newItemId] = module;
 
@@ -223,18 +201,27 @@ dataCenter.factory("dataService", function($rootScope, protocolService) {
 			if (position >= 0) {
 				var previousItemId = parent.childs[position].id;
 				parent.childs.splice(position, 0, {id: newItemId});
-				$rootScope.$broadcast('display:insert:' + previousItemId, newItemId);
+				if (broadcast) {
+					$rootScope.$broadcast('display:insert:' + previousItemId, newItemId);
+				}
 			} else {
 				parent.childs.push({id: newItemId});
-				$rootScope.$broadcast('display:append:' + parentId, newItemId);
+				if (broadcast) {
+					$rootScope.$broadcast('display:append:' + parentId, newItemId);
+				}
 			}
 
 			return newItemId;
 		},
+		newModuleProperty: function(module) {
+			elementId = newEelementId();
+			propertyDataMap[elementId] = module;
+			return elementId;
+		},
 		newProperty: function(parentId, name, module) {
 			var elementId;
 			var moduleProperty = protocolService.isModuleProperty(name);
-			propertyDataMap[parentId][name] = '';
+			
 			if (moduleProperty) {
 				elementId = newEelementId();
 				propertyDataMap[elementId] = module;
@@ -244,23 +231,30 @@ dataCenter.factory("dataService", function($rootScope, protocolService) {
 					parent.childs = [];
 				}
 				parent.childs.push({id: elementId});
+			} else {
+				propertyDataMap[parentId][name] = '';
 			}
 			
 			$rootScope.$broadcast('property:change:' + parentId);
 			return elementId;
 		},
 		deleteProperty: function(parentId, elementName, elementId) {
-			delete propertyDataMap[parentId][elementName];
+			if (parentId in propertyDataMap) {
+				delete propertyDataMap[parentId][elementName];
+			}
+			
 			if (elementId) {
 				delete propertyDataMap[elementId];
 				var parent = findHierarchyItem(propertyHierarchy, parentId);
-				var deleteInedx = findSlibingIndexInHierarchy(parent.childs, elementId);
-				var deleteItem = parent.childs.splice(deleteInedx, 1);
-				if (deleteItem.childs) {
-					deletePropertyModule(deleteItem.childs);
+				if (parent) {
+					var deleteInedx = findSlibingIndexInHierarchy(parent.childs, elementId);
+					var deleteItem = parent.childs.splice(deleteInedx, 1);
+					if (deleteItem.childs) {
+						deletePropertyModule(deleteItem.childs);
+					}
 				}
 			}
-			$rootScope.$broadcast('property:change:' + parentId);
+			$rootScope.$broadcast('property:change:' + parentId, elementName);
 		},
 		deleteModule: function(elementId) {
 			delete moduleDataMap[elementId];
@@ -272,8 +266,16 @@ dataCenter.factory("dataService", function($rootScope, protocolService) {
 				deleteBlockModule(deleteItem[0].childs);
 			}
 		},
-		assembleScript: function() {
-			return assembleScript;
+		getOverallScript: function() {
+			var script = {};
+			jQuery.extend(script, mainFragment);
+			for (var index in actionFragmentList) {
+				var actionCopy = {};
+				jQuery.extend(actionCopy, actionFragmentList[index]);
+				var parentObject = findItemParent(script, actionCopy.name);
+				parentObject.action = actionCopy;
+			}
+			return script;
 		},
 		getSelectFragment: function() {
 			return selectFragment;
@@ -306,5 +308,17 @@ dataCenter.factory("dataService", function($rootScope, protocolService) {
 			var hierarchy = getHierarchyLevel(moduleHierarchy, elementId);
 			return hierarchyColor[hierarchy];
 		},
+		getChildHierarchyColor: function(elementId) {
+			var hierarchy = getHierarchyLevel(moduleHierarchy, elementId);
+			return hierarchyColor[hierarchy + 1];
+		},
+		getActionbar: function() {
+			if (mainFragment && mainFragment.form && mainFragment.form.actionBar) {
+				return mainFragment.form.actionBar;
+			}
+		},
+		onSelectPanel: function(elementId) {
+			onSelectPanel(elementId);
+		}
 	}
 });

@@ -27,15 +27,18 @@ blockPanel.directive("moduleItem", function ($compile, $rootScope, $location, $a
       		return function (scope, element, attr) {
                 $anchorScroll.yOffset = 250;
                 scope.block = dataService.getModule(attr.elementId);
+                scope.hierarchyItem = dataService.findHierarchyItem(attr.elementId);
                 scope.properties = [];
                 scope.panel = {
                     title: '',
                     background: dataService.getHierarchyColor(attr.elementId),
+                    childbackground: dataService.getChildHierarchyColor(attr.elementId),
                     typeArray: protocolService.getProtocol('blocks').type,
                     properties: [],
                     unuseProperties: []
                 };
                 moduleService.resetModuleProperties(scope.panel.properties, scope.panel.unuseProperties, scope.block);
+                var panelProertyMap = moduleService.banchCreatePropertyPanel($compile, scope, element, attr.elementId, scope.block);
 
                 scope.insertSlibingBefore = function(type) {
                     var insertPosition = dataService.findSlibingIndexInHierarchy(attr.elementId);
@@ -51,10 +54,15 @@ blockPanel.directive("moduleItem", function ($compile, $rootScope, $location, $a
                 scope.addNewProperty = function(name) {
                     scope.block[name] = protocolService.getProtocolDefaultValue(name);
                     moduleService.resetModuleProperties(scope.panel.properties, scope.panel.unuseProperties, scope.block);
+                    if (protocolService.isModuleProperty(name)) {
+                        moduleService.createPropertypanel($compile, scope, element, attr.elementId, name, {});
+                    }
+                    $rootScope.$broadcast("display:change:" + attr.elementId);
                 };
                 scope.deleteProperty = function(name) {
                     delete scope.block[name];
                     moduleService.resetModuleProperties(scope.panel.properties, scope.panel.unuseProperties, scope.block);
+                    $rootScope.$broadcast("display:change:" + attr.elementId);
                 };
 		      	scope.appendNewChild = function(type) {
 		      		var container = element.find("#" + attr.elementId);
@@ -76,6 +84,11 @@ blockPanel.directive("moduleItem", function ($compile, $rootScope, $location, $a
                     }
                 };
 
+                scope.$on('property:change:' + attr.elementId, function(event, property) {
+                    delete scope.block[property];
+                    moduleService.resetModuleProperties(scope.panel.properties, scope.panel.unuseProperties, scope.block);
+                });
+
                 scope.$on('module:close-' + attr.elementId, function(event) {
                     element.find('#' + attr.elementId + '-body').collapse('hide');
                 });
@@ -83,14 +96,13 @@ blockPanel.directive("moduleItem", function ($compile, $rootScope, $location, $a
                     element.find('#' + attr.elementId + '-body').collapse('show');
                 });
                 scope.$on('module:open-' + attr.elementId + '-finished', function(event) {
-                    $location.hash(attr.elementId + '-body');
-                    $anchorScroll();
+                    //$location.hash(attr.elementId + '-body');
+                    //$anchorScroll();
                 });
 
                 if (scope.block.value instanceof Array && scope.block.value) {
                     var container = element.find("#" + attr.elementId);
-                    var result = dataService.recursiveProcessModule($compile, scope, container, attr.elementId, scope.block.value);
-                    scope.addNewtask(result);
+                    moduleService.branchCreateModulePanel($compile, scope, container, attr.elementId, scope.block.value);
                 }
 
                 if (moduleService.isManualCreated(attr.elementId)) {

@@ -1,0 +1,15 @@
+<div class="panel panel-default">
+  <div class="panel-heading block-header" role="tab" id="header">
+      <p class="panel-title"><a ><strong>value</strong></a></p>
+  </div>
+  <div id="body" class="panel-collapse collapse in" role="tabpanel" ng-style="{'background': panel.background}">
+    <div class="panel-body">
+      <div id="container" class="panel-group" role="tablist" aria-multiselectable="true" style="padding-top: 8px">
+      </div>
+      <div class="row" style="padding: 0px 14px 0px 14px">
+        <button type="button" class="btn btn-sm btn-danger" ng-click="deletePanel()">Delete</button>
+        <button type="button" class="btn btn-sm btn-default pull-right" ng-click="newChild()">Append Item</button>
+      </div>
+    </div>
+  </div>
+</div>

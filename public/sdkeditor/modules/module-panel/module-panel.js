@@ -12,14 +12,11 @@ blockPanel.directive("modulePanel", function ($compile, $rootScope, moduleServic
 
             scope.$on('dataService:newScriptLoaded', function() {
                 childRoot.html('');
-                var blocks = moduleService.getSelectPanelModules();
-                if (blocks) {
-                    moduleService.branchCreateModulePanel($compile, scope, connatiner, 'root', blocks);
-                }
+                moduleService.onNewScriptLoaded($compile, scope, childRoot);
             });
             
             scope.appendChildPanel = function(type) {
-                var elementId = moduleService.createModulePanel($compile, scope, childRoot, -1, type, 'root');
+                moduleService.createModulePanel($compile, scope, childRoot, -1, type, 'root');
             };
 
             scope.clearAllPanel = function() {

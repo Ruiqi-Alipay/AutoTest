@@ -1,12 +1,16 @@
 propertyPanel.factory('propertyService', function (protocolService, dataService) {
+	var newChildProperty = function(compile, element, scope, propertyname, parentid, property) {
+		var elementId = dataService.newProperty(parentid, propertyname, property);
+
+        if (protocolService.isModuleProperty(propertyname)) {
+            var container = element.find('#' + parentid);
+	    	container.append(compile("<div property-panel-item propertyname='" + propertyname + "' propertyid='" + elementId + "' parentid='" + parentid + "'></div>")(scope));
+        }
+	};
+
 	return {
 		newChildProperty: function(compile, element, scope, propertyname, parentid, property) {
-			var elementId = dataService.newProperty(parentid, propertyname, property);
-
-            if (protocolService.isModuleProperty(propertyname)) {
-                var container = element.find('#' + parentid);
-		    	container.append(compile("<div property-panel-item propertyname='" + propertyname + "' propertyid='" + elementId + "' parentid='" + parentid + "'></div>")(scope));
-            }
+			newChildProperty(compile, element, scope, propertyname, parentid, property);
 		},
 		deleteChildProperty: function(parentId, propertyName, elementId) {
 			dataService.deleteProperty(parentId, propertyName, elementId);
@@ -34,9 +38,14 @@ propertyPanel.factory('propertyService', function (protocolService, dataService)
 			for (var key in module) {
                 var type = protocol[key];
                 if (key != 'blocks' && type === 'object') {
-                    this.newChildProperty(compile, element, scope, key, moduleid, module[key]);
+                    newChildProperty(compile, element, scope, key, moduleid, module[key]);
                 }
             }
+	    },
+	    branchCreateListChildPanel: function(compile, element, scope, array, propertyName, parentid) {
+	    	array.forEach(function(value) {
+	    		newChildProperty(compile, element, scope, propertyName, parentid, value);
+	    	});
 	    }
 	};
 });

@@ -2,7 +2,7 @@
   <div class="panel-heading block-header" role="tab" id="header">
       <p class="panel-title"><a ><strong>{{panel.title}}</strong></a></p>
   </div>
-  <div id="body" class="panel-collapse collapse in" role="tabpanel">
+  <div id="body" class="panel-collapse collapse in" role="tabpanel" ng-style="{'background': panel.background}">
     <div class="panel-body">
       <div class="row block-item">
       	<div class="block-item col-sm-6" ng-repeat="name in panel.properties">

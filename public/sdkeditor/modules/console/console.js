@@ -20,7 +20,7 @@ consoleModule.directive('console', function ($rootScope, restService, dataServic
 			);
 
 			scope.$on('dataService:newScriptLoaded', function(event) {
-
+				scope.displayPanel = 'property';
 			});
 
 			scope.saveScript = function() {
@@ -90,7 +90,7 @@ consoleModule.directive('console', function ($rootScope, restService, dataServic
 				if (!scope.scriptName) {
 					scope.scriptName = 'new_script.json';
 				}
-				var saveFileContent = JSON.stringify(dataService.assembleScript());
+				var saveFileContent = JSON.stringify(dataService.getOverallScript());
 				var pom = document.createElement('a');
 				pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(saveFileContent));
 				pom.setAttribute('download', scope.scriptName);

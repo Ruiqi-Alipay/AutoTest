@@ -23,11 +23,16 @@ propertyPanel.directive("propertyPanelItem", function($compile, $rootScope, data
 
             return function (scope, element, attr) {
                 var protocol = protocolService.getProtocol(attr.propertyname);
+                var background = attr.background;
+                if (!background) {
+                    background = '#ffffff';
+                }
                 scope.module = dataService.getProperty(attr.propertyid);
                 scope.panel = {
                     title: attr.propertyname,
                     properties: [],
-                    unuseProperties: []
+                    unuseProperties: [],
+                    background: background
                 };
 
                 scope.newProperty = function(name) {
