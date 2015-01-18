@@ -1,6 +1,8 @@
 var autotestApp = angular.module("autotestApp");
 
-autotestApp.controller("dataController", function($scope, $rootScope) {
+autotestApp.controller("dataController", function($scope, $rootScope, dataService) {
+    $scope.reports = dataService.getServerReport();
+
     $scope.x2AxisTickFormatFunction = function(){
         return function(d){
             if (d in $scope.actionToCase) {
@@ -87,7 +89,43 @@ autotestApp.controller("dataController", function($scope, $rootScope) {
 });
 
 autotestApp.controller("reportController", function($scope, $rootScope) {
-    $scope.reportNavSelect = 1;
+    $scope.selectReport;
+
+    var onLoadReport = function(title, data) {
+        $scope.title = title;
+        var records = JSON.parse(data);
+        if (records) {
+            $scope.actionToCase = {};
+            $scope.caseDisplay = {};
+            $scope.actionTip = {};
+            $scope.meminfoMap = {};
+            $scope.sentMap = {};
+            $scope.receiveMap = {};
+            $scope.logMap = {};
+
+            var memoryData = [];
+            var networkData = [];
+            var cpuData = [];
+            records.forEach(function(record, index) {
+                var actionIndex = index + 1;
+                var caseIndex = record.index + 1;
+                $scope.actionToCase[actionIndex] = caseIndex;
+                $scope.caseDisplay[actionIndex] = 'Case ' + caseIndex + ' : Action ' + actionIndex;
+                $scope.actionTip[actionIndex] = record.action;
+                $scope.meminfoMap[actionIndex] = record.meminfo;
+                $scope.logMap[actionIndex] = record.log;
+                $scope.sentMap[actionIndex] = record.sent;
+                $scope.receiveMap[actionIndex] = record.reve;
+
+                memoryData.push([actionIndex, record.heap]);
+                networkData.push([actionIndex, record.sent + record.reve]);
+                cpuData.push([actionIndex, record.cpu]);
+            });
+
+            $rootScope.$broadcast('repoprt:newdata', {'memoryData': memoryData, 'networkData': networkData, 'cpuData': cpuData});
+        }
+    };
+
     $scope.$on('showdialog', function(event, data) {
         $scope.$apply(function () {
             $scope.dialog = data;
@@ -95,50 +133,38 @@ autotestApp.controller("reportController", function($scope, $rootScope) {
         });
     });
 
-	$scope.selectReportFile = function(event) {
-		var files = event.target.files;
+    $scope.loadReportFromLocal = function() {
+        var pom = document.createElement('input');
+        pom.setAttribute('type', 'file');
+        pom.setAttribute('accept', '.report');
+        pom.setAttribute('onchange', "angular.element(document.getElementById('viewRoot')).scope().localReadFile(this)");
+        pom.click();
+    };
+
+    $scope.loadScriptFromServer = function(index) {
+        $scope.selectReport = $scope.reports[index];
+        onLoadReport($scope.selectReport.title, $scope.selectReport.content);
+    };
+
+	$scope.localReadFile = function(event) {
+		var files = event.files;
         var file = files[0];
 	    var reader = new FileReader();
 
-	    // If we use onloadend, we need to check the readyState.
 	    reader.onloadend = function(evt) {
-	      if (evt.target.readyState == FileReader.DONE) { // DONE == 2
-	        var result = evt.target.result;
-	        var records = JSON.parse(result);
-	        if (records) {
-                $scope.actionToCase = {};
-                $scope.caseDisplay = {};
-                $scope.actionTip = {};
-                $scope.meminfoMap = {};
-                $scope.sentMap = {};
-                $scope.receiveMap = {};
-                $scope.logMap = {};
-
-                var memoryData = [];
-                var networkData = [];
-                var cpuData = [];
-                records.forEach(function(record, index) {
-                    var actionIndex = index + 1;
-                    var caseIndex = record.index + 1;
-                    $scope.actionToCase[actionIndex] = caseIndex;
-                    $scope.caseDisplay[actionIndex] = 'Case ' + caseIndex + ' : Action ' + actionIndex;
-                    $scope.actionTip[actionIndex] = record.action;
-                    $scope.meminfoMap[actionIndex] = record.meminfo;
-                    $scope.logMap[actionIndex] = record.log;
-                    $scope.sentMap[actionIndex] = record.sent;
-                    $scope.receiveMap[actionIndex] = record.reve;
-
-                    memoryData.push([actionIndex, record.heap]);
-                    networkData.push([actionIndex, record.sent + record.reve]);
-                    cpuData.push([actionIndex, record.cpu]);
-                });
-
-                $rootScope.$broadcast('repoprt:newdata', {'memoryData': memoryData, 'networkData': networkData, 'cpuData': cpuData});
-	        }
+	      if (evt.target.readyState == FileReader.DONE) {
+            onLoadReport(file.title, evt.target.result);
 	      }
 		};
 
 	    reader.readAsText(file);
-	}
+	};
 
+    $scope.saveReport = function() {
+        $http.post('/autotest/api/testreport', $scope.selectReport).success(function(data){
+            $rootScope.$broadcast('toastMessage', '保存成功');
+        }).error(function(data, status, headers, config) {
+            $rootScope.$broadcast('toastMessage', '保存失败：' + data);
+        });
+    };
 });

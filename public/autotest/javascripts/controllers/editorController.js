@@ -70,7 +70,7 @@ autotestApp.controller("editorController", function($scope, $rootScope, $http, d
 				name: "",
 				value: ""
 			};
-		} else if (itemName === "rollback" || itemName === "actions"){
+		} else if (itemName === "rollback" || itemName === "actions" || itemName === 'suitActions'){
 			newItem = {
 				type: "点击",
 				target: "",
