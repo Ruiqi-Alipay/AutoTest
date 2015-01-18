@@ -8,6 +8,7 @@ var mongoose = require('mongoose');
 
 mongoose.connect('mongodb://localhost/news');
 require('./models/TestScript');
+require('./models/TestReport');
 require('./models/Scripts');
 
 var rootRoutes = require('./routes/rootIndex')

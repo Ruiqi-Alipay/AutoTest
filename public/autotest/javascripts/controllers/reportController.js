@@ -132,6 +132,7 @@ autotestApp.controller("reportController", function($scope, $rootScope) {
             $('#myModal').modal('show');
         });
     });
+    $scope.$on('')
 
     $scope.loadReportFromLocal = function() {
         var pom = document.createElement('input');

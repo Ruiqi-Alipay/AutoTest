@@ -4,7 +4,6 @@ autotestApp.controller("reportManageController", function($scope, $http, $locati
 	$scope.reports = dataService.getServerReport();
 
 	$scope.editReport = function(index) {
-		dataService.setSelectIndex(index);
 		$location.path('/report');
 	};
 
