@@ -1,16 +1,14 @@
-<div class="col-sm-6 col-sm-offset-3" style="padding-top: 20px;">
+<div class="col-sm-8 col-sm-offset-2" style="padding-top: 20px;">
 	<table class="table table-striped">
 		<tr class="active">
 			<td>#</td>
 			<td>脚本标示</td>
-			<td>迭代次数</td>
 			<td>最近修改</td>
 			<td>操作</td>
 		</tr>
 		<tr ng-repeat="item in scripts">
 			<td>{{$index + 1}}</td>
 			<td>{{item.title}}</td>
-			<td>{{item.recurNum}}</td>
 			<td>{{item.date}}</td>
 			<td>
 				<button type="button" class="btn btn-sm btn-danger" ng-click="deleteScript($index)">删除</button>

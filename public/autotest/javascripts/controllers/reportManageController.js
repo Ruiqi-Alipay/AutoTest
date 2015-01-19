@@ -1,16 +1,18 @@
 var autotestApp = angular.module("autotestApp");
 
-autotestApp.controller("reportManageController", function($rootScope, $scope, $upload, $location, dataService) {
+autotestApp.controller("reportManageController", function($rootScope, $scope, $upload, $location, $window, dataService) {
 	var refresh = function() {
 		dataService.getServerReport(function(array) {
 			$scope.reports = array;
 		});
 	};
 
-	$scope.editReport = function(index) {
-		dataService.selectReport($scope.reports[index]);
-		$location.path('/report');
-		$scope.tabSelect = 3;
+	$scope.viewProfermenceReport = function(index) {
+		$window.open($location.$$protocol + '://' + $location.$$host + '/reporter#?title=' + encodeURIComponent($scope.reports[index].title), '_blank');
+	};
+
+	$scope.viewTaskReport = function(index) {
+		$window.open($location.$$protocol + '://' + $location.$$host + '/reporter/reports/' + encodeURIComponent($scope.reports[index].title) + '/index.html', '_blank');
 	};
 
 	$scope.deleteReport = function(index) {

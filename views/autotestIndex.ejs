@@ -7,8 +7,6 @@
     <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
     <!-- Optional theme -->
     <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap-theme.min.css">
-    <link rel="stylesheet" href="bower_components/nvd3/nv.d3.css">
-    <link rel="stylesheet" href="stylesheets/style.css">
     <!-- JQuery-->
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
 
@@ -16,9 +14,6 @@
     <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="bower_components/angular/angular.js"></script>
     <script src="bower_components/angular-route/angular-route.js"></script>
-    <script src="bower_components/angularjs-nvd3-directives/dist/angularjs-nvd3-directives.js"></script>
-    <script src="bower_components/d3/d3.js"></script>
-    <script src="bower_components/nvd3/nv.d3.js"></script>
     <script src="bower_components/ng-file-upload/angular-file-upload-shim.min.js"></script> 
     <script src="bower_components/ng-file-upload/angular-file-upload.min.js"></script> 
 
@@ -27,7 +22,6 @@
     <script src="javascripts/directives/toastDialog.js"></script>
     <script src="javascripts/controllers/editorController.js"></script>
     <script src="javascripts/controllers/guideController.js"></script>
-    <script src="javascripts/controllers/reportController.js"></script>
     <script src="javascripts/controllers/manageController.js"></script>
     <script src="javascripts/controllers/reportManageController.js"></script>
     <script src="javascripts/controllers/uploaderController.js"></script>
@@ -83,11 +77,9 @@
             <li ng-click="tabSelect=2"
                 ng-class="{'active' : tabSelect==2}"><a href="#manage">脚本管理</a></li>
             <li ng-click="tabSelect=3"
-                ng-class="{'active' : tabSelect==3}"><a href="#report">性能报告</a></li>
+                ng-class="{'active' : tabSelect==3}"><a href="#report_manage">报告管理</a></li>
             <li ng-click="tabSelect=4"
-                ng-class="{'active' : tabSelect==4}"><a href="#report_manage">报告管理</a></li>
-            <li ng-click="tabSelect=5"
-                ng-class="{'active' : tabSelect==5}"><a href="#guide">使用手册</a></li>
+                ng-class="{'active' : tabSelect==4}"><a href="#guide">使用手册</a></li>
           </ul>
         </div><!-- /.navbar-collapse -->
       </div><!-- /.container-fluid -->

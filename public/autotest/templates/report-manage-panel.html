@@ -1,7 +1,7 @@
 <div class="col-sm-8 col-sm-offset-2" style="padding-top: 20px;">
 	<button type="button" class="btn btn-success upload-button"
-	    ng-file-select ng-model="files" ng-file-change="upload(files)" ng-multiple="false" ng-accept="'*.report'" tabindex="0">上传脚本</button>
-	<table class="table table-striped" style="padding-top: 10px;">
+	    ng-file-select ng-model="files" ng-file-change="upload(files)" ng-multiple="false" ng-accept="'*.tar.gz'" tabindex="0">上传报告</button>
+	<table class="table table-striped" style="margin-top: 10px;">
 		<tr class="active">
 			<td>#</td>
 			<td>报告标示</td>
@@ -13,8 +13,9 @@
 			<td>{{item.title}}</td>
 			<td>{{item.date}}</td>
 			<td>
+				<button type="button" class="btn btn-sm btn-primary" ng-click="viewTaskReport($index)">查看执行报告</button>
+				<button type="button" class="btn btn-sm btn-primary" ng-click="viewProfermenceReport($index)">查看性能报告</button>
 				<button type="button" class="btn btn-sm btn-danger" ng-click="deleteReport($index)">删除</button>
-				<button type="button" class="btn btn-sm btn-success" ng-click="editReport($index)">查看</button>
 			</td>
 		</tr>
 	</table>

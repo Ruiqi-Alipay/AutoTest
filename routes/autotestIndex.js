@@ -1,5 +1,6 @@
 var express = require('express');
 var fs = require('fs');
+var targz = require('tar.gz');
 var router = express.Router();
 
 /* GET home page. */
@@ -83,28 +84,35 @@ router.delete('/api/testscript/:testscript', function(req, res) {
 router.post('/api/report', function(req, res) {
     var file = req.files.file;
 
-    fs.readFile(file.path, function(err, data) {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log('Data: ' + data);
+    var compress = new targz().extract(file.path, './reports/' + file.name, function(err){
+        if(err) {
+          console.log(err);
+          return;
+        }
 
-        var records = JSON.parse(data);
-        records.forEach(function(value, index) {
-          delete value['data'];
-        });
-
-        var report = new TestReport();
-        report.title = file.name;
-        report.content = JSON.stringify(records);
-        report.save(function(err, report){
-          if(err){
-            console.log('Report save error: ' + err);
+        fs.readFile('./reports/' + file.name + '/performance.report', function(err, data) {
+          if (err) {
+            console.log(err);
           } else {
-            console.log('Report saved: ' + report);
+            console.log('Data: ' + data);
+
+            var records = JSON.parse(data);
+            records.forEach(function(value, index) {
+              delete value['data'];
+            });
+
+            var report = new TestReport();
+            report.title = file.name;
+            report.content = JSON.stringify(records);
+            report.save(function(err, report){
+              if(err){
+                console.log('Report save error: ' + err);
+              } else {
+                console.log('Report saved: ' + report);
+              }
+            });
           }
         });
-      }
     });
 });
 
@@ -121,31 +129,37 @@ router.param('testreport', function(req, res, next, id) {
 });
 
 router.get('/api/testreport', function(req, res, next) {
-  TestReport.find(function(err, reports){
-    if(err){ return next(err); }
+  if (req.query && req.query.title) {
+    TestReport.find({title: decodeURIComponent(req.query.title)}, function(err, report){
+      if(err){ return next(err); }
 
-    res.json(reports);
-  });
+      res.json(report);
+    });
+  } else {
+    TestReport.find(function(err, reports){
+      if(err){ return next(err); }
+
+      res.json(reports);
+    });
+  }
 });
 
 router.delete('/api/testreport/:testreport', function(req, res) {
-  fs.unlink('uploads/' + req.testreport.title);
+  var fs = require('fs-extra')
+  fs.remove('uploads/' + req.testreport.title, function(err) {
+    if (err) return console.error(err)
+
+    console.log("Delete source gz success")
+  });
+  fs.remove('reports/' + req.testreport.title, function(err) {
+    if (err) return console.error(err)
+
+    console.log("Delete extracted content success")
+  })
   req.testreport.remove(function(err, report){
     if (err) { return next(err); }
 
     res.json(report);
-  });
-});
-
-router.get('/api/reportdata', function(req, res, next) {
-  var file = decodeURIComponent(req.query.file);
-  var index = req.query.index;
-
-  fs.readFile('uploads/' + file, function(err, data) {
-    if (err) { return next(err); }
-
-    var report = JSON.parse(data);
-    res.json(report[index].data);
   });
 });
 

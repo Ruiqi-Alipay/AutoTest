@@ -1,4 +1,4 @@
-var autotestApp = angular.module("autotestApp", ['nvd3ChartDirectives', 'ngRoute', 'angularFileUpload']);
+var autotestApp = angular.module("autotestApp", ['ngRoute', 'angularFileUpload']);
 
 autotestApp.config(function($routeProvider) {
         $routeProvider
@@ -7,7 +7,7 @@ autotestApp.config(function($routeProvider) {
                 controller  : 'editorController'
             })
             .when('/manage', {
-                templateUrl : 'templates/manage-panel.html',
+                templateUrl : 'templates/script-manage-panel.html',
                 controller  : 'manageController'
             })
             .when('/report', {

@@ -15,6 +15,7 @@ require('./models/Scripts');
 var rootRoutes = require('./routes/rootIndex')
 var autotestRoutes = require('./routes/autotestIndex');
 var sdkeditorRoutes = require('./routes/sdkeditorIndex');
+var reporterRoutes = require('./routes/reporterIndex');
 var users = require('./routes/users');
 
 var app = express();
@@ -46,11 +47,15 @@ app.use('/autotest', express.static(path.join(__dirname, '/public/autotest')));
 app.use('/autotest/bower_components',  express.static(path.join(__dirname, '/bower_components')));
 app.use('/sdkeditor', express.static(path.join(__dirname, '/public/sdkeditor')));
 app.use('/sdkeditor/bower_components',  express.static(path.join(__dirname, '/bower_components')));
+app.use('/reporter', express.static(path.join(__dirname, '/public/reporter')));
+app.use('/reporter/bower_components',  express.static(path.join(__dirname, '/bower_components')));
+app.use('/reporter/reports', express.static(path.join(__dirname, '/reports')));
 app.use('/bower_components',  express.static(path.join(__dirname, '/bower_components')));
 
 app.use('/', rootRoutes);
 app.use('/autotest', autotestRoutes);
 app.use('/sdkeditor', sdkeditorRoutes);
+app.use('/reporter', reporterRoutes);
 app.use('/users', users);
 
 // catch 404 and forward to error handler
