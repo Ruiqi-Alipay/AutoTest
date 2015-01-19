@@ -88,13 +88,13 @@ autotestApp.controller("dataController", function($scope, $rootScope, dataServic
     });
 });
 
-autotestApp.controller("reportController", function($scope, $rootScope) {
+autotestApp.controller("reportController", function($scope, $http, $rootScope) {
     $scope.selectReport;
 
     var onLoadReport = function(title, data) {
         $scope.title = title;
-        var records = JSON.parse(data);
-        if (records) {
+        $scope.records = JSON.parse(data);
+        if ($scope.records) {
             $scope.actionToCase = {};
             $scope.caseDisplay = {};
             $scope.actionTip = {};
@@ -106,11 +106,11 @@ autotestApp.controller("reportController", function($scope, $rootScope) {
             var memoryData = [];
             var networkData = [];
             var cpuData = [];
-            records.forEach(function(record, index) {
+            $scope.records.forEach(function(record, index) {
                 var actionIndex = index + 1;
                 var caseIndex = record.index + 1;
                 $scope.actionToCase[actionIndex] = caseIndex;
-                $scope.caseDisplay[actionIndex] = 'Case ' + caseIndex + ' : Action ' + actionIndex;
+                $scope.caseDisplay[actionIndex] = 'Case ' + caseIndex;
                 $scope.actionTip[actionIndex] = record.action;
                 $scope.meminfoMap[actionIndex] = record.meminfo;
                 $scope.logMap[actionIndex] = record.log;
@@ -154,7 +154,7 @@ autotestApp.controller("reportController", function($scope, $rootScope) {
 
 	    reader.onloadend = function(evt) {
 	      if (evt.target.readyState == FileReader.DONE) {
-            onLoadReport(file.title, evt.target.result);
+            onLoadReport(file.name, evt.target.result);
 	      }
 		};
 
@@ -162,7 +162,13 @@ autotestApp.controller("reportController", function($scope, $rootScope) {
 	};
 
     $scope.saveReport = function() {
-        $http.post('/autotest/api/testreport', $scope.selectReport).success(function(data){
+        var report = $scope.selectReport;
+        if (!report) {
+            report = {};
+            report.title = $scope.title;
+            report.content = $scope.records;
+        }
+        $http.post('/autotest/api/testreport', report).success(function(data){
             $rootScope.$broadcast('toastMessage', '保存成功');
         }).error(function(data, status, headers, config) {
             $rootScope.$broadcast('toastMessage', '保存失败：' + data);

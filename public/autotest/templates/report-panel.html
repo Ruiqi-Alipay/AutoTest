@@ -6,23 +6,11 @@
     </div>
   </div>
   <div class="col-sm-2">
-    <div class="btn-group">
-      <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-        导入报告 <span class="caret"></span>
-      </button>
-      <ul class="dropdown-menu" role="menu">
-        <li role="presentation" class="dropdown-header">服务器报告</li>
-        <li ng-repeat="item in reports" ng-click="loadReportFromServer($index)"><a>{{item.title}}</a></li>
-        <li class="divider"></li>
-        <li><a ng-click="loadReportFromLocal()">本地导入</a></li>
-      </ul>
-    </div>
-    <button ng-disabled="!title || !selectReport" type="button"
-              class="btn btn-success" ng-click="saveReport()">保存脚本</button>
+    <button class="btn btn-success" ng-click="loadReportFromLocal()">导入报表</button>
   </div>
 </div>
 
-<div class="col-md-10 col-md-offset-1 col-sm-10 col-sm-offset-1">
+<div class="col-md-10 col-md-offset-1 col-sm-10 col-sm-offset-1" style="padding-bottom: 200px;">
   <div ng-controller="dataController">
     <div class="page-header">
       <h1>内存使用报告<small>Dalvik Heap</small></h1>
