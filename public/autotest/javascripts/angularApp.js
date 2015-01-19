@@ -1,4 +1,4 @@
-var autotestApp = angular.module("autotestApp", ['nvd3ChartDirectives', 'ngRoute']);
+var autotestApp = angular.module("autotestApp", ['nvd3ChartDirectives', 'ngRoute', 'angularFileUpload']);
 
 autotestApp.config(function($routeProvider) {
         $routeProvider

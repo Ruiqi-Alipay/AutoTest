@@ -2,8 +2,8 @@ var autotestApp = angular.module("autotestApp");
 
 autotestApp.factory("dataService", function($rootScope, $timeout, $http) {
 	var serverScripts = [];
-	var serverReports = [];
 	var selectIndex;
+	var selectReport;
 
 	$http.get('/autotest/api/testscript').success(function(array) {
 		if (array) {
@@ -13,21 +13,19 @@ autotestApp.factory("dataService", function($rootScope, $timeout, $http) {
 			});
 		}
 	});
-	$http.get('/autotest/api/testreport').success(function(array) {
-		if (array) {
-			serverReports.length = 0;
-			array.forEach(function(value) {
-				serverReports.push(value);
-			});
-		}
-	});
 
 	return {
+		selectReport: function(report) {
+			selectReport = report;
+		},
+		getSelectReport: function() {
+			return selectReport;
+		},
 		getServerScript: function() {
 			return serverScripts;
 		},
-		getServerReport: function() {
-			return serverReports;
+		getServerReport: function(success, failed) {
+			$http.get('/autotest/api/testreport').success(success);
 		},
 		getSelectIndex: function() {
 			return selectIndex;
@@ -35,8 +33,16 @@ autotestApp.factory("dataService", function($rootScope, $timeout, $http) {
 		setSelectIndex: function(index) {
 			selectIndex = index;
 		},
-		deleteAtindex: function(index) {
-			return serverScripts.splice(index, 1);
+		deleteScript: function(index) {
+			var deleteItem = serverScripts.splice(index, 1);
+			$http.delete('/autotest/api/testscript/' + deleteItem[0]._id).success(function(data){
+	    	
+	  		});
+		},
+		deleteReport: function(report) {
+			$http.delete('/autotest/api/testreport/' + report[0]._id).success(function(data){
+	    	
+	  		});
 		},
 		downloadScript: function(index) {
 			var selectScript = serverScripts[index];
@@ -51,6 +57,9 @@ autotestApp.factory("dataService", function($rootScope, $timeout, $http) {
 			pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(selectReport.content));
 			pom.setAttribute('download', selectReport.title + ".json");
 			pom.click();
+		},
+		getReportData: function(file, index, callback) {
+			$http.get('/autotest/api/reportdata?file=' + encodeURIComponent(file) + '&index=' + index).success(callback);
 		}
 	};
 });

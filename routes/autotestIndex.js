@@ -1,4 +1,5 @@
 var express = require('express');
+var fs = require('fs');
 var router = express.Router();
 
 /* GET home page. */
@@ -79,37 +80,32 @@ router.delete('/api/testscript/:testscript', function(req, res) {
 });
 
 /* Test Report */
-router.get('/api/testreport', function(req, res, next) {
-  TestReport.find(function(err, reports){
-    if(err){ return next(err); }
+router.post('/api/report', function(req, res) {
+    var file = req.files.file;
 
-    res.json(reports);
-  });
-});
+    fs.readFile(file.path, function(err, data) {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log('Data: ' + data);
 
-router.post('/api/testreport', function(req, res, next) {
-  if (req.body._id) {
-    var query = TestReport.findById(req.body._id);
-    query.exec(function (err, report){
-      if (err) { return next(err); }
-      if (!report) { return next(new Error("can't find report")); }
-      report.content = req.body.content;
-      report.title = req.body.title;
-      report.date = new Date();
+        var records = JSON.parse(data);
+        records.forEach(function(value, index) {
+          delete value['data'];
+        });
 
-      report.save(function(err, report){
-        if(err){ return next(err); }
-        res.json(report);
-      });
+        var report = new TestReport();
+        report.title = file.name;
+        report.content = JSON.stringify(records);
+        report.save(function(err, report){
+          if(err){
+            console.log('Report save error: ' + err);
+          } else {
+            console.log('Report saved: ' + report);
+          }
+        });
+      }
     });
-  } else {
-    var report = new TestReport(req.body);
-
-    report.save(function(err, report){
-      if(err){ return next(err); }
-      res.json(report);
-    });
-  }
 });
 
 router.param('testreport', function(req, res, next, id) {
@@ -124,15 +120,11 @@ router.param('testreport', function(req, res, next, id) {
   });
 });
 
-router.get('/api/testreport/:testreport', function(req, res) {
-  res.json(req.testreport);
-});
+router.get('/api/testreport', function(req, res, next) {
+  TestReport.find(function(err, reports){
+    if(err){ return next(err); }
 
-router.put('/api/testreport/:testreport/download', function(req, res, next) {
-  req.testreport.download(function(err, report){
-    if (err) { return next(err); }
-
-    res.json(report);
+    res.json(reports);
   });
 });
 
@@ -144,5 +136,15 @@ router.delete('/api/testreport/:testreport', function(req, res) {
   });
 });
 
+router.get('/api/reportdata', function(req, res, next) {
+  var file = decodeURIComponent(req.query.file);
+  var index = req.query.index;
 
+  fs.readFile('uploads/' + file, function(err, data) {
+    if (err) { return next(err); }
+
+    var report = JSON.parse(data);
+    res.json(report[index].data);
+  });
+});
 

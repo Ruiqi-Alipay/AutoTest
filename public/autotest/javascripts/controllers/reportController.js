@@ -1,7 +1,48 @@
 var autotestApp = angular.module("autotestApp");
 
+autotestApp.controller("reportController", function($scope) {
+
+});
+
 autotestApp.controller("dataController", function($scope, $rootScope, dataService) {
-    $scope.reports = dataService.getServerReport();
+    var refresh = function() {
+        var report = dataService.getSelectReport();
+        if (!report) {
+            return;
+        }
+
+        var records = JSON.parse(report.content);
+        if (records) {
+            $scope.actionToCase = {};
+            $scope.caseDisplay = {};
+            $scope.actionTip = {};
+            $scope.meminfoMap = {};
+            $scope.sentMap = {};
+            $scope.receiveMap = {};
+            $scope.logMap = {};
+
+            var memoryData = [];
+            var networkData = [];
+            var cpuData = [];
+            records.forEach(function(record, index) {
+                var actionIndex = index + 1;
+                var caseIndex = record.index + 1;
+                $scope.actionToCase[actionIndex] = caseIndex;
+                $scope.caseDisplay[actionIndex] = 'Case ' + caseIndex;
+                $scope.actionTip[actionIndex] = record.action;
+                $scope.sentMap[actionIndex] = record.sent;
+                $scope.receiveMap[actionIndex] = record.reve;
+
+                memoryData.push([actionIndex, record.heap]);
+                networkData.push([actionIndex, record.sent + record.reve]);
+                cpuData.push([actionIndex, record.cpu]);
+            });
+
+            $scope.memoryData[0].values = memoryData;
+            $scope.networkData[0].values = networkData;
+            $scope.cpuData[0].values = cpuData;
+        }
+    };
 
     $scope.x2AxisTickFormatFunction = function(){
         return function(d){
@@ -11,7 +52,7 @@ autotestApp.controller("dataController", function($scope, $rootScope, dataServic
                 return '';
             }
         }
-    }
+    };
     $scope.xAxisTickFormatFunction = function(){
         return function(d){
             if (d in $scope.caseDisplay) {
@@ -20,28 +61,28 @@ autotestApp.controller("dataController", function($scope, $rootScope, dataServic
                 return '';
             }
         }
-    }
+    };
     $scope.memoryToolTip = function(){
         return function(key, x, y, e, graph) {
             var index = e.series.values[e.pointIndex][0];
             return "<p style='background: gray'>" + $scope.actionTip[index] + '</p>' +
                 '<p> Heap: ' +  y + ' Mb / ' + x + '</p>'
         }
-    }
+    };
     $scope.networkToolTip = function(){
         return function(key, x, y, e, graph) {
             var index = e.series.values[e.pointIndex][0];
             return "<p style='background: gray'>" + $scope.actionTip[index] + '</p>' +
                 '<p> Sent: ' +  $scope.sentMap[index] + ' Kb Rev: ' + $scope.receiveMap[index] + ' Kb / ' + x + '</p>'
         }
-    }
+    };
     $scope.cpuToolTip = function(){
         return function(key, x, y, e, graph) {
             var index = e.series.values[e.pointIndex][0];
             return "<p style='background: gray'>" + $scope.actionTip[index] + '</p>' +
                 '<p> CPU: ' +  y + '% / ' + x + '</p>'
         }
-    }
+    };
 
     $scope.memoryData = [
         {
@@ -64,114 +105,23 @@ autotestApp.controller("dataController", function($scope, $rootScope, dataServic
 
     $scope.$on('elementClick.directive', function(angularEvent, event){
         var index = event.series.values[event.pointIndex][0];
-        var content;
-        if (event.series.key === 'Memory') {
-            content = $scope.meminfoMap[index] + '\n\n' + $scope.logMap[index];
-        } else if (event.series.key === 'Network') {
-            content = $scope.logMap[index];
-        } else if (event.series.key === 'CPU') {
-            content = $scope.logMap[index];
-        }
+        var report = dataService.getSelectReport();
+        dataService.getReportData(report.title, index, function(data) {
+            var content;
+            if (event.series.key === 'Memory') {
+                content = data.mem + '\n\n' + data.log;
+            } else if (event.series.key === 'Network') {
+                content = data.log;
+            } else if (event.series.key === 'CPU') {
+                content = data.log;
+            }
 
-        $rootScope.$broadcast('showdialog', {
-            title: $scope.actionTip[index],
-            content: content
-        });
-    });
-
-    $scope.$on('repoprt:newdata', function(event, data) {
-        $scope.$apply(function () {
-            $scope.memoryData[0].values = data.memoryData;
-            $scope.networkData[0].values = data.networkData;
-            $scope.cpuData[0].values = data.cpuData;
-        });
-    });
-});
-
-autotestApp.controller("reportController", function($scope, $http, $rootScope) {
-    $scope.selectReport;
-
-    var onLoadReport = function(title, data) {
-        $scope.title = title;
-        $scope.records = JSON.parse(data);
-        if ($scope.records) {
-            $scope.actionToCase = {};
-            $scope.caseDisplay = {};
-            $scope.actionTip = {};
-            $scope.meminfoMap = {};
-            $scope.sentMap = {};
-            $scope.receiveMap = {};
-            $scope.logMap = {};
-
-            var memoryData = [];
-            var networkData = [];
-            var cpuData = [];
-            $scope.records.forEach(function(record, index) {
-                var actionIndex = index + 1;
-                var caseIndex = record.index + 1;
-                $scope.actionToCase[actionIndex] = caseIndex;
-                $scope.caseDisplay[actionIndex] = 'Case ' + caseIndex;
-                $scope.actionTip[actionIndex] = record.action;
-                $scope.meminfoMap[actionIndex] = record.meminfo;
-                $scope.logMap[actionIndex] = record.log;
-                $scope.sentMap[actionIndex] = record.sent;
-                $scope.receiveMap[actionIndex] = record.reve;
-
-                memoryData.push([actionIndex, record.heap]);
-                networkData.push([actionIndex, record.sent + record.reve]);
-                cpuData.push([actionIndex, record.cpu]);
+            $rootScope.$broadcast('showdialog', {
+                title: $scope.actionTip[index],
+                content: content
             });
-
-            $rootScope.$broadcast('repoprt:newdata', {'memoryData': memoryData, 'networkData': networkData, 'cpuData': cpuData});
-        }
-    };
-
-    $scope.$on('showdialog', function(event, data) {
-        $scope.$apply(function () {
-            $scope.dialog = data;
-            $('#myModal').modal('show');
         });
     });
-    $scope.$on('')
 
-    $scope.loadReportFromLocal = function() {
-        var pom = document.createElement('input');
-        pom.setAttribute('type', 'file');
-        pom.setAttribute('accept', '.report');
-        pom.setAttribute('onchange', "angular.element(document.getElementById('viewRoot')).scope().localReadFile(this)");
-        pom.click();
-    };
-
-    $scope.loadScriptFromServer = function(index) {
-        $scope.selectReport = $scope.reports[index];
-        onLoadReport($scope.selectReport.title, $scope.selectReport.content);
-    };
-
-	$scope.localReadFile = function(event) {
-		var files = event.files;
-        var file = files[0];
-	    var reader = new FileReader();
-
-	    reader.onloadend = function(evt) {
-	      if (evt.target.readyState == FileReader.DONE) {
-            onLoadReport(file.name, evt.target.result);
-	      }
-		};
-
-	    reader.readAsText(file);
-	};
-
-    $scope.saveReport = function() {
-        var report = $scope.selectReport;
-        if (!report) {
-            report = {};
-            report.title = $scope.title;
-            report.content = $scope.records;
-        }
-        $http.post('/autotest/api/testreport', report).success(function(data){
-            $rootScope.$broadcast('toastMessage', '保存成功');
-        }).error(function(data, status, headers, config) {
-            $rootScope.$broadcast('toastMessage', '保存失败：' + data);
-        });
-    };
+    refresh();
 });

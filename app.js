@@ -5,6 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
+var multer = require('multer');
 
 mongoose.connect('mongodb://localhost/news');
 require('./models/TestScript');
@@ -21,6 +22,19 @@ var app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+
+app.use(multer({
+    dest: './uploads/',
+    rename: function(fieldname, filename) {
+        return filename + Date.now();
+    },
+    onFileUploadStart: function(file) {
+        console.log(file.originalname + ' is starting...');
+    },
+    onFileUploadComplete: function(file) {
+        console.log(file.originalname + ' is done');
+    }
+}));
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));

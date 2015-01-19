@@ -9,12 +9,7 @@ autotestApp.controller("manageController", function($scope, $http, $location, da
 	};
 
 	$scope.deleteScript = function(index) {
-		var deleteItem = dataService.deleteAtindex(index);
-		$http.delete('/autotest/api/testscript/' + deleteItem[0]._id).success(function(data){
-	    	if (data) {
-	    		
-	    	}
-	  	});
+		dataService.deleteScript(index);
 	};
 
 	$scope.downloadScript = function(index) {
