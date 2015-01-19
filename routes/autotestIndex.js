@@ -129,6 +129,7 @@ router.get('/api/testreport', function(req, res, next) {
 });
 
 router.delete('/api/testreport/:testreport', function(req, res) {
+  fs.unlink('uploads/' + req.testreport.title);
   req.testreport.remove(function(err, report){
     if (err) { return next(err); }
 
