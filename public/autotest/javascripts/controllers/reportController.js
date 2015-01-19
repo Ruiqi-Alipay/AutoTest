@@ -1,7 +1,10 @@
 var autotestApp = angular.module("autotestApp");
 
 autotestApp.controller("reportController", function($scope) {
-
+    $scope.$on('showdialog', function(event, data) {
+        $scope.dialog = data;
+        $('#myModal').modal('show');
+    });
 });
 
 autotestApp.controller("dataController", function($scope, $rootScope, dataService) {
