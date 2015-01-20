@@ -11,6 +11,9 @@ autotestApp.directive("toastDialog", function($compile, dataService) {
     			scope.message = message;
     			element.modal('show');
     		});
+            scope.$on('closeDialog', function(event, message) {
+                element.modal('hide');
+            });
     	}
     };
 });
