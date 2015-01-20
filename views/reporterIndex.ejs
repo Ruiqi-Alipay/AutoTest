@@ -23,7 +23,7 @@
     <title>自动化测试报告</title>
   </head>
   <body ng-controller="reporterController">
-    <div class="col-md-10 col-md-offset-1 col-sm-10 col-sm-offset-1" style="padding-bottom: 200px;">
+    <div class="col-md-10 col-md-offset-1 col-sm-10 col-sm-offset-1" style="padding-bottom: 200px;" ng-show="!log">
         <div class="page-header">
           <h1>内存使用报告<small>Dalvik Heap</small></h1>
         </div>
@@ -89,19 +89,13 @@
         </nvd3-line-with-focus-chart>
     </div>
 
-    <!-- Modal -->
-    <div class="modal fade bs-example-modal-lg" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="myModalLabel">{{dialog.title}}</h4>
-          </div>
-          <div class="modal-body" style="overflow-y: scroll;">
-            <pre>{{dialog.content}}</pre>
-          </div>
+    <button type="button" class="btn btn-danger btn-lg" style="position: fixed; right: 40px; top: 40px;" ng-click="closeLog()" ng-show="log">X</button>
+
+    <div class="well" ng-show="log">
+        <div class="page-header">
+          <h1>{{log.title}}</h1>
         </div>
-      </div>
+        <pre>{{log.content}}</pre>
     </div>
   </body>
 </html>

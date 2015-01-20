@@ -3,10 +3,7 @@ var reporterApp = angular.module("reporterApp", ['nvd3ChartDirectives']);
 reporterApp.controller("reporterController", function($scope, $location, restService) {
     var parameter = $location.search();
     var report;
-    var showDialog = function(data) {
-        $scope.dialog = data;
-        $('#myModal').modal('show');
-    };
+
     var refresh = function() {
         restService.getReport(parameter.title, function(array) {
             if (!array) {
@@ -87,6 +84,9 @@ reporterApp.controller("reporterController", function($scope, $location, restSer
                 '<p> CPU: ' +  y + '% / ' + x + '</p>'
         }
     };
+    $scope.closeLog = function() {
+        $scope.log = undefined;
+    };
 
     $scope.memoryData = [
         {
@@ -109,6 +109,11 @@ reporterApp.controller("reporterController", function($scope, $location, restSer
 
     $scope.$on('elementClick.directive', function(angularEvent, event){
         var index = event.series.values[event.pointIndex][0];
+        $scope.log = {
+            content: 'Loading..',
+            title: $scope.actionTip[index]
+        };
+        
         restService.getReportData(report.title, index, function(data) {
             var content;
             if (event.series.key === 'Memory') {
@@ -119,10 +124,7 @@ reporterApp.controller("reporterController", function($scope, $location, restSer
                 content = data.log;
             }
 
-            showDialog({
-                title: $scope.actionTip[index],
-                content: content
-            });
+            $scope.log.content = content;
         });
     });
 
