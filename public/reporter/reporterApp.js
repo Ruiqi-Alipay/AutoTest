@@ -4,6 +4,23 @@ reporterApp.controller("reporterController", function($scope, $location, restSer
     var parameter = $location.search();
     var report;
 
+    if (parameter.type === 'memory') {
+        $scope.header = {
+            main: '内存使用报告',
+            sub: 'Dalvik Heap'
+        };
+    } else if (parameter.type === 'network') {
+        $scope.header = {
+            main: '流量使用报告',
+            sub: '发送/接收'
+        };
+    } else if (parameter.type === 'cpu') {
+        $scope.header = {
+            main: 'CPU使用报告',
+            sub: '使用占比'
+        };
+    }
+
     var refresh = function() {
         restService.getReport(parameter.title, function(array) {
             if (!array) {
@@ -21,9 +38,7 @@ reporterApp.controller("reporterController", function($scope, $location, restSer
                 $scope.receiveMap = {};
                 $scope.logMap = {};
 
-                var memoryData = [];
-                var networkData = [];
-                var cpuData = [];
+                var data = [];
                 records.forEach(function(record, index) {
                     var actionIndex = index + 1;
                     var caseIndex = record.index + 1;
@@ -33,14 +48,16 @@ reporterApp.controller("reporterController", function($scope, $location, restSer
                     $scope.sentMap[actionIndex] = record.sent;
                     $scope.receiveMap[actionIndex] = record.reve;
 
-                    memoryData.push([actionIndex, record.heap]);
-                    networkData.push([actionIndex, record.sent + record.reve]);
-                    cpuData.push([actionIndex, record.cpu]);
+                    if (parameter.type === 'memory') {
+                        data.push([actionIndex, record.heap]);
+                    } else if (parameter.type === 'network') {
+                        data.push([actionIndex, record.sent + record.reve]);
+                    } else if (parameter.type === 'cpu') {
+                        data.push([actionIndex, record.cpu]);
+                    }
                 });
 
-                $scope.memoryData[0].values = memoryData;
-                $scope.networkData[0].values = networkData;
-                $scope.cpuData[0].values = cpuData;
+                $scope.reportData[0].values = data;
             }
         });
     };
@@ -63,46 +80,29 @@ reporterApp.controller("reporterController", function($scope, $location, restSer
             }
         }
     };
-    $scope.memoryToolTip = function(){
+    $scope.getToolTip = function(){
         return function(key, x, y, e, graph) {
             var index = e.series.values[e.pointIndex][0];
-            return "<p style='background: gray'>" + $scope.actionTip[index] + '</p>' +
-                '<p> Heap: ' +  y + ' Mb / ' + x + '</p>'
+            if (parameter.type === 'memory') {
+                return "<p style='background: gray'>" + $scope.actionTip[index] + '</p>' +
+                    '<p> Heap: ' +  y + ' Mb / ' + x + '</p>';
+            } else if (parameter.type === 'network') {
+                return "<p style='background: gray'>" + $scope.actionTip[index] + '</p>' +
+                    '<p> Sent: ' +  $scope.sentMap[index] + ' Kb Rev: ' + $scope.receiveMap[index] + ' Kb / ' + x + '</p>';
+            } else if (parameter.type === 'cpu') {
+                return "<p style='background: gray'>" + $scope.actionTip[index] + '</p>' +
+                                '<p> CPU: ' +  y + '% / ' + x + '</p>'
+            }
         }
     };
-    $scope.networkToolTip = function(){
-        return function(key, x, y, e, graph) {
-            var index = e.series.values[e.pointIndex][0];
-            return "<p style='background: gray'>" + $scope.actionTip[index] + '</p>' +
-                '<p> Sent: ' +  $scope.sentMap[index] + ' Kb Rev: ' + $scope.receiveMap[index] + ' Kb / ' + x + '</p>'
-        }
-    };
-    $scope.cpuToolTip = function(){
-        return function(key, x, y, e, graph) {
-            var index = e.series.values[e.pointIndex][0];
-            return "<p style='background: gray'>" + $scope.actionTip[index] + '</p>' +
-                '<p> CPU: ' +  y + '% / ' + x + '</p>'
-        }
-    };
+
     $scope.closeLog = function() {
         $scope.log = undefined;
     };
 
-    $scope.memoryData = [
+    $scope.reportData = [
         {
-            "key": "Memory",
-            "values": [] 
-        }
-    ];
-    $scope.networkData = [
-        {
-            "key": "Network",
-            "values": [] 
-        }
-    ];
-    $scope.cpuData = [
-        {
-            "key": "CPU",
+            "key": parameter.type,
             "values": [] 
         }
     ];
@@ -113,14 +113,14 @@ reporterApp.controller("reporterController", function($scope, $location, restSer
             content: 'Loading..',
             title: $scope.actionTip[index]
         };
-        
+
         restService.getReportData(report.title, index, function(data) {
             var content;
-            if (event.series.key === 'Memory') {
+            if (parameter.type === 'memory') {
                 content = data.mem + '\n\n' + data.log;
-            } else if (event.series.key === 'Network') {
+            } else if (parameter.type === 'network') {
                 content = data.log;
-            } else if (event.series.key === 'CPU') {
+            } else if (parameter.type === 'cpu') {
                 content = data.log;
             }
 

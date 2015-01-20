@@ -7,8 +7,9 @@ autotestApp.controller("reportManageController", function($rootScope, $scope, $u
 		});
 	};
 
-	$scope.viewProfermenceReport = function(index) {
-		$window.open($location.$$protocol + '://' + $location.$$host + '/reporter#?title=' + encodeURIComponent($scope.reports[index].title), '_blank');
+	$scope.viewProfermenceReport = function(type, index) {
+		$window.open($location.$$protocol + '://' + $location.$$host
+			+ '/reporter#?title=' + encodeURIComponent($scope.reports[index].title) + '&type=' + type, '_blank');
 	};
 
 	$scope.viewTaskReport = function(index) {
@@ -28,12 +29,15 @@ autotestApp.controller("reportManageController", function($rootScope, $scope, $u
 			  method: 'POST',
 			  file: files
 			}).progress(function (evt) {
-                $rootScope.$broadcast('toastMessage', '报告上传中... ' + parseInt(100.0 * evt.loaded / evt.total) + ' %');
+               $rootScope.$broadcast('toastMessage', '报告上传中... ' + parseInt(100.0 * evt.loaded / evt.total) + ' %');
+               if (evt.loaded === evt.total) {
+               	 $rootScope.$broadcast('toastMessage', 'Generating report, please wait a few second..');
+               }
             }).success(function (data, status, headers, config) {
                refresh();
                $rootScope.$broadcast('closeDialog');
             }).error(function (data, status, headers, config) {
-               $rootScope.$broadcast('upload failde: ' + data);
+               $rootScope.$broadcast('toastMessage', 'upload failde: ' + data);
             });
 		}
 	});

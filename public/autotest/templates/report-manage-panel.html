@@ -5,17 +5,20 @@
 		<tr class="active">
 			<td>#</td>
 			<td>报告标示</td>
-			<td>最近修改</td>
-			<td>操作</td>
+			<td>查看</td>
+			<td>删除</td>
 		</tr>
 		<tr ng-repeat="item in reports">
 			<td>{{$index + 1}}</td>
 			<td>{{item.title}}</td>
-			<td>{{item.date}}</td>
 			<td>
-				<button type="button" class="btn btn-sm btn-primary" ng-click="viewTaskReport($index)">查看执行报告</button>
-				<button type="button" class="btn btn-sm btn-primary" ng-click="viewProfermenceReport($index)">查看性能报告</button>
-				<button type="button" class="btn btn-sm btn-danger" ng-click="deleteReport($index)">删除</button>
+				<button type="button" class="btn btn-sm btn-primary" ng-click="viewTaskReport($index)">执行报告</button>
+				<button type="button" class="btn btn-sm btn-primary" ng-click="viewProfermenceReport('memory', $index)">内存报告</button>
+				<button type="button" class="btn btn-sm btn-primary" ng-click="viewProfermenceReport('network', $index)">流量报告</button>
+				<button type="button" class="btn btn-sm btn-primary" ng-click="viewProfermenceReport('cpu', $index)">CPU报告</button>
+			</td>
+			<td>
+				<button type="button" class="btn btn-sm btn-danger" ng-click="deleteReport($index)">X</button>
 			</td>
 		</tr>
 	</table>
