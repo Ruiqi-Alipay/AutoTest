@@ -29,16 +29,11 @@ autotestApp.controller("reportManageController", function($rootScope, $scope, $u
 			  file: files
 			}).progress(function (evt) {
                 $rootScope.$broadcast('toastMessage', '报告上传中... ' + parseInt(100.0 * evt.loaded / evt.total) + ' %');
-                if (evt.loaded === evt.total) {
-                	refresh();
-                	$rootScope.$broadcast('closeDialog');
-                }
             }).success(function (data, status, headers, config) {
-                // file is uploaded successfully
-                console.log(data);
+               refresh();
+               $rootScope.$broadcast('closeDialog');
             }).error(function (data, status, headers, config) {
-                // file failed to upload
-                console.log(data);
+               $rootScope.$broadcast('upload failde: ' + data);
             });
 		}
 	});

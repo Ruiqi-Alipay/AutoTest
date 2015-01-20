@@ -87,15 +87,14 @@ router.post('/api/report', function(req, res) {
     var compress = new targz().extract(file.path, './reports/' + file.name, function(err){
         if(err) {
           console.log(err);
-          return;
+          return next(err);
         }
 
         fs.readFile('./reports/' + file.name + '/performance.report', function(err, data) {
           if (err) {
             console.log(err);
+            return next(err);
           } else {
-            console.log('Data: ' + data);
-
             var records = JSON.parse(data);
             records.forEach(function(value, index) {
               delete value['data'];
@@ -107,8 +106,9 @@ router.post('/api/report', function(req, res) {
             report.save(function(err, report){
               if(err){
                 console.log('Report save error: ' + err);
+                return next(err);
               } else {
-                console.log('Report saved: ' + report);
+                res.json(report);
               }
             });
           }
