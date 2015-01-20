@@ -109,6 +109,12 @@ autotestApp.controller("dataController", function($scope, $rootScope, dataServic
     $scope.$on('elementClick.directive', function(angularEvent, event){
         var index = event.series.values[event.pointIndex][0];
         var report = dataService.getSelectReport();
+
+        $rootScope.$broadcast('showdialog', {
+            title: $scope.actionTip[index],
+            content: 'Loading..'
+        });
+
         dataService.getReportData(report.title, index, function(data) {
             var content;
             if (event.series.key === 'Memory') {

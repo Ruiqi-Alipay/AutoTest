@@ -11,6 +11,10 @@ autotestApp.controller("editorController", function($scope, $rootScope, $http, d
 		$scope.selectScript = jsonObject;
 	}
 
+    $scope.range = function(n) {
+        return new Array(n);
+    };
+    
 	$scope.loadScriptFromLocal = function() {
 		dataService.setSelectIndex(-1);
 		var pom = document.createElement('input');

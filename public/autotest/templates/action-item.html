@@ -1,0 +1,74 @@
+<div class="col-sm-1">
+  <span class="label label-info">{{$index + 1}}</span>
+</div>
+<div class="col-sm-8">
+  <form name="stepTwoForm">
+    <div class="input-group"
+      ng-class="{'has-error': stepTwoForm.target.$dirty && stepTwoForm.target.$invalid}">
+        <div class="input-group-btn">
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">{{action.type}} <span class="caret"></span></button>
+          <ul class="dropdown-menu" role="menu">
+            <li><a ng-click="action.type='点击'; action.target=''">点击</a></li>
+            <li><a ng-click="action.type='点击位置'; action.target='按钮[1]'">点击（按位置）</a></li>
+            <li class="divider"></li>
+            <li><a ng-click="action.type='输入'; action.target='编辑框[1]'">输入</a></li>
+            <li><a ng-click="action.type='阿里键盘输入'; action.target='编辑框[1]'">阿里键盘输入</a></li>
+            <li><a ng-click="action.type='阿里数字键盘输入'; action.target='编辑框[1]'">阿里数字键盘输入</a></li>
+            <li><a ng-click="action.type='按键'; action.target='BACK'">按键</a></li>
+            <li class="divider"></li>
+            <li><a ng-click="action.type='选择'; action.target=''">选择</a></li>
+            <li><a ng-click="action.type='快速选择'; action.target=''">快速选择</a></li>
+            <li><a ng-click="action.type='单选位置'; action.target='单选框[1]'">单选（按位置）</a></li>
+            <li><a ng-click="action.type='多选位置'; action.target='多选框[1]'">多选（按位置）</a></li>
+            <li class="divider"></li>
+            <li><a ng-click="action.type='清屏'; action.target='编辑框[1]'">清屏</a></li>
+            <li><a ng-click="action.type='清除'; action.target='编辑框[1]'">清除</a></li>
+            <li class="divider"></li>
+            <li><a ng-click="action.type='向下滚动'; action.target='SCROLL'">向下滚动</a></li>
+          </ul>
+        </div><!-- /btn-group -->
+        <input name="target" type="text" class="form-control" ng-model="action.target"
+            ng-show="action.type=='点击' || action.type=='选择' || action.type=='快速选择'" required>
+        <div class="btn-group" ng-show="action.type=='输入' || action.type=='阿里键盘输入' || action.type=='清除'">
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+            {{action.target}} <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu">
+              <li ng-repeat="i in range(9) track by $index"><a ng-click="action.target='编辑框[' + ($index + 1) + ']'">编辑框 {{$index + 1}}</a></li>
+          </ul>
+        </div>
+        <div class="btn-group" ng-show="action.type=='单选位置' || action.type=='多选位置'">
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+            {{action.target}} <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu">
+              <li ng-repeat="i in range(9) track by $index"><a ng-click="action.target='选择框[' + ($index + 1) + ']'">选择框 {{$index + 1}}</a></li>
+          </ul>
+        </div>
+        <div class="btn-group" ng-show="action.type=='点击位置'">
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+            {{action.target}} <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu">
+              <li role="presentation" class="dropdown-header">按钮</li>
+              <li ng-repeat="i in range(9) track by $index"><a ng-click="action.target='按钮[' + ($index + 1) + ']'">按钮 {{$index + 1}}</a></li>
+              <li role="presentation" class="dropdown-header">图片</li>
+              <li ng-repeat="i in range(9) track by $index"><a ng-click="action.target='图片[' + ($index + 1) + ']'">图片 {{$index + 1}}</a></li>
+          </ul>
+        </div>
+        <div class="btn-group" ng-show="action.type=='按键'">
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+            {{action.target}} <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu">
+              <li><a ng-click="action.target='BACK'">BACK</a></li>
+              <li><a ng-click="action.target='HOME'">HOME</a></li>
+          </ul>
+        </div>
+      </div><!-- /input-group -->
+    <div class="input-group" ng-show="action.type=='输入' || action.type=='阿里键盘输入' || action.type=='阿里数字键盘输入'">
+      <span class="input-group-addon">参数</span>
+      <input type="text" class="form-control" ng-model="action.param">
+    </div>
+  </form>
+</div>
