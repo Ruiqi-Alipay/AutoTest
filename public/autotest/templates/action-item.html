@@ -37,12 +37,20 @@
               <li ng-repeat="i in range(9) track by $index"><a ng-click="action.target='编辑框[' + ($index + 1) + ']'">编辑框 {{$index + 1}}</a></li>
           </ul>
         </div>
-        <div class="btn-group" ng-show="action.type=='单选位置' || action.type=='多选位置'">
+        <div class="btn-group" ng-show="action.type=='单选位置'">
           <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
             {{action.target}} <span class="caret"></span>
           </button>
           <ul class="dropdown-menu" role="menu">
-              <li ng-repeat="i in range(9) track by $index"><a ng-click="action.target='选择框[' + ($index + 1) + ']'">选择框 {{$index + 1}}</a></li>
+              <li ng-repeat="i in range(9) track by $index"><a ng-click="action.target='单选框[' + ($index + 1) + ']'">单选框 {{$index + 1}}</a></li>
+          </ul>
+        </div>
+        <div class="btn-group" ng-show="action.type=='多选位置'">
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+            {{action.target}} <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu">
+              <li ng-repeat="i in range(9) track by $index"><a ng-click="action.target='多选框[' + ($index + 1) + ']'">多选框 {{$index + 1}}</a></li>
           </ul>
         </div>
         <div class="btn-group" ng-show="action.type=='点击位置'">
