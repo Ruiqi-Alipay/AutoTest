@@ -10,9 +10,9 @@ autotestApp.config(function($routeProvider) {
                 templateUrl : 'templates/script-manage-panel.html',
                 controller  : 'manageController'
             })
-            .when('/report', {
-                templateUrl : 'templates/report-panel.html',
-                controller  : 'reportController'
+            .when('/parameter', {
+                templateUrl : 'templates/parameter-panel.html',
+                controller  : 'parameterController'
             })
             .when('/report_manage', {
                 templateUrl : 'templates/report-manage-panel.html',

@@ -16,11 +16,22 @@ var mongoose = require('mongoose');
 var TestScript = mongoose.model('TestScript');
 var TestReport = mongoose.model('TestReport');
 var TestScriptFolder = mongoose.model('TestScriptFolder');
+var ScriptParameter = mongoose.model('ScriptParameter');
 
 /* for java client usage */
 router.get('/api/scriptlist', function(req, res, next) {
-  TestScript.find(function(err, scripts){
+  TestScript.find({type: 'Script'}, function(err, scripts){
     if(err){ return next(err); }
+
+    var hasScritpFolderMap = {};
+    var unFolderedScript = [];
+    scripts.forEach(function(script) {
+      if (script.folder && 'UNFORDERED' != script.folder) {
+        hasScritpFolderMap[script.folder] = '';
+      } else {
+        unFolderedScript.push(script);
+      }
+    });
 
     TestScriptFolder.find(function(err, folders){
       if(err){ return next(err); }
@@ -29,39 +40,43 @@ router.get('/api/scriptlist', function(req, res, next) {
       var folderMap = {};
       var index = 0;
       folders.forEach(function(folder, forderIndex) {
-        index = forderIndex + 1;
-        folderMap[folder._id] = folder.title;
+        if (folder._id in hasScritpFolderMap) {
+          index = forderIndex + 1;
+          folderMap[folder._id] = folder.title;
+          selectList.push({
+            title: folder.title,
+            key: index
+          });
+
+          var scriptIndex = 1;
+          scripts.forEach(function(script) {
+            if (script.folder == folder._id) {
+              selectList.push({
+                title: script.title,
+                key: index + '.' + scriptIndex,
+                id: script._id
+              });
+              scriptIndex++;
+            }
+          });
+        }
+      });
+
+      if (unFolderedScript.length > 0) {
+        index++;
         selectList.push({
-          title: folder.title,
+          title: '未分组脚本',
           key: index
         });
 
-        scripts.forEach(function(script, scriptIndex) {
-          if (script.folder === folder._id) {
-            selectList.push({
-              title: script.title,
-              key: index + '.' + (scriptIndex + 1),
-              id: script._id
-            });
-          }
-        });
-      });
-
-      index++;
-      selectList.push({
-        title: '未分组脚本',
-        key: index
-      });
-
-      scripts.forEach(function(script, scriptIndex) {
-        if (!(script.folder in folderMap)) {
+        unFolderedScript.forEach(function(script, scriptIndex) {
           selectList.push({
             title: script.title,
             key: index + '.' + (scriptIndex + 1),
             id: script._id
           });
-        }
-      });
+        });
+      }
 
       res.json(selectList);
     });
@@ -80,6 +95,64 @@ router.get('/api/getscripts', function(req, res, next) {
   } else {
     res.json({error: 'ids not provided'});
   }
+});
+
+/* Script parameter */
+router.get('/api/scriptparameter', function(req, res, next) {
+  ScriptParameter.find(function(err, params){
+    if(err){ return next(err); }
+
+    res.json(params);
+  });
+});
+
+router.post('/api/scriptparameter', function(req, res, next) {
+  if (req.body._id) {
+    var query = ScriptParameter.findById(req.body._id);
+    query.exec(function (err, parameter){
+      if (err) { return next(err); }
+      if (!parameter) { return next(new Error("can't find parameter")); }
+      parameter.name = req.body.name;
+      parameter.value = req.body.value;
+
+      parameter.save(function(err, value){
+        if(err){ return next(err); }
+        res.json(value);
+      });
+    });
+  } else {
+    ScriptParameter.find({name: req.body.name}, function(err, param) {
+      if (param.length > 0) {
+          res.json({error: 'name already exit!', object: param});
+      } else {
+        var newItem = new ScriptParameter(req.body);
+        newItem.save(function(err, item){
+          if(err){ return next(err); }
+          res.json(item);
+        });
+      }
+    });
+  }
+});
+
+router.param('scriptparameter', function(req, res, next, id) {
+  var query = ScriptParameter.findById(id);
+
+  query.exec(function (err, param){
+    if (err) { return next(err); }
+    if (!param) { return next(new Error("can't find param")); }
+
+    req.scriptparameter = param;
+    return next();
+  });
+});
+
+router.delete('/api/scriptparameter/:scriptparameter', function(req, res) {
+  req.scriptparameter.remove(function(err, param){
+    if (err) { return next(err); }
+
+    res.json(param);
+  });
 });
 
 /* Test Script Folder */

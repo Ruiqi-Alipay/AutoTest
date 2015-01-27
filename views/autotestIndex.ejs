@@ -23,6 +23,7 @@
     <script src="javascripts/controllers/editorController.js"></script>
     <script src="javascripts/controllers/guideController.js"></script>
     <script src="javascripts/controllers/manageController.js"></script>
+    <script src="javascripts/controllers/parameterController.js"></script>
     <script src="javascripts/controllers/reportManageController.js"></script>
     <script src="javascripts/controllers/uploaderController.js"></script>
     <title>自动化测试控制台</title>
@@ -74,8 +75,9 @@
           <ul class="nav navbar-nav" ng-init="appContext.tabSelect=1">
             <li ng-class="{'active' : appContext.tabSelect==1}"><a href="#/">脚本编辑</a></li>
             <li ng-class="{'active' : appContext.tabSelect==2}"><a href="#manage">脚本管理</a></li>
-            <li ng-class="{'active' : appContext.tabSelect==3}"><a href="#report_manage">报告管理</a></li>
-            <li ng-class="{'active' : appContext.tabSelect==4}"><a href="#guide">使用手册</a></li>
+            <li ng-class="{'active' : appContext.tabSelect==3}"><a href="#parameter">脚本参数</a></li>
+            <li ng-class="{'active' : appContext.tabSelect==4}"><a href="#report_manage">报告管理</a></li>
+            <li ng-class="{'active' : appContext.tabSelect==5}"><a href="#guide">使用手册</a></li>
           </ul>
         </div><!-- /.navbar-collapse -->
       </div><!-- /.container-fluid -->
