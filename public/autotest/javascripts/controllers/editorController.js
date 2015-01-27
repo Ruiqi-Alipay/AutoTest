@@ -10,6 +10,9 @@ autotestApp.controller("editorController", function($scope, dataService) {
 	var selected = dataService.getSelectScript();
 	if (selected) {
 		$scope.script = JSON.parse(selected.content);
+		if (!$scope.script.type) {
+			$scope.script.type = 'Script';
+		}
 	} else {
 		$scope.script = {
 			type: 'Script'
