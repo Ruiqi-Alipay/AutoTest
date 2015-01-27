@@ -8,6 +8,7 @@ var mongoose = require('mongoose');
 var multer = require('multer');
 
 mongoose.connect('mongodb://localhost/news');
+require('./models/TestScriptFolder');
 require('./models/TestScript');
 require('./models/TestReport');
 require('./models/Scripts');

@@ -1,42 +1,82 @@
 var autotestApp = angular.module("autotestApp");
 
 autotestApp.factory("dataService", function($rootScope, $timeout, $http) {
-	var serverScripts = [];
-	var selectIndex;
+	var scriptByFolderId;
+	var folderIdToTitle;
+	var folderList = [];
+	var configScripts = [];
+
+	var selectScript;
 	var selectReport;
 
-	$http.get('/autotest/api/testscript').success(function(array) {
-		if (array) {
-			serverScripts.length = 0;
-			array.forEach(function(value) {
-				serverScripts.push(value);
+	var refreshScripts = function() {
+		$http.get('/autotest/api/testscriptfolder').success(function(serverFolders) {
+			scriptByFolderId = {};
+			folderIdToTitle = {};
+			configScripts.length = 0;
+			folderList.length = 0;
+			serverFolders.forEach(function(value) {
+				folderList.push(value);
 			});
-		}
-	});
+			folderList.push({title: '未分组', _id: 'UNFORDERED'});
+			folderList.forEach(function(folder) {
+				scriptByFolderId[folder._id] = [];
+				folderIdToTitle[folder._id] = folder.title;
+			});
+
+			$http.get('/autotest/api/testscript').success(function(scriptList) {
+				scriptList.forEach(function(script) {
+					if (script.folder in scriptByFolderId) {
+						scriptByFolderId[script.folder].push(script);
+					} else {
+						scriptByFolderId['UNFORDERED'].push(script);
+					}
+					if (script.type === 'Config') {
+						configScripts.push(script);
+					}
+				});
+			});
+		});
+	};
+
+	refreshScripts();
 
 	return {
+		getFolderIdToTitleMap: function() {
+			return folderIdToTitle;
+		},
+		getScriptFolderMap: function() {
+			return scriptByFolderId;
+		},
+		getConfigScripts: function() {
+			return configScripts;
+		},
+		getFolderList: function() {
+			return folderList;
+		},
 		selectReport: function(report) {
 			selectReport = report;
 		},
 		getSelectReport: function() {
 			return selectReport;
 		},
-		getServerScript: function() {
-			return serverScripts;
-		},
 		getServerReport: function(success, failed) {
 			$http.get('/autotest/api/testreport').success(success);
 		},
-		getSelectIndex: function() {
-			return selectIndex;
+		getSelectScript: function() {
+			return selectScript;
 		},
-		setSelectIndex: function(index) {
-			selectIndex = index;
+		setSelectScript: function(folderId, index) {
+			if (folderId) {
+				selectScript = scriptByFolderId[folderId][index];
+			} else {
+				selectScript = undefined;
+			}
 		},
-		deleteScript: function(index) {
-			var deleteItem = serverScripts.splice(index, 1);
-			$http.delete('/autotest/api/testscript/' + deleteItem[0]._id).success(function(data){
-	    	
+		deleteScript: function(folderId, index) {
+			var deleteItem = scriptByFolderId[folderId][index];
+			$http.delete('/autotest/api/testscript/' + deleteItem._id).success(function(data){
+				refreshScripts();
 	  		});
 		},
 		deleteReport: function(report) {
@@ -44,11 +84,12 @@ autotestApp.factory("dataService", function($rootScope, $timeout, $http) {
 	    	
 	  		});
 		},
-		downloadScript: function(index) {
-			var selectScript = serverScripts[index];
+		downloadScript: function(folderId, index) {
+			var script = scriptByFolderId[folderId][index];
+			var extention = script.type === 'Script' ? '.json' : '.config';
 			var pom = document.createElement('a');
-			pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(selectScript.content));
-			pom.setAttribute('download', selectScript.title + ".json");
+			pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(script.content));
+			pom.setAttribute('download', script.title + ".json");
 			pom.click();
 		},
 		downloadReport: function(index) {
@@ -60,6 +101,40 @@ autotestApp.factory("dataService", function($rootScope, $timeout, $http) {
 		},
 		getReportData: function(file, index, callback) {
 			$http.get('/autotest/api/reportdata?file=' + encodeURIComponent(file) + '&index=' + index).success(callback);
+		},
+		serverDataChanges: function() {
+			refreshScripts();
+		},
+		newEditFolder: function(folder) {
+			$http.post('/autotest/api/testscriptfolder', folder).success(function(data){
+		    	refreshScripts();
+		    	$rootScope.$broadcast('toastMessage', '保存成功');
+		  	}).error(function(data, status, headers, config) {
+		  		$rootScope.$broadcast('toastMessage', '保存失败：' + data);
+		  	});
+		},
+		deleteFolder: function(folder) {
+			$http.delete('/autotest/api/testscriptfolder/' + folder._id).success(function(data){
+				refreshScripts();
+	  		});
+		},
+		saveScript: function(script, saveType) {
+			var saveItem = selectScript;
+			if (!saveItem || saveType === '另存为') {
+				saveItem = {};
+			}
+
+			saveItem.title = script.title;
+			saveItem.type = script.type;
+			saveItem.folder = script.folder;
+			saveItem.content = JSON.stringify(script);
+
+			$http.post('/autotest/api/testscript', saveItem).success(function(data){
+		    	refreshScripts();
+		    	$rootScope.$broadcast('toastMessage', '保存成功');
+		  	}).error(function(data, status, headers, config) {
+		  		$rootScope.$broadcast('toastMessage', '保存失败：' + data);
+		  	});
 		}
 	};
 });

@@ -1,28 +1,27 @@
 <form name="scriptForm" novalidate>
   <div class="row" style="padding: 40px 0px;">
     <div class="col-sm-6 col-sm-offset-1">
-      <div class="panel panel-default">
-        <div class="panel-heading"><span class="label label-success r-padding">Step 1</span>初始化行为设定（仅执行一次）</div>
+      <div class="panel panel-default" ng-show="script.type==='Script'">
+        <div class="panel-heading">环境配置行为</div>
         <div class="panel-body">
-          <div class="row case-padding" ng-repeat="action in selectScript.suitActions track by $index">
-            <div ng-include="'templates/action-item.html'"></div>
-            <div class="col-sm-1">
-              <button type="button" class="btn btn-success" ng-click="scriptListItemAdd('suitActions', $index)">+</button>
-            </div>
-            <div class="col-sm-1">
-              <button type="button" class="btn btn-danger" ng-click="scriptListItemDelete('suitActions', $index)">X</button>
-            </div>
-          </div>
-          <div class="case-padding">
-            <button type="button" class="btn btn-success pull-right" ng-click="scriptListItemAdd('suitActions', -1)">添加行为</button>
+          <div class="dropdown">
+            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+              {{script.configRef ? getConfigScriptTitle(script.configRef) : '无'}}
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+              <li ng-click="script.configRef=''"><a >无</a></li>
+              <li role="presentation" class="divider"></li>
+              <li role="presentation" ng-repeat="item in configScripts"><a role="menuitem" ng-click="script.configRef=item._id">{{item.title}}</a></li>
+            </ul>
           </div>
         </div>
       </div>
 
       <div class="panel panel-default">
-        <div class="panel-heading"><span class="label label-success r-padding">Step 2</span>脚本行为设定</div>
+        <div class="panel-heading">{{script.type==='Script' ? '脚本行为设定' : '配置行为设定'}}</div>
         <div class="panel-body">
-          <div class="row case-padding" ng-repeat="action in selectScript.actions track by $index">
+          <div class="row case-padding" ng-repeat="action in script.actions track by $index">
             <div ng-include="'templates/action-item.html'"></div>
             <div class="col-sm-1">
               <button type="button" class="btn btn-success" ng-click="scriptListItemAdd('actions', $index)">+</button>
@@ -37,128 +36,20 @@
         </div>
       </div>
 
-      <div class="panel panel-default">
-        <div class="panel-heading"><span class="label label-success r-padding">Step 3</span>成功判定规范设定</div>
+      <div class="panel panel-default" ng-show="script.type==='Script'">
+        <div class="panel-heading">返回行为设定</div>
         <div class="panel-body">
-          <div class="row case-padding" ng-repeat="verify in selectScript.verifies track by $index">
+          <div class="row case-padding" ng-repeat="action in script.rollbackActions track by $index">
+            <div ng-include="'templates/action-item.html'"></div>
             <div class="col-sm-1">
-            <span class="label label-info">{{$index + 1}}</span>
+              <button type="button" class="btn btn-success" ng-click="scriptListItemAdd('rollbackActions', $index)">+</button>
             </div>
-            <div class="col-sm-8">
-              <form name="stepThreeForm">
-              <div class="input-group"
-                ng-class="{'has-error': stepThreeForm.target.$dirty && stepThreeForm.target.$invalid}">
-                  <div class="input-group-btn">
-                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">{{verify.type}} <span class="caret"></span></button>
-                    <ul class="dropdown-menu" role="menu">
-                      <li><a ng-click="verify.type='单元'">单元</a></li>
-                      <li><a ng-click="verify.type='界面'">界面</a></li>
-                    </ul>
-                  </div><!-- /btn-group -->
-                  <input name="target" type="text" class="form-control" ng-model="verify.target" required>
-                </div><!-- /input-group -->
-              <div class="input-group" ng-show="verify.type=='界面'"
-                ng-class="{'has-error': stepThreeForm.param.$dirty && stepThreeForm.param.$invalid}">
-                <span class="input-group-addon">参数</span>
-                <input name="param" type="text" class="form-control" ng-model="verify.param">
-              </div>
-              </form>
-            </div>
-          <div class="col-sm-1">
-            <button type="button" class="btn btn-success" ng-click="scriptListItemAdd('verifies', $index)">+</button>
-            </div>
-          <div class="col-sm-1">
-            <button type="button" class="btn btn-danger" ng-click="scriptListItemDelete('verifies', $index)">X</button>
+            <div class="col-sm-1">
+              <button type="button" class="btn btn-danger" ng-click="scriptListItemDelete('rollbackActions', $index)">X</button>
             </div>
           </div>
           <div class="case-padding">
-            <button type="button" class="btn btn-success pull-right" ng-click="scriptListItemAdd('verifies', -1)">添加规则</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="panel panel-default">
-        <div class="panel-heading"><span class="label label-success r-padding">Step 4</span>返回起始页行为设定</div>
-        <div class="panel-body">
-          <div class="row case-padding" ng-repeat="action in selectScript.rollback track by $index">
-            <div class="col-sm-1">
-            <span class="label label-info">{{$index + 1}}</span>
-            </div>
-            <div class="col-sm-8">
-              <form name="stepFourForm">
-              <div class="input-group"
-                ng-class="{'has-error': stepFourForm.target.$dirty && stepFourForm.target.$invalid}">
-                  <div class="input-group-btn">
-                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">{{action.type}} <span class="caret"></span></button>
-                    <ul class="dropdown-menu" role="menu">
-                      <li><a ng-click="action.type='点击'">点击</a></li>
-                      <li><a ng-click="action.type='按键'">按键</a></li>
-                      <li><a ng-click="action.type='向下滚动'; action.target='SCROLL'">向下滚动</a></li>
-                    </ul>
-                  </div><!-- /btn-group -->
-                  <input name="target" type="text" class="form-control" ng-model="action.target"
-                      ng-show="action.type=='点击'" required>
-                <div class="btn-group" ng-show="action.type=='按键'">
-                  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                    {{action.target}} <span class="caret"></span>
-                  </button>
-                  <ul class="dropdown-menu" role="menu">
-                      <li><a ng-click="action.target='BACK'">BACK</a></li>
-                      <li><a ng-click="action.target='HOME'">HOME</a></li>
-                  </ul>
-                </div>
-                </div><!-- /input-group -->
-              </form>
-            </div>
-          <div class="col-sm-1">
-            <button type="button" class="btn btn-success" ng-click="scriptListItemAdd('rollback', $index)">+</button>
-            </div>
-          <div class="col-sm-1">
-            <button type="button" class="btn btn-danger" ng-click="scriptListItemDelete('rollback', $index)">X</button>
-            </div>
-          </div>
-          <div class="case-padding">
-            <button type="button" class="btn btn-success pull-right" ng-click="scriptListItemAdd('rollback', -1)">添加行为</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="panel panel-default">
-        <div class="panel-heading"><span class="label label-success r-padding">Step 5</span>起始界面判定设定</div>
-        <div class="panel-body">
-          <div class="row case-padding" ng-repeat="verify in selectScript.rollbackVerifies track by $index">
-            <div class="col-sm-1">
-            <span class="label label-info">{{$index + 1}}</span>
-            </div>
-            <div class="col-sm-8">
-              <form name="stepFiveForm">
-              <div class="input-group" 
-                ng-class="{'has-error': stepFiveForm.target.$dirty && stepFiveForm.target.$invalid}">
-                  <div class="input-group-btn">
-                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">{{verify.type}} <span class="caret"></span></button>
-                    <ul class="dropdown-menu" role="menu">
-                      <li><a ng-click="verify.type='单元'">单元</a></li>
-                      <li><a ng-click="verify.type='界面'">界面</a></li>
-                    </ul>
-                  </div><!-- /btn-group -->
-                  <input name="target" type="text" class="form-control" ng-model="verify.target" required>
-                </div><!-- /input-group -->
-              <div class="input-group" ng-show="verify.type=='界面'"
-                ng-class="{'has-error': stepFiveForm.param.$dirty && stepFiveForm.param.$invalid}">
-                <span class="input-group-addon">参数</span>
-                <input name="param" type="text" class="form-control" ng-model="verify.param">
-              </div>
-              </form>
-            </div>
-          <div class="col-sm-1">
-            <button type="button" class="btn btn-success" ng-click="scriptListItemAdd('rollbackVerifies', $index)">+</button>
-            </div>
-          <div class="col-sm-1">
-            <button type="button" class="btn btn-danger" ng-click="scriptListItemDelete('rollbackVerifies', $index)">X</button>
-            </div>
-          </div>
-          <div class="case-padding">
-            <button type="button" class="btn btn-success pull-right" ng-click="scriptListItemAdd('rollbackVerifies', -1)">添加规则</button>
+            <button type="button" class="btn btn-success pull-right" ng-click="scriptListItemAdd('rollbackActions', -1)">添加行为</button>
           </div>
         </div>
       </div>
@@ -169,21 +60,17 @@
         <div class="row" style="padding: 0px 0px 20px 20px;">
           <div class="btn-group">
             <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-              导入脚本 <span class="caret"></span>
+              新建脚本 <span class="caret"></span>
             </button>
             <ul class="dropdown-menu" role="menu">
-              <li role="presentation" class="dropdown-header">服务器脚本</li>
-              <li ng-repeat="item in scripts" ng-click="loadScriptFromServer($index)"><a>{{item.title}}</a></li>
-              <li class="divider"></li>
-              <li><a ng-click="loadScriptFromLocal()">本地导入</a></li>
-              <li class="divider"></li>
-              <li><a ng-click="newScript()">新建</a></li>
+              <li><a ng-click="newScript('Script')">执行脚本</a></li>
+              <li><a ng-click="newScript('Config')">配置脚本</a></li>
             </ul>
           </div>
           <button ng-disabled="scriptForm.$invalid" type="button"
-              class="btn btn-success" ng-click="saveScript()">保存脚本</button>
+              class="btn btn-success" data-toggle="modal" data-target="#saveDialog" ng-click="startSaveScript('保存脚本')">保存脚本</button>
           <button ng-disabled="scriptForm.$invalid" type="button"
-              class="btn btn-primary" ng-click="downloadScript()">下载脚本</button>
+              class="btn btn-success" data-toggle="modal" data-target="#saveDialog" ng-click="startSaveScript('另存为')">另存为</button>
         </div>
         <div class="panel panel-default">
           <div class="panel-heading">基本信息</div>
@@ -191,42 +78,48 @@
             <form name="stepOneForm" novalidate>
               <div class="input-group">
                 <span class="input-group-addon">脚本名</span>
-                <input type="text" class="form-control" ng-model="selectScript.category" required>
+                <input type="text" class="form-control" ng-model="script.title" placeholder="脚本标示" required>
               </div>
             </form>
           </div>
         </div>
-        <div class="panel panel-default">
-          <div class="panel-heading">迭代参数</div>
+        <div class="panel panel-default" ng-show="script.type==='Script'">
+          <div class="panel-heading">订单参数</div>
           <div class="panel-body">
             <form name="stepOneForm" novalidate>
               <div class="input-group">
-                <span class="input-group-addon">参数名</span>
-                <input type="text" class="form-control" ng-model="selectScript.recurParam">
+                <span class="input-group-addon">订单ID</span>
+                <input type="text" class="form-control" ng-model="script.order.reference" placeholder="自动化生成的订单编号引用">
+              </div>
+              <div class="input-group">
+                <span class="input-group-addon">金额</span>
+                <input type="number" class="form-control" ng-model="script.order.amount" placeholder="Random">
+              </div>
+              <div class="input-group">
+                <span class="input-group-addon">Coupon金额</span>
+                <input type="number" class="form-control" ng-model="script.order.couponAmount" placeholder="Random">
               </div>
             </form>
           </div>
         </div>
-        <div class="panel panel-default">
+        <div class="panel panel-default" ng-show="script.type==='Script'">
           <div class="panel-heading">配置测试参数</div>
           <div class="panel-body">
-            <div class="row case-padding" ng-repeat="parameter in selectScript.parameters track by $index">
+            <div class="row case-padding" ng-repeat="param in script.parameters track by $index">
               <div class="col-sm-10">
               <div class="input-group">
                 <span class="input-group-addon">参数名</span>
-                <input type="text" class="form-control" ng-model="parameter.name">
+                <input type="text" class="form-control" ng-model="param.name">
               </div>
               <div class="input-group">
                 <span class="input-group-addon">参数值</span>
-                <input type="text" class="form-control" ng-model="parameter.value">
+                <input type="text" class="form-control" ng-model="param.value">
               </div>
               </div>
-
               <div class="col-sm-2">
                 <button type="button" class="btn btn-danger" ng-click="scriptListItemDelete('parameters', $index)">X</button>
               </div>
             </div>
-
             <div class="case-padding">
               <button type="button" class="btn btn-success pull-right" ng-click="scriptListItemAdd('parameters', -1)">添加参数</button>
             </div>
@@ -236,3 +129,29 @@
     </div>
   </div>
 </form>
+
+<div class="modal fade" id="saveDialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">分组选择</h4>
+      </div>
+      <div class="modal-body">
+        <div class="dropdown">
+          <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+            {{script.folder ? folderIdMap[script.folder] : '未选择'}}
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+            <li role="presentation" ng-repeat="folder in folderList"><a role="menuitem" ng-click="script.folder=folder._id">{{folder.title}}</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal" ng-disabled="!script.folder" ng-click="saveScript()">Save changes</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

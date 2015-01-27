@@ -2,6 +2,8 @@ var express = require('express');
 var fs = require('fs');
 var targz = require('tar.gz');
 var router = express.Router();
+var moment = require('moment');
+moment().utcOffset(8);
 
 /* GET home page. */
 router.get('/', function(req, res) {
@@ -13,6 +15,59 @@ module.exports = router;
 var mongoose = require('mongoose');
 var TestScript = mongoose.model('TestScript');
 var TestReport = mongoose.model('TestReport');
+var TestScriptFolder = mongoose.model('TestScriptFolder');
+
+/* Test Script Folder */
+router.get('/api/testscriptfolder', function(req, res, next) {
+  TestScriptFolder.find(function(err, folders){
+    if(err){ return next(err); }
+
+    res.json(folders);
+  });
+});
+
+router.post('/api/testscriptfolder', function(req, res, next) {
+  if (req.body._id) {
+    var query = TestScriptFolder.findById(req.body._id);
+    query.exec(function (err, folder){
+      if (err) { return next(err); }
+      if (!folder) { return next(new Error("can't find folder")); }
+      folder.title = req.body.title;
+
+      folder.save(function(err, folder){
+        if(err){ return next(err); }
+        res.json(folder);
+      });
+    });
+  } else {
+    var folder = new TestScriptFolder(req.body);
+
+    folder.save(function(err, folder){
+      if(err){ return next(err); }
+      res.json(folder);
+    });
+  }
+});
+
+router.param('testscriptfolder', function(req, res, next, id) {
+  var query = TestScriptFolder.findById(id);
+
+  query.exec(function (err, folder){
+    if (err) { return next(err); }
+    if (!folder) { return next(new Error("can't find folder")); }
+
+    req.testscriptfolder = folder;
+    return next();
+  });
+});
+
+router.delete('/api/testscriptfolder/:testscriptfolder', function(req, res) {
+  req.testscriptfolder.remove(function(err, folder){
+    if (err) { return next(err); }
+
+    res.json(folder);
+  });
+});
 
 /* Test Script */
 router.get('/api/testscript', function(req, res, next) {
@@ -31,7 +86,9 @@ router.post('/api/testscript', function(req, res, next) {
       if (!script) { return next(new Error("can't find script")); }
       script.content = req.body.content;
       script.title = req.body.title;
-      script.date = new Date();
+      script.type = req.body.type;
+      script.folder = req.body.folder;
+      script.date = moment();
 
       script.save(function(err, script){
         if(err){ return next(err); }
@@ -39,6 +96,7 @@ router.post('/api/testscript', function(req, res, next) {
       });
     });
   } else {
+    req.body.date = moment();
     var script = new TestScript(req.body);
 
     script.save(function(err, script){

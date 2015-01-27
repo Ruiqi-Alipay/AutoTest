@@ -8,6 +8,7 @@
         <div class="input-group-btn">
           <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">{{action.type}} <span class="caret"></span></button>
           <ul class="dropdown-menu" role="menu">
+            <li role="presentation" class="dropdown-header">行为</li>
             <li><a ng-click="action.type='点击'; action.target=''">点击</a></li>
             <li><a ng-click="action.type='点击位置'; action.target='按钮[1]'">点击（按位置）</a></li>
             <li class="divider"></li>
@@ -25,10 +26,13 @@
             <li><a ng-click="action.type='清除'; action.target='编辑框[1]'">清除</a></li>
             <li class="divider"></li>
             <li><a ng-click="action.type='向下滚动'; action.target='SCROLL'">向下滚动</a></li>
+            <li role="presentation" class="dropdown-header">校验</li>
+            <li><a ng-click="action.type='文案校验'; action.target=''">文案校验</a></li>
+            <li><a ng-click="action.type='像素校验'; action.target=''">像素校验</a></li>
           </ul>
         </div><!-- /btn-group -->
         <input name="target" type="text" class="form-control" ng-model="action.target"
-            ng-show="action.type=='点击' || action.type=='选择' || action.type=='快速选择'" required>
+            ng-show="action.type=='点击' || action.type=='选择' || action.type=='快速选择' || action.type=='文案校验' || action.type=='像素校验'" required>
         <div class="btn-group" ng-show="action.type=='输入' || action.type=='阿里键盘输入' || action.type=='清除'">
           <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
             {{action.target}} <span class="caret"></span>

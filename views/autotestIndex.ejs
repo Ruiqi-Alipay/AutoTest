@@ -66,20 +66,16 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">自动化测试控制台</a>
+          <a class="navbar-brand" href="#/">自动化测试控制台</a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-          <ul class="nav navbar-nav" ng-init="tabSelect=1">
-            <li ng-click="tabSelect=1"
-                ng-class="{'active' : tabSelect==1}"><a href="#/">脚本编辑</a></li>
-            <li ng-click="tabSelect=2"
-                ng-class="{'active' : tabSelect==2}"><a href="#manage">脚本管理</a></li>
-            <li ng-click="tabSelect=3"
-                ng-class="{'active' : tabSelect==3}"><a href="#report_manage">报告管理</a></li>
-            <li ng-click="tabSelect=4"
-                ng-class="{'active' : tabSelect==4}"><a href="#guide">使用手册</a></li>
+          <ul class="nav navbar-nav" ng-init="appContext.tabSelect=1">
+            <li ng-class="{'active' : appContext.tabSelect==1}"><a href="#/">脚本编辑</a></li>
+            <li ng-class="{'active' : appContext.tabSelect==2}"><a href="#manage">脚本管理</a></li>
+            <li ng-class="{'active' : appContext.tabSelect==3}"><a href="#report_manage">报告管理</a></li>
+            <li ng-class="{'active' : appContext.tabSelect==4}"><a href="#guide">使用手册</a></li>
           </ul>
         </div><!-- /.navbar-collapse -->
       </div><!-- /.container-fluid -->
