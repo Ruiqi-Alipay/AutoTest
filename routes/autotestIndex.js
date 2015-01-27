@@ -40,9 +40,9 @@ router.get('/api/scriptlist', function(req, res, next) {
         var selectList = [];
         var folderMap = {};
         var index = 0;
-        folders.forEach(function(folder, forderIndex) {
+        folders.forEach(function(folder) {
           if (folder._id in hasScritpFolderMap) {
-            index = forderIndex + 1;
+            index++;
             folderMap[folder._id] = folder.title;
             selectList.push({
               title: folder.title,
