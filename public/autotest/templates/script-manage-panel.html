@@ -2,14 +2,15 @@
 	<button type="button" class="btn btn-info" data-toggle="modal" data-target="#folderDialog" ng-click="newFolder()" style="margin-bottom: 10px">新建分组</button>
 	<div class="panel-group" id="root" role="tablist" aria-multiselectable="true">
 	  <div class="panel panel-default" ng-repeat="folder in folderList">
-	    <div class="panel-heading" role="tab" id="{{folder._id + '-header'}}" data-toggle="collapse" data-parent="#root" href="{{'#' + folder._id  + '-collpase'}}" aria-expanded="true" aria-controls="{{folder._id  + '-collpase'}}">
+	    <div class="panel-heading" role="tab" id="{{folder._id + '-header'}}" data-toggle="collapse" data-parent="#root" href="{{'#' + folder._id  + '-collpase'}}" aria-expanded="false" aria-controls="{{folder._id  + '-collpase'}}">
 	      <h4 class="panel-title">
 	        <a>
 	          {{folder.title}}
 	        </a>
+	        <span class="label label-success">{{scriptByFolder[folder._id].length}}</span>
 	      </h4>
 	    </div>
-	    <div id="{{folder._id + '-collpase'}}" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="{{folder._id + '-header'}}">
+	    <div id="{{folder._id + '-collpase'}}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="{{folder._id + '-header'}}">
 	      <div class="panel-body">
 	      	<div ng-show="folder._id != 'UNFORDERED'">
 	      		<button type="button" class="btn btn-info btn-sm pull-right" data-toggle="modal" data-target="#folderDialog" ng-click="editFolder($index)" style="margin-bottom: 10px">编辑分组</button>
