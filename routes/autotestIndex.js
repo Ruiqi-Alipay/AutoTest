@@ -17,6 +17,71 @@ var TestScript = mongoose.model('TestScript');
 var TestReport = mongoose.model('TestReport');
 var TestScriptFolder = mongoose.model('TestScriptFolder');
 
+/* for java client usage */
+router.get('/api/scriptlist', function(req, res, next) {
+  TestScript.find(function(err, scripts){
+    if(err){ return next(err); }
+
+    TestScriptFolder.find(function(err, folders){
+      if(err){ return next(err); }
+
+      var selectList = [];
+      var folderMap = {};
+      var index = 0;
+      folders.forEach(function(folder, forderIndex) {
+        index = forderIndex + 1;
+        folderMap[folder._id] = folder.title;
+        selectList.push({
+          title: folder.title,
+          key: index
+        });
+
+        scripts.forEach(function(script, scriptIndex) {
+          if (script.folder === folder._id) {
+            selectList.push({
+              title: script.title,
+              key: index + '.' + (scriptIndex + 1),
+              id: script._id
+            });
+          }
+        });
+      });
+
+      index++;
+      selectList.push({
+        title: '未分组脚本',
+        key: index
+      });
+
+      scripts.forEach(function(script, scriptIndex) {
+        if (!(script.folder in folderMap)) {
+          selectList.push({
+            title: script.title,
+            key: index + '.' + (scriptIndex + 1),
+            id: script._id
+          });
+        }
+      });
+
+      res.json(selectList);
+    });
+  });
+});
+
+router.get('/api/getscripts', function(req, res, next) {
+  var ids = req.param('ids');
+  if (ids) {
+    var idArray = ids.split(',');
+    TestScript.find({'_id': {'$in' : idArray}}, function(err, scripts) {
+      if(err){ return next(err); }
+
+      res.json(scripts);
+    });
+  } else {
+    res.json({error: 'ids not provided'});
+  }
+});
+
 /* Test Script Folder */
 router.get('/api/testscriptfolder', function(req, res, next) {
   TestScriptFolder.find(function(err, folders){

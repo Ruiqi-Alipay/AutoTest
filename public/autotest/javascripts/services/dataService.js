@@ -1,7 +1,7 @@
 var autotestApp = angular.module("autotestApp");
 
 autotestApp.factory("dataService", function($rootScope, $timeout, $http) {
-	var scriptByFolderId;
+	var scriptByFolderId = {};
 	var folderIdToTitle;
 	var folderList = [];
 	var configScripts = [];
@@ -11,7 +11,6 @@ autotestApp.factory("dataService", function($rootScope, $timeout, $http) {
 
 	var refreshScripts = function() {
 		$http.get('/autotest/api/testscriptfolder').success(function(serverFolders) {
-			scriptByFolderId = {};
 			folderIdToTitle = {};
 			configScripts.length = 0;
 			folderList.length = 0;
@@ -20,7 +19,11 @@ autotestApp.factory("dataService", function($rootScope, $timeout, $http) {
 			});
 			folderList.push({title: '未分组', _id: 'UNFORDERED'});
 			folderList.forEach(function(folder) {
-				scriptByFolderId[folder._id] = [];
+				if (folder._id in scriptByFolderId) {
+					scriptByFolderId[folder._id].length = 0;
+				} else {
+					scriptByFolderId[folder._id] = [];
+				}
 				folderIdToTitle[folder._id] = folder.title;
 			});
 
