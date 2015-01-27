@@ -20,65 +20,70 @@ var ScriptParameter = mongoose.model('ScriptParameter');
 
 /* for java client usage */
 router.get('/api/scriptlist', function(req, res, next) {
-  TestScript.find({type: 'Script'}, function(err, scripts){
-    if(err){ return next(err); }
-
-    var hasScritpFolderMap = {};
-    var unFolderedScript = [];
-    scripts.forEach(function(script) {
-      if (script.folder && 'UNFORDERED' != script.folder) {
-        hasScritpFolderMap[script.folder] = '';
-      } else {
-        unFolderedScript.push(script);
-      }
-    });
-
-    TestScriptFolder.find(function(err, folders){
+  ScriptParameter.find(function(err, params){
+    TestScript.find({type: 'Script'}, function(err, scripts){
       if(err){ return next(err); }
 
-      var selectList = [];
-      var folderMap = {};
-      var index = 0;
-      folders.forEach(function(folder, forderIndex) {
-        if (folder._id in hasScritpFolderMap) {
-          index = forderIndex + 1;
-          folderMap[folder._id] = folder.title;
-          selectList.push({
-            title: folder.title,
-            key: index
-          });
-
-          var scriptIndex = 1;
-          scripts.forEach(function(script) {
-            if (script.folder == folder._id) {
-              selectList.push({
-                title: script.title,
-                key: index + '.' + scriptIndex,
-                id: script._id
-              });
-              scriptIndex++;
-            }
-          });
+      var hasScritpFolderMap = {};
+      var unFolderedScript = [];
+      scripts.forEach(function(script) {
+        if (script.folder && 'UNFORDERED' != script.folder) {
+          hasScritpFolderMap[script.folder] = '';
+        } else {
+          unFolderedScript.push(script);
         }
       });
 
-      if (unFolderedScript.length > 0) {
-        index++;
-        selectList.push({
-          title: '未分组脚本',
-          key: index
+      TestScriptFolder.find(function(err, folders){
+        if(err){ return next(err); }
+
+        var selectList = [];
+        var folderMap = {};
+        var index = 0;
+        folders.forEach(function(folder, forderIndex) {
+          if (folder._id in hasScritpFolderMap) {
+            index = forderIndex + 1;
+            folderMap[folder._id] = folder.title;
+            selectList.push({
+              title: folder.title,
+              key: '' + index
+            });
+
+            var scriptIndex = 1;
+            scripts.forEach(function(script) {
+              if (script.folder == folder._id) {
+                selectList.push({
+                  title: script.title,
+                  key: index + '.' + scriptIndex,
+                  id: script._id
+                });
+                scriptIndex++;
+              }
+            });
+          }
         });
 
-        unFolderedScript.forEach(function(script, scriptIndex) {
+        if (unFolderedScript.length > 0) {
+          index++;
           selectList.push({
-            title: script.title,
-            key: index + '.' + (scriptIndex + 1),
-            id: script._id
+            title: '未分组脚本',
+            key: index
           });
-        });
-      }
 
-      res.json(selectList);
+          unFolderedScript.forEach(function(script, scriptIndex) {
+            selectList.push({
+              title: script.title,
+              key: index + '.' + (scriptIndex + 1),
+              id: script._id
+            });
+          });
+        }
+
+        res.json({
+          scripts: selectList,
+          params: params
+        });
+      });
     });
   });
 });
