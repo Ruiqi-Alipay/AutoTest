@@ -17,6 +17,7 @@ var TestScript = mongoose.model('TestScript');
 var TestReport = mongoose.model('TestReport');
 var TestScriptFolder = mongoose.model('TestScriptFolder');
 var ScriptParameter = mongoose.model('ScriptParameter');
+var TestApp = mongoose.model('TestApp');
 
 /* for java client usage */
 router.get('/api/scriptlist', function(req, res, next) {
@@ -124,6 +125,56 @@ router.get('/api/getscripts', function(req, res, next) {
   } else {
     res.json({error: 'ids not provided'});
   }
+});
+
+/* TestApp */
+router.post('/api/testapp', function(req, res) {
+    var file = req.files.file;
+
+    console.log(req.body);
+
+    var newItem = new TestApp();
+    newItem.name = file.name;
+    newItem.path = file.path;
+    newItem.description = req.body.description;
+    newItem.save(function(err, item){
+      if(err){ return next(err); }
+      res.json(item);
+    });
+});
+
+router.get('/api/testapp', function(req, res, next) {
+  TestApp.find(function(err, items){
+    if(err){ return next(err); }
+
+    res.json(items);
+  });
+});
+
+router.param('testapp', function(req, res, next, id) {
+  var query = TestApp.findById(id);
+
+  query.exec(function (err, item){
+    if (err) { return next(err); }
+    if (!item) { return next(new Error("can't find item")); }
+
+    req.testapp = item;
+    return next();
+  });
+});
+
+router.delete('/api/testapp/:testapp', function(req, res) {
+  var fs = require('fs-extra')
+  fs.remove('uploads/' + req.testapp.name, function(err) {
+    if (err) return console.error(err)
+
+    console.log("Delete apk success")
+  });
+  req.testapp.remove(function(err, item){
+    if (err) { return next(err); }
+
+    res.json(item);
+  });
 });
 
 /* Script parameter */

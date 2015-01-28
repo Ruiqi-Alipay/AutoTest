@@ -13,6 +13,7 @@ require('./models/TestScript');
 require('./models/TestReport');
 require('./models/Scripts');
 require('./models/ScriptParameter');
+require('./models/TestApp');
 
 var rootRoutes = require('./routes/rootIndex')
 var autotestRoutes = require('./routes/autotestIndex');

@@ -1,0 +1,58 @@
+<div class="col-sm-8 col-sm-offset-2" style="padding-top: 20px;">
+	<button type="button" class="btn btn-success upload-button" data-toggle="modal" data-target="#uploadDialog" style="margin-bottom: 10px;">上传APP</button>
+	<div class="panel panel-default">
+	  <div class="panel-heading">测试程序列表</div>
+	  <div class="panel-body">
+	    <div class="row case-padding" ng-repeat="app in serverApps">
+	    	<div class="col-sm-5">
+		      <div class="input-group">
+		        <span class="input-group-addon">程序名</span>
+		        <input type="text" class="form-control" ng-model="app.name" disabled>
+		      </div>
+	    	</div>
+	    	<div class="col-sm-6">
+		      <div class="input-group">
+		        <span class="input-group-addon">程序描述</span>
+		        <input type="text" class="form-control" ng-model="app.description" disabled>
+		      </div>
+	      	</div>
+		    <div class="col-sm-1">
+		      <button type="button" class="btn btn-danger" ng-click="deleteItem($index)">X</button>
+		    </div>
+	    </div>
+	  </div>
+	</div>
+</div>
+
+<div class="modal fade" id="uploadDialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">测试APP上传</h4>
+      </div>
+      <div class="modal-body">
+      	<div class="row">
+      		<div class="col-sm-9">
+		      <div class="input-group">
+		        <span class="input-group-addon">应用名</span>
+		        <input type="text" class="form-control" ng-model="app.title" disabled>
+		      </div>
+		      <div class="input-group">
+		        <span class="input-group-addon">应用描述</span>
+		        <input type="text" class="form-control" ng-model="app.description">
+		      </div>
+      		</div>
+      		<div class="col-sm-2">
+				<button type="button" class="btn btn-success upload-button"
+	    		ng-file-select ng-model="files" ng-file-change="select(files)" ng-multiple="false" ng-accept="'*.apk'" tabindex="0">选择文件</button>
+      		</div>
+      	</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal" ng-disabled="!app.title || !app.description || !app.selectFile" ng-click="uplaodApp()">上传</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

@@ -1,7 +1,7 @@
 var autotestApp = angular.module("autotestApp");
 
 autotestApp.controller("reportManageController", function($rootScope, $scope, $upload, $location, $window, dataService) {
-	$scope.appContext.tabSelect = 4;
+	$scope.appContext.tabSelect = 5;
 	var refresh = function() {
 		dataService.getServerReport(function(array) {
 			$scope.reports = array;

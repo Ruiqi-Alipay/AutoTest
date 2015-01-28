@@ -66,6 +66,9 @@ autotestApp.factory("dataService", function($rootScope, $timeout, $http) {
 		getServerReport: function(success, failed) {
 			$http.get('/autotest/api/testreport').success(success);
 		},
+		getServerApps: function(success, failed) {
+			$http.get('/autotest/api/testapp').success(success);
+		},
 		getSelectScript: function() {
 			return selectScript;
 		},
