@@ -29,6 +29,9 @@ app.set('view engine', 'ejs');
 
 app.use(multer({
     dest: './uploads/',
+    rename: function(fieldname, filename) {
+        return filename;
+    },
     onFileUploadStart: function(file) {
         console.log(file.originalname + ' is starting...');
     },
