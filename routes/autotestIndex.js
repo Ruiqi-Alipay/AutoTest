@@ -99,8 +99,27 @@ router.get('/api/getscripts', function(req, res, next) {
       scripts.forEach(function(script) {
         clientScripts.push(JSON.parse(script.content));
       });
+          
+      var configIds = [];
+      clientScripts.forEach(function(script) {
+        if (script.configRef) {
+          configIds.push(script.configRef);
+        }
+      });
 
-      res.json(clientScripts);
+      TestScript.find({'_id': {'$in' : configIds}}, function(err, configs) {
+          if(err){ return next(err); }
+
+          var clientConfigs = [];
+          configs.forEach(function(config) {
+            clientConfigs.push(JSON.parse(config.content));
+          });
+
+          res.json({
+            scripts: clientScripts,
+            configs: clientConfigs
+          });
+      });
     });
   } else {
     res.json({error: 'ids not provided'});
