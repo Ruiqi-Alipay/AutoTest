@@ -20,70 +20,65 @@ var ScriptParameter = mongoose.model('ScriptParameter');
 
 /* for java client usage */
 router.get('/api/scriptlist', function(req, res, next) {
-  ScriptParameter.find(function(err, params){
-    TestScript.find({type: 'Script'}, function(err, scripts){
+  TestScript.find({type: 'Script'}, function(err, scripts){
+    if(err){ return next(err); }
+
+    var hasScritpFolderMap = {};
+    var unFolderedScript = [];
+    scripts.forEach(function(script) {
+      if (script.folder && 'UNFORDERED' != script.folder) {
+        hasScritpFolderMap[script.folder] = '';
+      } else {
+        unFolderedScript.push(script);
+      }
+    });
+
+    TestScriptFolder.find(function(err, folders){
       if(err){ return next(err); }
 
-      var hasScritpFolderMap = {};
-      var unFolderedScript = [];
-      scripts.forEach(function(script) {
-        if (script.folder && 'UNFORDERED' != script.folder) {
-          hasScritpFolderMap[script.folder] = '';
-        } else {
-          unFolderedScript.push(script);
-        }
-      });
-
-      TestScriptFolder.find(function(err, folders){
-        if(err){ return next(err); }
-
-        var selectList = [];
-        var folderMap = {};
-        var index = 0;
-        folders.forEach(function(folder) {
-          if (folder._id in hasScritpFolderMap) {
-            index++;
-            folderMap[folder._id] = folder.title;
-            selectList.push({
-              title: folder.title,
-              key: '' + index
-            });
-
-            var scriptIndex = 1;
-            scripts.forEach(function(script) {
-              if (script.folder == folder._id) {
-                selectList.push({
-                  title: script.title,
-                  key: index + '.' + scriptIndex,
-                  id: script._id
-                });
-                scriptIndex++;
-              }
-            });
-          }
-        });
-
-        if (unFolderedScript.length > 0) {
+      var selectList = [];
+      var folderMap = {};
+      var index = 0;
+      folders.forEach(function(folder) {
+        if (folder._id in hasScritpFolderMap) {
           index++;
+          folderMap[folder._id] = folder.title;
           selectList.push({
-            title: '未分组脚本',
-            key: index
+            title: folder.title,
+            key: '' + index
           });
 
-          unFolderedScript.forEach(function(script, scriptIndex) {
-            selectList.push({
-              title: script.title,
-              key: index + '.' + (scriptIndex + 1),
-              id: script._id
-            });
+          var scriptIndex = 1;
+          scripts.forEach(function(script) {
+            if (script.folder == folder._id) {
+              selectList.push({
+                title: script.title,
+                key: index + '.' + scriptIndex,
+                id: script._id
+              });
+              scriptIndex++;
+            }
           });
         }
-
-        res.json({
-          scripts: selectList,
-          params: params
-        });
       });
+
+      if (unFolderedScript.length > 0) {
+        index++;
+        selectList.push({
+          title: '未分组脚本',
+          key: index
+        });
+
+        unFolderedScript.forEach(function(script, scriptIndex) {
+          selectList.push({
+            title: script.title,
+            key: index + '.' + (scriptIndex + 1),
+            id: script._id
+          });
+        });
+      }
+
+      res.json(selectList);
     });
   });
 });
@@ -91,36 +86,39 @@ router.get('/api/scriptlist', function(req, res, next) {
 router.get('/api/getscripts', function(req, res, next) {
   var ids = req.param('ids');
   if (ids) {
-    var idArray = ids.split(',');
-    TestScript.find({'_id': {'$in' : idArray}}, function(err, scripts) {
-      if(err){ return next(err); }
+    ScriptParameter.find(function(err, params){
+      var idArray = ids.split(',');
+      TestScript.find({'_id': {'$in' : idArray}}, function(err, scripts) {
+        if(err){ return next(err); }
 
-      var clientScripts = [];
-      scripts.forEach(function(script) {
-        clientScripts.push(JSON.parse(script.content));
-      });
+        var clientScripts = [];
+        scripts.forEach(function(script) {
+          clientScripts.push(JSON.parse(script.content));
+        });
 
-      var configIds = [];
-      clientScripts.forEach(function(script) {
-        if (script.configRef) {
-          configIds.push(script.configRef);
-        }
-      });
+        var configIds = [];
+        clientScripts.forEach(function(script) {
+          if (script.configRef) {
+            configIds.push(script.configRef);
+          }
+        });
 
-      TestScript.find({'_id': {'$in' : configIds}}, function(err, configs) {
-          if(err){ return next(err); }
+        TestScript.find({'_id': {'$in' : configIds}}, function(err, configs) {
+            if(err){ return next(err); }
 
-          var clientConfigs = [];
-          configs.forEach(function(config) {
-            var item = JSON.parse(config.content);
-            item.id = config._id;
-            clientConfigs.push(item);
-          });
+            var clientConfigs = [];
+            configs.forEach(function(config) {
+              var item = JSON.parse(config.content);
+              item.id = config._id;
+              clientConfigs.push(item);
+            });
 
-          res.json({
-            scripts: clientScripts,
-            configs: clientConfigs
-          });
+            res.json({
+              scripts: clientScripts,
+              configs: clientConfigs,
+              params: params
+            });
+        });
       });
     });
   } else {
