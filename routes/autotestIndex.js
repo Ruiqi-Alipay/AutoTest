@@ -103,7 +103,7 @@ router.get('/api/getscripts', function(req, res, next) {
           }
         });
 
-        TestScript.find({'_id': {'$in' : configIds}}, function(err, configs) {
+        TestScript.find({$or: [{'_id': {'$in' : configIds}}, {'title': 'ROLLBACK_ACTIONS'}]}, function(err, configs) {
             if(err){ return next(err); }
 
             var clientConfigs = [];
