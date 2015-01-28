@@ -379,7 +379,7 @@ router.post('/api/report', function(req, res) {
             var report = new TestReport();
             report.title = file.name;
             report.content = JSON.stringify(records);
-            report.data = moment();
+            report.date = moment();
             report.save(function(err, report){
               if(err){
                 console.log('Report save error: ' + err);
@@ -413,7 +413,7 @@ router.get('/api/testreport', function(req, res, next) {
       res.json(report);
     });
   } else {
-    var query = TestReport.find().sort({ date: -1 });
+    var query = TestReport.find({}, {date: 1, title: 1}).sort({ date: -1 });
 
     query.exec(function(err, reports){
       if(err){ return next(err); }
