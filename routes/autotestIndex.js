@@ -95,7 +95,12 @@ router.get('/api/getscripts', function(req, res, next) {
     TestScript.find({'_id': {'$in' : idArray}}, function(err, scripts) {
       if(err){ return next(err); }
 
-      res.json(scripts);
+      var clientScripts = [];
+      scripts.forEach(function(script) {
+        clientScripts.push(JSON.parse(script.content));
+      });
+
+      res.json(clientScripts);
     });
   } else {
     res.json({error: 'ids not provided'});
