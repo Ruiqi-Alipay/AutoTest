@@ -85,10 +85,8 @@ autotestApp.factory("dataService", function($rootScope, $timeout, $http) {
 				refreshScripts();
 	  		});
 		},
-		deleteReport: function(report) {
-			$http.delete('/autotest/api/testreport/' + report[0]._id).success(function(data){
-	    	
-	  		});
+		deleteReport: function(report, success) {
+			$http.delete('/autotest/api/testreport/' + report._id).success(success);
 		},
 		downloadScript: function(folderId, index) {
 			var script = scriptByFolderId[folderId][index];

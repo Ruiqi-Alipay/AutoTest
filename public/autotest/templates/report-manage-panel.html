@@ -1,25 +1,40 @@
 <div class="col-sm-8 col-sm-offset-2" style="padding-top: 20px;">
 	<button type="button" class="btn btn-success upload-button"
-	    ng-file-select ng-model="files" ng-file-change="upload(files)" ng-multiple="false" ng-accept="'*.tar.gz'" tabindex="0">上传报告</button>
-	<table class="table table-striped" style="margin-top: 10px;">
-		<tr class="active">
-			<td>#</td>
-			<td>报告标示</td>
-			<td>查看</td>
-			<td>删除</td>
-		</tr>
-		<tr ng-repeat="item in reports">
-			<td>{{$index + 1}}</td>
-			<td>{{item.title}}</td>
-			<td>
-				<button type="button" class="btn btn-sm btn-primary" ng-click="viewTaskReport($index)">执行报告</button>
-				<button type="button" class="btn btn-sm btn-primary" ng-click="viewProfermenceReport('memory', $index)">内存报告</button>
-				<button type="button" class="btn btn-sm btn-primary" ng-click="viewProfermenceReport('network', $index)">流量报告</button>
-				<button type="button" class="btn btn-sm btn-primary" ng-click="viewProfermenceReport('cpu', $index)">CPU报告</button>
-			</td>
-			<td>
-				<button type="button" class="btn btn-sm btn-danger" ng-click="deleteReport($index)">X</button>
-			</td>
-		</tr>
-	</table>
+	    ng-file-select ng-model="files" ng-file-change="upload(files)" ng-multiple="false" ng-accept="'*.tar.gz'" tabindex="0" style="margin-bottom: 10px;">上传报告</button>
+	<div class="panel-group" id="root" role="tablist" aria-multiselectable="true">
+	  <div class="panel panel-default" ng-repeat="(dayIndex, day) in reportByDays">
+	    <div class="panel-heading" role="tab" id="{{dayIndex + '-header'}}" data-toggle="collapse" data-parent="#root" href="{{'#' + dayIndex  + '-collpase'}}" aria-expanded="false" aria-controls="{{dayIndex  + '-collpase'}}">
+	      <h4 class="panel-title">
+	        <a>
+	          {{day.title}}
+	        </a>
+	      </h4>
+	    </div>
+	    <div id="{{dayIndex + '-collpase'}}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="{{dayIndex + '-header'}}">
+	      <div class="panel-body">
+			<table class="table table-striped" style="margin-top: 10px;">
+				<tr class="active">
+					<td>#</td>
+					<td>报告标示</td>
+					<td>查看</td>
+					<td>删除</td>
+				</tr>
+				<tr ng-repeat="report in day.reports">
+					<td>{{$index + 1}}</td>
+					<td>{{report.title}}</td>
+					<td>
+						<button type="button" class="btn btn-sm btn-primary" ng-click="viewTaskReport(dayIndex, $index)">执行报告</button>
+						<button type="button" class="btn btn-sm btn-primary" ng-click="viewProfermenceReport('memory', dayIndex, $index)">内存报告</button>
+						<button type="button" class="btn btn-sm btn-primary" ng-click="viewProfermenceReport('network', dayIndex, $index)">流量报告</button>
+						<button type="button" class="btn btn-sm btn-primary" ng-click="viewProfermenceReport('cpu', dayIndex, $index)">CPU报告</button>
+					</td>
+					<td>
+						<button type="button" class="btn btn-sm btn-danger" ng-click="deleteReport(dayIndex, $index)">X</button>
+					</td>
+				</tr>
+			</table>
+	      </div>
+	    </div>
+	  </div>
+	</div>
 </div>
