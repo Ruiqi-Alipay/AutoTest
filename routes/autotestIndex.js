@@ -99,7 +99,7 @@ router.get('/api/getscripts', function(req, res, next) {
       scripts.forEach(function(script) {
         clientScripts.push(JSON.parse(script.content));
       });
-          
+
       var configIds = [];
       clientScripts.forEach(function(script) {
         if (script.configRef) {
@@ -112,7 +112,9 @@ router.get('/api/getscripts', function(req, res, next) {
 
           var clientConfigs = [];
           configs.forEach(function(config) {
-            clientConfigs.push(JSON.parse(config.content));
+            var item = JSON.parse(config.content);
+            item.id = config._id;
+            clientConfigs.push(item);
           });
 
           res.json({
