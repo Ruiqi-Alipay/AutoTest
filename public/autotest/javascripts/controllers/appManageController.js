@@ -32,7 +32,7 @@ autotestApp.controller("appManageController", function($scope, $rootScope, $uplo
 		}).progress(function (evt) {
            $rootScope.$broadcast('toastMessage', 'APP上传中... ' + parseInt(100.0 * evt.loaded / evt.total) + ' %');
            if (evt.loaded === evt.total) {
-           	 $rootScope.$broadcast('toastMessage', 'Generating report, please wait a few second..');
+           	 $rootScope.$broadcast('toastMessage', 'Uplaod success!');
            }
         }).success(function (data, status, headers, config) {
         	$scope.app = {};
