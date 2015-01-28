@@ -10,7 +10,7 @@ autotestApp.controller("reportManageController", function($rootScope, $scope, $u
 			var workingArray;
 			reports.forEach(function(report) {
 				var date = new Date(report.date);
-				var dateTitle = date.getFullYear() + '年' + (date.getMonth() + 1) + '月' + date.getDay() + '日';
+				var dateTitle = date.getFullYear() + '年' + (date.getMonth() + 1) + '月' + date.getDate() + '日';
 				if (!lastDateTitle || lastDateTitle != dateTitle) {
 					workingArray = [];
 					$scope.reportByDays.push({
