@@ -4,9 +4,18 @@ autotestApp.controller("manageController", function($scope, $location, dataServi
 	$scope.appContext.tabSelect = 2;
 	$scope.scriptByFolder = dataService.getScriptFolderMap();
 	$scope.folderList = dataService.getFolderList();
+	$scope.scriptSort = {
+		sort: '首字母 A-Z',
+		sortList: ['首字母 A-Z', '首字母 Z-A', '最近跟新', '最久更新']
+	}
 
 	var deleteFolderIndex;
 	var deleteScriptIndex;
+
+	$scope.sortTypeChange = function(sortType) {
+		$scope.scriptSort.sort = sortType;
+		dataService.sortScriptList(sortType);
+	};
 
 	$scope.editScript = function(folderId, index) {
 		dataService.setSelectScript(folderId, index);

@@ -9,6 +9,47 @@ autotestApp.factory("dataService", function($rootScope, $timeout, $http) {
 	var selectScript;
 	var selectReport;
 
+	var sortScritps = function(sortType) {
+		for (var key in scriptByFolderId) {
+			var itemList = scriptByFolderId[key];
+			scriptByFolderId[key] = itemList.sort(function(obj1, obj2) {
+				if (sortType === '首字母 A-Z') {
+					if (obj1.title == obj2.title) {
+						return 0;
+					} else if (obj1.title > obj2.title) {
+						return 1;
+					} else {
+						return -1;
+					}
+				} else if (sortType === '首字母 Z-A') {
+					if (obj1.title == obj2.title) {
+						return 0;
+					} else if (obj1.title > obj2.title) {
+						return -1;
+					} else {
+						return 1;
+					}
+				} else if (sortType === '最近跟新') {
+					if (obj1.date == obj2.date) {
+						return 0;
+					} else if (obj1.date > obj2.date) {
+						return -1;
+					} else {
+						return 1;
+					}
+				} else if (sortType === '最久更新') {
+					if (obj1.date == obj2.date) {
+						return 0;
+					} else if (obj1.date > obj2.date) {
+						return 1;
+					} else {
+						return -1;
+					}
+				}
+			});
+		}
+	};
+
 	var refreshScripts = function() {
 		$http.get('/autotest/api/testscriptfolder').success(function(serverFolders) {
 			folderIdToTitle = {};
@@ -38,6 +79,7 @@ autotestApp.factory("dataService", function($rootScope, $timeout, $http) {
 						configScripts.push(script);
 					}
 				});
+				sortScritps('首字母 A-Z');
 			});
 		});
 	};
@@ -142,6 +184,9 @@ autotestApp.factory("dataService", function($rootScope, $timeout, $http) {
 		  	}).error(function(data, status, headers, config) {
 		  		$rootScope.$broadcast('toastMessage', '保存失败：' + data);
 		  	});
+		},
+		sortScriptList: function(sortType) {
+			sortScritps(sortType);
 		}
 	};
 });
