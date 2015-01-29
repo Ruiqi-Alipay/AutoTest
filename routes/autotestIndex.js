@@ -20,6 +20,17 @@ var ScriptParameter = mongoose.model('ScriptParameter');
 var TestApp = mongoose.model('TestApp');
 
 /* for java client usage */
+router.get('/api/environment/checkversion', function(req, res, next) {
+  fs.readFile('./environment/version.json', function(err, data) {
+    if (err) {
+      console.log(err);
+      return next(err);
+    } else {
+      var system = JSON.parse(data);
+      res.json(system);
+    }
+  });
+});
 router.get('/api/scriptlist', function(req, res, next) {
   TestScript.find({type: 'Script'}, function(err, scripts){
     if(err){ return next(err); }

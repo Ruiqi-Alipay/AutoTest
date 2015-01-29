@@ -47,6 +47,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
+app.use('/environment', express.static(path.join(__dirname, '/environment')));
 app.use('/autotest', express.static(path.join(__dirname, '/public/autotest')));
 app.use('/autotest/bower_components',  express.static(path.join(__dirname, '/bower_components')));
 app.use('/sdkeditor', express.static(path.join(__dirname, '/public/sdkeditor')));
