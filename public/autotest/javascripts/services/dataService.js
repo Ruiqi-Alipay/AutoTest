@@ -127,7 +127,7 @@ autotestApp.factory("dataService", function($rootScope, $timeout, $http) {
 		},
 		saveScript: function(script, saveType) {
 			var saveItem = {};
-			if (selectScript || saveType != '另存为') {
+			if (selectScript && saveType != '另存为') {
 				jQuery.extend(saveItem, selectScript);
 			}
 
