@@ -3,18 +3,10 @@ var autotestApp = angular.module("autotestApp");
 autotestApp.controller("parameterController", function($scope, $rootScope, $http) {
 	$scope.appContext.tabSelect = 3;
 	$scope.parameters;
-	$scope.scriptSort = {
-		sort: '首字母 A-Z',
-		sortList: ['首字母 A-Z', '首字母 Z-A', '最近跟新', '最久更新']
-	}
 
 	$http.get('/autotest/api/scriptparameter').success(function(params) {
 		$scope.parameters = params;
 	});
-
-	$scope.sortTypeChange = function(sortType) {
-		$scope.scriptSort.sort = sortType;
-	};
 
 	$scope.deleteItem = function(index) {
 		var item = $scope.parameters[index];

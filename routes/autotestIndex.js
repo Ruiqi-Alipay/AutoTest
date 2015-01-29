@@ -390,23 +390,27 @@ router.post('/api/report', function(req, res) {
             console.log(err);
             return next(err);
           } else {
-            var records = JSON.parse(data);
-            records.forEach(function(value, index) {
-              delete value['data'];
-            });
+            try {
+              var records = JSON.parse(data);
+              records.forEach(function(value, index) {
+                delete value['data'];
+              });
 
-            var report = new TestReport();
-            report.title = file.name;
-            report.content = JSON.stringify(records);
-            report.date = moment();
-            report.save(function(err, report){
-              if(err){
-                console.log('Report save error: ' + err);
-                return next(err);
-              } else {
-                res.json(report);
-              }
-            });
+              var report = new TestReport();
+              report.title = file.name;
+              report.content = JSON.stringify(records);
+              report.date = moment();
+              report.save(function(err, report){
+                if(err){
+                  console.log('Report save error: ' + err);
+                  return next(err);
+                } else {
+                  res.json(report);
+                }
+              });
+            } catch (err) {
+              return next(err);
+            }
           }
         });
     });
