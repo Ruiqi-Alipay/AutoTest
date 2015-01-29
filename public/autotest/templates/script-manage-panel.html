@@ -1,5 +1,15 @@
 <div class="col-sm-8 col-sm-offset-2" style="padding-top: 20px;">
-	<button type="button" class="btn btn-info" data-toggle="modal" data-target="#folderDialog" ng-click="newFolder()" style="margin-bottom: 10px">新建分组</button>
+	<div style="padding-bottom: 10px;">
+      <div class="btn-group">
+        <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+          {{scriptSort.sort}} <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" role="menu">
+          <li ng-repeat="sortType in scriptSort.sortList"><a ng-click="sortTypeChange(sortType)">{{sortType}}</a></li>
+        </ul>
+      </div>
+	  <button type="button" class="btn btn-info pull-right" data-toggle="modal" data-target="#folderDialog" ng-click="newFolder()" style="margin-bottom: 10px">新建分组</button>
+	</div>
 	<div class="panel-group" id="root" role="tablist" aria-multiselectable="true">
 	  <div class="panel panel-default" ng-repeat="(folderIndex, folder) in folderList">
 	    <div class="panel-heading" role="tab" id="{{folder._id + '-header'}}" data-toggle="collapse" data-parent="#root" href="{{'#' + folder._id  + '-collpase'}}" aria-expanded="false" aria-controls="{{folder._id  + '-collpase'}}">
