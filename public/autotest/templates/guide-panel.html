@@ -1,25 +1,13 @@
-      <div class="col-md-6 col-md-offset-3 col-sm-6 col-sm-offset-3">
+      <div class="col-md-6 col-md-offset-3 col-sm-6 col-sm-offset-3" style="padding-bottom: 200px;">
         <div class="page-header">
-          <h1>运行环境搭建<small>Windows</small></h1>
+          <h1>运行环境下载<small>Windows/Mac</small></h1>
         </div>
         <div class="row step">
-          <div class="col-md-1 col-sm-1">
-            <span class="label label-success">Step 1</span>
+          <div class="col-sm-4 col-sm-offset-2">
+            <button type="button" class="btn btn-sm btn-primary" ng-click="window.open('http://autotest.d10970aqcn.alipay.net/environment/environment.rar')">下载工程（Windows）</button>
           </div>
-          <div class="col-md-8 col-sm-8">
-            <button type="button" class="btn btn-sm btn-primary" ng-click="">下载工程</button>
-            <p>工程文件仅用下载一次，后续更新想将自动进行</p>
-          </div>
-        </div>
-        <div class="row step">
-          <div class="col-md-1 col-sm-1">
-            <span class="label label-success">Step 2</span>
-          </div>
-          <div class="col-md-8 col-sm-8">
-            <p>配置环境</p>
-            <p><a href="https://www.python.org/downloads/" target="_blank">安装 Python</a></p>
-            <p>双击执行工程根目录下setup.py</p>
-            <img src="res/envernment_setup.png">
+          <div class="col-sm-4">
+            <button type="button" class="btn btn-sm btn-info" ng-click="window.open('http://autotest.d10970aqcn.alipay.net/environment/environment.tar.gz')">下载工程（Mac）</button>
           </div>
         </div>
 
@@ -39,14 +27,7 @@
             <span class="label label-success">Step 2</span>
           </div>
           <div class="col-md-8 col-sm-8">
-            <p>测试会执行test_cases目录下所有脚本测试根目录下.apk安装包</p>
-            <p>打开cmd到测试环境根目录</p>
-            <p>运行：python run.py arg1 arg2 arg3 arg4 arg5</p>
-            <p>arg1: 测试迭代次数，如： 100 （默认为 100）</p>
-            <p>arg2: 单词测试订单数量，如： 2 标示2个订单合并支付 （默认为 1）</p>
-            <p>arg3: 用于生成订单的买家卡号，如： 2134534522492834 （默认为）</p>
-            <p>arg4: 订单金额，如： 76.5 （默认为随机）</p>
-            <p>arg5: 订单中红包金额，如： 12.5 （默认为0）</p>
+            <p>双击run.bat开始执行测试</p>
           </div>
         </div>
 
@@ -135,76 +116,6 @@
           <div class="col-md-8 col-sm-8">
             <p>配置脚本中用到的参数数据，顺序无关</p>
             <img src="res/config_parameters.png">
-          </div>
-        </div>
-
-        <div class="page-header">
-          <h1>工程结构简介<small>自动化测试工程文件结构</small></h1>
-        </div>
-        <img src="res/project_scructure.png">
-        <div class="row step">
-          <div class="col-md-2 col-sm-2">
-            <span class="label label-success">environment</span>
-          </div>
-          <div class="col-md-8 col-sm-8">
-            <p>测试运行环境，仅程序使用</p>
-          </div>
-        </div>
-        <div class="row step">
-          <div class="col-md-2 col-sm-2">
-            <span class="label label-success">test_cases</span>
-          </div>
-          <div class="col-md-8 col-sm-8">
-            <p>用于存放测试脚本，测试程序运行时，会根据此脚本结合测试数据批量生成测试用例</p>
-          </div>
-        </div>
-        <div class="row step">
-          <div class="col-md-2 col-sm-2">
-            <span class="label label-success">verify_images</span>
-          </div>
-          <div class="col-md-8 col-sm-8">
-            <p>用于存放'界面验证'时需要用到的比对图片，相关测试用例在运行结束后会截取当前屏
-              幕与此图片进行像素比对，以判定是否成功。</p>
-          </div>
-        </div>
-        <div class="row step">
-          <div class="col-md-2 col-sm-2">
-            <span class="label label-success">DemoActivity.apk</span>
-          </div>
-          <div class="col-md-8 col-sm-8">
-            <p>测试对象，测试开始执行时会自动安装该安装包到手机，文件名不限，但该目录下仅可存放一个.apk安装包</p>
-          </div>
-        </div>
-        <div class="row step">
-          <div class="col-md-2 col-sm-2">
-            <span class="label label-success">performance.report</span>
-          </div>
-          <div class="col-md-8 col-sm-8">
-            <p>性能报告，测试结束后生成</p>
-          </div>
-        </div>
-        <div class="row step">
-          <div class="col-md-2 col-sm-2">
-            <span class="label label-success">run.py</span>
-          </div>
-          <div class="col-md-8 col-sm-8">
-            <p>测试执行脚本，用于执行测试</p>
-          </div>
-        </div>
-        <div class="row step">
-          <div class="col-md-2 col-sm-2">
-            <span class="label label-success">setup.py</span>
-          </div>
-          <div class="col-md-8 col-sm-8">
-            <p>环境初始化脚本，用于初始化测试环境，仅用在下载完工程后执行一次</p>
-          </div>
-        </div>
-        <div class="row step">
-          <div class="col-md-2 col-sm-2">
-            <span class="label label-success">wireless.py</span>
-          </div>
-          <div class="col-md-8 col-sm-8">
-            <p>无线连接脚本，先用USB线将手机连接至电脑，双击运行该脚本即可完成无线连接</p>
           </div>
         </div>
       </div>
