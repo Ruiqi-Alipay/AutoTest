@@ -300,11 +300,19 @@ router.delete('/api/testscriptfolder/:testscriptfolder', function(req, res) {
 
 /* Test Script */
 router.get('/api/testscript', function(req, res, next) {
-  TestScript.find(function(err, scripts){
-    if(err){ return next(err); }
+  if (req.query && req.query.id) {
+    var query = TestScript.findById(req.query.id);
+    query.exec(function (err, script){
+      if (err) { return next(err); }
+      res.json(script);
+    });
+  } else {
+    TestScript.find({}, {folder: 1, title: 1, type: 1, date: 1}, function(err, scripts){
+      if(err){ return next(err); }
 
-    res.json(scripts);
-  });
+      res.json(scripts);
+    });
+  }
 });
 
 router.post('/api/testscript', function(req, res, next) {

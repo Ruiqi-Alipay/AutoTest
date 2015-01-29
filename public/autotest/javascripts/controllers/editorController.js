@@ -9,10 +9,14 @@ autotestApp.controller("editorController", function($scope, dataService) {
 
 	var selected = dataService.getSelectScript();
 	if (selected) {
-		$scope.script = JSON.parse(selected.content);
-		if (!$scope.script.type) {
-			$scope.script.type = 'Script';
-		}
+		$scope.context.loading = true;
+		dataService.getServerScriptById(selected._id, function(script) {
+			$scope.context.loading = false;
+			$scope.script = JSON.parse(script.content);
+			if (!$scope.script.type) {
+				$scope.script.type = 'Script';
+			}
+		});
 	} else {
 		$scope.script = {
 			type: 'Script'

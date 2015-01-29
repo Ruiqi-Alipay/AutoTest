@@ -1,4 +1,4 @@
-<form name="scriptForm" novalidate>
+<form name="scriptForm" novalidate ng-show="!context.loading">
   <div class="row" style="padding: 40px 0px;">
     <div class="col-sm-6 col-sm-offset-1">
       <div class="panel panel-default" ng-show="script.type==='Script'">
@@ -133,6 +133,10 @@
     </div>
   </div>
 </form>
+
+<div calss="row" ng-show="context.loading" style="padding-top: 200px;">
+  <h2 class="col-sm-2 col-sm-offset-5" style="color: gray;">Loading...</h2>
+</div>
 
 <div class="modal fade" id="saveDialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">

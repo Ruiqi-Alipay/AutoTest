@@ -69,6 +69,9 @@ autotestApp.factory("dataService", function($rootScope, $timeout, $http) {
 		getServerApps: function(success, failed) {
 			$http.get('/autotest/api/testapp').success(success);
 		},
+		getServerScriptById: function(id, success) {
+			$http.get('/autotest/api/testscript?id=' + id).success(success);
+		},
 		getSelectScript: function() {
 			return selectScript;
 		},
@@ -123,9 +126,9 @@ autotestApp.factory("dataService", function($rootScope, $timeout, $http) {
 	  		});
 		},
 		saveScript: function(script, saveType) {
-			var saveItem = selectScript;
-			if (!saveItem || saveType === '另存为') {
-				saveItem = {};
+			var saveItem = {};
+			if (selectScript || saveType != '另存为') {
+				jQuery.extend(saveItem, selectScript);
 			}
 
 			saveItem.title = script.title;
