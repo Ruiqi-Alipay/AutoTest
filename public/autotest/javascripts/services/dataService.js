@@ -70,6 +70,8 @@ autotestApp.factory("dataService", function($rootScope, $timeout, $http) {
 
 			$http.get('/autotest/api/testscript').success(function(scriptList) {
 				scriptList.forEach(function(script) {
+					var date = new Date(script.date);
+					script.readableDate = date.getFullYear() + '年' + (date.getMonth() + 1) + '月' + date.getDate() + '日 ' + date.getHours() + ':' + date.getMinutes();
 					if (script.folder in scriptByFolderId) {
 						scriptByFolderId[script.folder].push(script);
 					} else {
