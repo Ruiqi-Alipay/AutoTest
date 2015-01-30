@@ -4,9 +4,11 @@ autotestApp.controller("parameterController", function($scope, $rootScope, $http
 	$scope.appContext.tabSelect = 3;
 	$scope.parameters;
 
-	$http.get('/autotest/api/scriptparameter').success(function(params) {
-		$scope.parameters = params;
-	});
+	var refresh = function() {
+		$http.get('/autotest/api/scriptparameter').success(function(params) {
+			$scope.parameters = params;
+		});
+	};
 
 	$scope.deleteItem = function(index) {
 		var item = $scope.parameters[index];
@@ -26,6 +28,7 @@ autotestApp.controller("parameterController", function($scope, $rootScope, $http
 				$rootScope.$broadcast('toastMessage', data.error);
 			} else {
 				$rootScope.$broadcast('toastMessage', '保存成功');
+				refresh();
 			}
 	  	}).error(function(data, status, headers, config) {
 	  		$rootScope.$broadcast('toastMessage', '保存失败：' + data);
@@ -38,4 +41,6 @@ autotestApp.controller("parameterController", function($scope, $rootScope, $http
 			value: ''
 		})
 	};
+
+	refresh();
 });
