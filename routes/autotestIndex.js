@@ -376,7 +376,7 @@ router.delete('/api/testscript/:testscript', function(req, res) {
 });
 
 /* Test Report */
-router.post('/api/report', function(req, res) {
+router.post('/api/report', function(req, res, next) {
     var file = req.files.file;
 
     var compress = new targz().extract(file.path, './reports/' + file.name, function(err){
