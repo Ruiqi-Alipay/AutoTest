@@ -20,6 +20,14 @@ var ScriptParameter = mongoose.model('ScriptParameter');
 var TestApp = mongoose.model('TestApp');
 
 /* for java client usage */
+router.get('/api/sysconfiglist', function(req, res, next) {
+  TestScript.find({type: 'SysConfig'}, function(err, scripts){
+    if(err){ return next(err); }
+
+    res.json(scripts);
+  });
+});
+
 router.get('/api/environment/checkversion', function(req, res, next) {
   fs.readFile('./environment/version.json', function(err, data) {
     if (err) {
