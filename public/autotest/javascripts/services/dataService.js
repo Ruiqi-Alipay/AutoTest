@@ -70,6 +70,15 @@ autotestApp.factory("dataService", function($rootScope, $timeout, $http) {
 			folderIdToTitle = {};
 			configScripts.length = 0;
 			folderList.length = 0;
+			serverFolders = serverFolders.sort(function(obj1, obj2) {
+				if (obj1.title == obj2.title) {
+					return 0;
+				} else if (obj1.title > obj2.title) {
+					return 1;
+				} else {
+					return -1;
+				}
+			});
 			serverFolders.forEach(function(value) {
 				folderList.push(value);
 			});
@@ -148,19 +157,22 @@ autotestApp.factory("dataService", function($rootScope, $timeout, $http) {
 						index: selectScriptIndex + 1
 					};
 				} else {
-					var folderIndex;
+					var itemIndex;
 					for (var index in folderList) {
 						if (folderList[index]._id == selectScriptFolder) {
-							folderIndex = index;
+							itemIndex = index;
 							break;
 						}
 					}
-					if (folderIndex >= 0 && folderIndex < folderList.length - 1) {
-						var newFolderId = folderList[parseInt(folderIndex) + 1]._id;
-						return {
-							folderId: newFolderId,
-							index: 0
-						};
+					while (itemIndex < folderList.length - 1) {
+						itemIndex++;
+						var itemId = folderList[itemIndex]._id;
+						if (scriptByFolderId[itemId].length > 0) {
+							return {
+								folderId: itemId,
+								index: 0
+							};
+						}
 					}
 				}
 			}
@@ -173,19 +185,22 @@ autotestApp.factory("dataService", function($rootScope, $timeout, $http) {
 						index: selectScriptIndex - 1
 					};
 				} else {
-					var folderIndex;
+					var itemIndex;
 					for (var index in folderList) {
 						if (folderList[index]._id == selectScriptFolder) {
-							folderIndex = index;
+							itemIndex = index;
 							break;
 						}
 					}
-					if (folderIndex > 0) {
-						var newFolderId = folderList[0]._id;
-						return {
-							folderId: newFolderId,
-							index: scriptByFolderId[newFolderId].length - 1
-						};
+					while (itemIndex > 0) {
+						itemIndex--;
+						var itemId = folderList[itemIndex]._id;
+						if (scriptByFolderId[itemId].length > 0) {
+							return {
+								folderId: itemId,
+								index: scriptByFolderId[itemId].length - 1
+							};
+						}
 					}
 				}
 			}
