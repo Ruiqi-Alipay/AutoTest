@@ -1,27 +1,31 @@
 <div class="col-sm-8 col-sm-offset-2" style="padding-top: 20px;">
 	<div class="panel panel-default">
-	  <div class="panel-heading">全局参数配置 (参数使用请将参数名至于{}中)</div>
+	  <div class="panel-heading">全局参数配置 (参数使用请将参数名至于{}中)
+	  	<input class="pull-right" type="search" ng-model="q" placeholder="参数查找" />
+	  </div>
 	  <div class="panel-body">
-	    <div class="row case-padding" ng-repeat="param in parameters">
-	    	<div class="col-sm-4">
-		      <div class="input-group">
-		        <span class="input-group-addon">参数名</span>
-		        <input type="text" class="form-control" ng-model="param.name" ng-disabled="param._id">
-		      </div>
-	    	</div>
-	    	<div class="col-sm-6">
-		      <div class="input-group">
-		        <span class="input-group-addon">参数值</span>
-		        <input type="text" class="form-control" ng-model="param.value">
-		      </div>
-	      	</div>
-		    <div class="col-sm-1">
-		      <button type="button" class="btn btn-success" ng-click="saveItem($index)" ng-disabled="!param.name || !param.value">S</button>
-		    </div>
-		    <div class="col-sm-1">
-		      <button type="button" class="btn btn-danger" ng-click="deleteItem($index)">X</button>
-		    </div>
-	    </div>
+	  	<ul class="example-animate-container">
+		    <li class="row case-padding animate-repeat" ng-repeat="param in parameters | filter:q as results">
+		    	<div class="col-sm-4">
+			      <div class="input-group">
+			        <span class="input-group-addon">参数名</span>
+			        <input type="text" class="form-control" ng-model="param.name" ng-disabled="param._id">
+			      </div>
+		    	</div>
+		    	<div class="col-sm-6">
+			      <div class="input-group">
+			        <span class="input-group-addon">参数值</span>
+			        <input type="text" class="form-control" ng-model="param.value">
+			      </div>
+		      	</div>
+			    <div class="col-sm-1">
+			      <button type="button" class="btn btn-success" ng-click="saveItem($index)" ng-disabled="!param.name || !param.value">S</button>
+			    </div>
+			    <div class="col-sm-1">
+			      <button type="button" class="btn btn-danger" ng-click="deleteItem($index)">X</button>
+			    </div>
+		    </li>
+	  	</ul>
 	    <div class="case-padding">
 	      <button type="button" class="btn btn-success pull-right" ng-click="addItem()">添加参数</button>
 	    </div>

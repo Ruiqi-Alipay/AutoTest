@@ -36,7 +36,7 @@ autotestApp.controller("parameterController", function($scope, $rootScope, $http
 	};
 
 	$scope.addItem = function() {
-		$scope.parameters.push( {
+		$scope.parameters.splice(0, 0, {
 			name: '',
 			value: ''
 		})
