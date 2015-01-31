@@ -1,20 +1,21 @@
-var path = require('path');
-var exec = require('child_process').exec;
 
-var testEnv = {};
-testEnv['JAVA_HOME'] = path.resolve(__dirname, 'jdk');
-testEnv['ANDROID_HOME'] = path.resolve(__dirname, 'sdk');
-testEnv['Path'] = path.resolve(__dirname, 'sdk\\platform-tools') + ';'
-						+ path.resolve(__dirname, 'sdk\\tools') + ';'
-						+ path.resolve(__dirname, 'nodejs') + ';'
-						+ path.resolve(__dirname, 'jdk\\bin') + ';'
-						+ process.env['Path'];
+exports.start = function () {
+	var path = require('path');
+	var exec = require('child_process').exec;
 
-for (var key in testEnv) {
-	process.env[key] = testEnv[key];
-}
+	var testEnv = {};
+	testEnv['JAVA_HOME'] = path.resolve(__dirname, 'jdk');
+	testEnv['ANDROID_HOME'] = path.resolve(__dirname, 'sdk');
+	testEnv['Path'] = path.resolve(__dirname, 'sdk\\platform-tools') + ';'
+							+ path.resolve(__dirname, 'sdk\\tools') + ';'
+							+ path.resolve(__dirname, 'nodejs') + ';'
+							+ path.resolve(__dirname, 'jdk\\bin') + ';'
+							+ process.env['Path'];
 
-function start () {
+	for (var key in testEnv) {
+		process.env[key] = testEnv[key];
+	}
+
 	var child = exec('java -Dfile.encoding=UTF-8 -jar environment/autotest.jar', {env: testEnv}, function (error, stdout, stderr){
 		console.log(' ');
 		console.log('--------------------');
