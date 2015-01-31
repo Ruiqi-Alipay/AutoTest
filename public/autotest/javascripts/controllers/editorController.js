@@ -2,26 +2,42 @@ var autotestApp = angular.module("autotestApp");
 
 autotestApp.controller("editorController", function($scope, dataService) {
 	$scope.appContext.tabSelect = 1;
-	$scope.configScripts = dataService.getConfigScripts();
-	$scope.folderList = dataService.getFolderList();
-	$scope.folderIdMap = dataService.getFolderIdToTitleMap();
-	$scope.context = {};
 
-	var selected = dataService.getSelectScript();
-	if (selected) {
-		$scope.context.loading = true;
-		dataService.getServerScriptById(selected._id, function(script) {
-			$scope.context.loading = false;
-			$scope.script = JSON.parse(script.content);
-			if (!$scope.script.type) {
-				$scope.script.type = 'Script';
-			}
-		});
-	} else {
-		$scope.script = {
-			type: 'Script'
-		};
+	var refresh = function(scriptType) {
+		$scope.context = {};
+		$scope.configScripts = dataService.getConfigScripts();
+		$scope.folderList = dataService.getFolderList();
+		$scope.folderIdMap = dataService.getFolderIdToTitleMap();
+		$scope.selectedScript = dataService.getSelectScript();
+		if ($scope.selectedScript) {
+			$scope.nextItem = dataService.getNextScript();
+			$scope.previousItem = dataService.getPreviousScript();
+			$scope.context.loading = true;
+			dataService.getServerScriptById($scope.selectedScript._id, function(script) {
+				$scope.context.loading = false;
+				$scope.script = JSON.parse(script.content);
+				if (!$scope.script.type) {
+					$scope.script.type = 'Script';
+				}
+			});
+		} else {
+			$scope.nextItem = undefined;
+			$scope.previousItem = undefined;
+			$scope.script = {
+				type: scriptType
+			};
+		}
 	}
+
+	$scope.nextScript = function() {
+		dataService.setSelectScript($scope.nextItem.folderId, $scope.nextItem.index);
+		refresh('Script');
+	};
+
+	$scope.previousScirpt = function() {
+		dataService.setSelectScript($scope.previousItem.folderId, $scope.previousItem.index);
+		refresh('Script');
+	};
 
     $scope.range = function(n) {
         return new Array(n);
@@ -41,14 +57,17 @@ autotestApp.controller("editorController", function($scope, dataService) {
     };
 
     $scope.newScript = function(scriptType) {
-    	$scope.script = {
-			type: scriptType
-    	};
     	dataService.setSelectScript();
+    	refresh(scriptType);
     };
 
 	$scope.saveScript = function() {
-		dataService.saveScript($scope.script, $scope.context.saveType);
+		dataService.saveScript($scope.script, $scope.context.saveType, function(position) {
+			if (position) {
+				dataService.setSelectScript(position.folderId, position.index);
+				refresh('Script');
+			}
+		});
 	};
 
 	$scope.scriptListItemAdd = function(itemName, index) {
@@ -89,4 +108,6 @@ autotestApp.controller("editorController", function($scope, dataService) {
 	$scope.scriptListItemDelete = function(itemName, index) {
 		$scope.script[itemName].splice(index, 1);
 	}
+
+	refresh('Script');
 });

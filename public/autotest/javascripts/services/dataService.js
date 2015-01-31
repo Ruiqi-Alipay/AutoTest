@@ -6,8 +6,23 @@ autotestApp.factory("dataService", function($rootScope, $timeout, $http) {
 	var folderList = [];
 	var configScripts = [];
 
-	var selectScript;
+	var selectScriptFolder;
+	var selectScriptIndex;
 	var selectReport;
+
+	var findItemPosition = function(data) {
+		var scriptList = scriptByFolderId[data.folder];
+		if (scriptList) {
+			for (var index in scriptList) {
+				if (scriptList[index]._id == data._id) {
+					return {
+						folderId: data.folder,
+						index: index
+					}
+				}
+			}
+		}
+	};
 
 	var sortScritps = function(sortType) {
 		for (var key in scriptByFolderId) {
@@ -50,7 +65,7 @@ autotestApp.factory("dataService", function($rootScope, $timeout, $http) {
 		}
 	};
 
-	var refreshScripts = function() {
+	var refreshScripts = function(callback) {
 		$http.get('/autotest/api/testscriptfolder').success(function(serverFolders) {
 			folderIdToTitle = {};
 			configScripts.length = 0;
@@ -82,6 +97,10 @@ autotestApp.factory("dataService", function($rootScope, $timeout, $http) {
 					}
 				});
 				sortScritps('首字母 A-Z');
+
+				if (callback) {
+					callback();
+				}
 			});
 		});
 	};
@@ -117,14 +136,63 @@ autotestApp.factory("dataService", function($rootScope, $timeout, $http) {
 			$http.get('/autotest/api/testscript?id=' + id).success(success);
 		},
 		getSelectScript: function() {
-			return selectScript;
+			if (selectScriptFolder && selectScriptIndex >= 0) {
+				return scriptByFolderId[selectScriptFolder][selectScriptIndex];
+			}
+		},
+		getNextScript: function() {
+			if (selectScriptFolder) {
+				if (scriptByFolderId[selectScriptFolder].length > selectScriptIndex + 1) {
+					return {
+						folderId: selectScriptFolder,
+						index: selectScriptIndex + 1
+					};
+				} else {
+					var folderIndex;
+					for (var index in folderList) {
+						if (folderList[index]._id == selectScriptFolder) {
+							folderIndex = index;
+							break;
+						}
+					}
+					if (folderIndex >= 0 && folderIndex < folderList.length - 1) {
+						var newFolderId = folderList[parseInt(folderIndex) + 1]._id;
+						return {
+							folderId: newFolderId,
+							index: 0
+						};
+					}
+				}
+			}
+		},
+		getPreviousScript: function() {
+			if (selectScriptFolder) {
+				if (selectScriptIndex > 0) {
+					return {
+						folderId: selectScriptFolder,
+						index: selectScriptIndex - 1
+					};
+				} else {
+					var folderIndex;
+					for (var index in folderList) {
+						if (folderList[index]._id == selectScriptFolder) {
+							folderIndex = index;
+							break;
+						}
+					}
+					if (folderIndex > 0) {
+						var newFolderId = folderList[0]._id;
+						return {
+							folderId: newFolderId,
+							index: scriptByFolderId[newFolderId].length - 1
+						};
+					}
+				}
+			}
 		},
 		setSelectScript: function(folderId, index) {
-			if (folderId) {
-				selectScript = scriptByFolderId[folderId][index];
-			} else {
-				selectScript = undefined;
-			}
+			selectScriptFolder = folderId;
+			selectScriptIndex = index;
 		},
 		deleteScript: function(folderId, index) {
 			var deleteItem = scriptByFolderId[folderId][index];
@@ -169,8 +237,10 @@ autotestApp.factory("dataService", function($rootScope, $timeout, $http) {
 				refreshScripts();
 	  		});
 		},
-		saveScript: function(script, saveType) {
+		saveScript: function(script, saveType, callback) {
+			$rootScope.$broadcast('toastMessage', '保存中...');
 			var saveItem = {};
+			var selectScript = this.getSelectScript();
 			if (selectScript && saveType != '另存为') {
 				jQuery.extend(saveItem, selectScript);
 			}
@@ -181,8 +251,10 @@ autotestApp.factory("dataService", function($rootScope, $timeout, $http) {
 			saveItem.content = JSON.stringify(script);
 
 			$http.post('/autotest/api/testscript', saveItem).success(function(data){
-		    	refreshScripts();
-		    	$rootScope.$broadcast('toastMessage', '保存成功');
+		    	refreshScripts(function() {
+			    	callback(findItemPosition(data));
+			    	$rootScope.$broadcast('toastMessage', '保存成功');
+		    	});
 		  	}).error(function(data, status, headers, config) {
 		  		$rootScope.$broadcast('toastMessage', '保存失败：' + data);
 		  	});

@@ -2,7 +2,7 @@
   <div class="row" style="padding: 40px 0px;">
     <div class="col-sm-6 col-sm-offset-1">
       <div class="panel panel-default" ng-show="script.type==='Script'">
-        <div class="panel-heading">环境配置行为</div>
+        <div class="panel-heading">配置行为</div>
         <div class="panel-body">
           <div class="dropdown">
             <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
@@ -72,11 +72,19 @@
               class="btn btn-success" data-toggle="modal" data-target="#saveDialog" ng-click="startSaveScript('保存脚本')">保存脚本</button>
           <button ng-disabled="scriptForm.$invalid" type="button"
               class="btn btn-success" data-toggle="modal" data-target="#saveDialog" ng-click="startSaveScript('另存为')">另存为</button>
+          <button ng-disabled="!nextItem" type="button"
+              class="btn btn-default pull-right" ng-click="nextScript()">下一个 ></button>
+          <button ng-disabled="!previousItem" type="button"
+              class="btn btn-default pull-right" ng-click="previousScirpt()">< 上一个</button>
         </div>
         <div class="panel panel-default">
           <div class="panel-heading">基本信息</div>
           <div class="panel-body">
             <form name="stepOneForm" novalidate>
+              <div class="input-group" ng-show="selectedScript.folder">
+                <span class="input-group-addon">所在分组</span>
+                <input type="text" class="form-control" ng-model="folderIdMap[selectedScript.folder]" disabled>
+              </div>
               <div class="input-group">
                 <span class="input-group-addon">脚本名</span>
                 <input type="text" class="form-control" ng-model="script.title" placeholder="脚本标示" required>
