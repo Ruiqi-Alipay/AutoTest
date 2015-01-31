@@ -1,21 +1,31 @@
 exports.start = function () {
 	var path = require('path');
 	var exec = require('child_process').exec;
+	var os = require('os');
 
 	var testEnv = {};
-	testEnv['JAVA_HOME'] = path.resolve(__dirname, 'jdk');
-	testEnv['ANDROID_HOME'] = path.resolve(__dirname, 'sdk');
-	testEnv['Path'] = path.resolve(__dirname, 'sdk\\platform-tools') + ';'
-							+ path.resolve(__dirname, 'sdk\\tools') + ';'
-							+ path.resolve(__dirname, 'nodejs') + ';'
-							+ path.resolve(__dirname, 'jdk\\bin') + ';'
-							+ process.env['Path'];
+	testEnv['TEST_ROOT'] = __dirname;
+	testEnv['JAVA_HOME'] = path.join(__dirname, 'jdk');
+	testEnv['ANDROID_HOME'] = path.join(__dirname, 'sdk');
+	if (os.platform() == 'darwin') {
+		testEnv['PATH'] = path.join(__dirname, 'sdk', 'platform-tools') + ':'
+								+ path.join(__dirname, 'sdk', 'tools') + ':'
+								+ path.join(__dirname, 'nodejs') + ':'
+								+ path.join(__dirname, 'jdk', 'bin') + ':'
+								+ process.env['PATH'];
+	} else {
+		testEnv['Path'] = path.join(__dirname, 'sdk', 'platform-tools') + ';'
+								+ path.join(__dirname, 'sdk', 'tools') + ';'
+								+ path.join(__dirname, 'nodejs') + ';'
+								+ path.join(__dirname, 'jdk', 'bin') + ';'
+								+ process.env['Path'];
+	}
 
 	for (var key in testEnv) {
 		process.env[key] = testEnv[key];
 	}
 
-	var child = exec('java -Dfile.encoding=UTF-8 -jar environment/autotest.jar', {env: testEnv}, function (error, stdout, stderr){
+	var child = exec('java -Dfile.encoding=UTF-8 -jar ' + path.join(__dirname, 'autotest.jar'), {env: testEnv}, function (error, stdout, stderr){
 		console.log(' ');
 		console.log('--------------------');
 	    console.log('-->Test finished!<--');
@@ -30,4 +40,7 @@ exports.start = function () {
 	});
 
 	child.stdout.pipe(process.stdout);
+	child.on('close', function(code) {
+	    
+	});
 };
