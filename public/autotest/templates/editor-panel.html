@@ -1,4 +1,4 @@
-<form name="scriptForm" novalidate ng-show="!context.loading">
+<form class="sample-show-hide" name="scriptForm" novalidate ng-show="!context.loading">
   <div class="row" style="padding: 40px 0px;">
     <div class="col-sm-6 col-sm-offset-1">
       <div class="panel panel-default" ng-show="script.type==='Script'">
@@ -147,7 +147,7 @@
   </div>
 </form>
 
-<div calss="row" ng-show="context.loading" style="padding-top: 200px;">
+<div calss="row sample-show-hide" ng-show="context.loading" style="padding-top: 200px;">
   <h2 class="col-sm-2 col-sm-offset-5" style="color: gray;">Loading...</h2>
 </div>
 

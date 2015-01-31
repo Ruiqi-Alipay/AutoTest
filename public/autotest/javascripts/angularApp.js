@@ -1,4 +1,4 @@
-var autotestApp = angular.module("autotestApp", ['ngRoute', 'angularFileUpload']);
+var autotestApp = angular.module("autotestApp", ['ngRoute', 'ngAnimate', 'angularFileUpload']);
 
 autotestApp.config(function($routeProvider) {
         $routeProvider
