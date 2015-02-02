@@ -70,7 +70,7 @@ device.factory("styleService", function($rootScope, $timeout, dataService, proto
 			var end = text.indexOf('}}');
 			if (start >= 0 && end > start + 2) {
 				var key = text.slice(start + 2, end);
-				var value = this.getVariable(key);
+				var value = dataService.getVariable(key);
 				if (value) {
 					return value;
 				} else {
@@ -390,6 +390,10 @@ device.factory("styleService", function($rootScope, $timeout, dataService, proto
             if (type === "component" || type === "block") {
                 scope.$on('display:append:' + elementId, function(event, name) {
                     createWidget(compile, scope, element, true, name);
+                });
+            } else {
+            	scope.$on('display:variable:change', function(event) {
+                    updateStyle(elementId);
                 });
             }
 

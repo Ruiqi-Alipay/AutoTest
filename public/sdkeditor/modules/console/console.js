@@ -1,4 +1,4 @@
-var consoleModule = angular.module('console', ['data-center', 'property-panel', 'module-panel']);
+var consoleModule = angular.module('console', ['data-center', 'property-panel', 'module-panel', 'variable-panel']);
 
 consoleModule.directive('console', function ($rootScope, restService, dataService) {
 	return {
@@ -100,15 +100,15 @@ consoleModule.directive('console', function ($rootScope, restService, dataServic
 			scope.localReadFile = function(element) {
 		        var file = element.files[0];
 			    var reader = new FileReader();
-			    $scope.scriptName = file.name;
-
+			    
 			    // If we use onloadend, we need to check the readyState.
 			    reader.onloadend = function(evt) {
 			      if (evt.target.readyState == FileReader.DONE) { // DONE == 2
 			        var result = evt.target.result;
 			        var jsonObject = JSON.parse(result);
 			        if (jsonObject) {
-				        $scope.$apply(function() {
+			        	scope.scriptName = file.name;
+				        scope.$apply(function() {
 			        		dataService.loadNewScript(jsonObject);
 			        	});
 			        }

@@ -1,4 +1,4 @@
-<div>
+<div id="consoleId">
   <div class="btn-group btn-group-justified" role="group" style="background: white; z-index: 99; position: fixed; width: 52%; padding-top: 20px;" aria-label="...">
     <div class="btn-group" role="group">
       <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
@@ -15,6 +15,9 @@
     </div>
     <div class="btn-group" role="group">
       <button type="button" class="btn btn-default" ng-click="displayPanel='property'">Script Root</button>
+    </div>
+    <div class="btn-group" role="group">
+      <button type="button" class="btn btn-default" ng-click="displayPanel='variables'">Variables</button>
     </div>
     <div class="btn-group" role="group">
       <button type="button" class="btn btn-default" ng-click="displayPanel='blocks'">Blocks</button>
@@ -42,5 +45,6 @@
   <div style="padding: 80px 0px 0px 10px;">
     <div ng-show="displayPanel=='property'" property-panel></div>
     <div ng-show="displayPanel=='blocks'" module-panel></div>
+    <div ng-show="displayPanel=='variables'" variable-panel></div>
   </div>
 </div>

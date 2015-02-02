@@ -121,11 +121,26 @@ dataCenter.factory("dataService", function($rootScope, $timeout, protocolService
 		propertyHierarchy = [{id: 'root'}];
 		moduleDataMap = {};
 		propertyDataMap = {};
+		variables.length = 0;
 
-		if (script && script.form) {
-			extractActions(actionFragmentList, script);
-			mainFragment = script;
-			selectFragment = mainFragment;
+		if (script) {
+			if (script.templates) {
+				script.form = script.templates;
+				delete script.templates;
+			}
+
+			for (var key in script.variables) {
+				variables.push({
+					name: key,
+					value: script.variables[key]
+				})
+			}
+
+			if (script.form) {
+				extractActions(actionFragmentList, script);
+				mainFragment = script;
+				selectFragment = mainFragment;
+			}
 		}
 
 		propertyDataMap['root'] = mainFragment;
@@ -182,10 +197,22 @@ dataCenter.factory("dataService", function($rootScope, $timeout, protocolService
    	var mainFragment = {};
    	var actionFragmentList = [];
    	var selectFragment = mainFragment;
+   	var variables = [];
 
    	loadNewScript();
 
 	return {
+		getVariable: function(key) {
+			for (var index in variables) {
+				var item = variables[index];
+				if (item.name == key) {
+					return item.value;
+				}
+			}
+		},
+		getVariables: function() {
+			return variables;
+		},
 		loadNewScript: function(script) {
 			loadNewScript(script);
 			$rootScope.$broadcast('dataService:newScriptLoaded');
