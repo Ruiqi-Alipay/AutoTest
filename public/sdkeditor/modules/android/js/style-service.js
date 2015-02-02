@@ -157,6 +157,9 @@ device.factory("styleService", function($rootScope, $timeout, dataService, proto
 	};
 	var updateStyle = function(elementId) {
 		var style = widgetStyleMap[elementId];
+		if (!style) {
+			return;
+		}
 		delete style['regex'];
 		var module = dataService.getModule(elementId);
 
@@ -233,10 +236,11 @@ device.factory("styleService", function($rootScope, $timeout, dataService, proto
 			}
 		} else if (module.type === 'img' || module.type === 'icon') {
 			if (module.image) {
-				if (module.image.slice(0, 6) === 'local:') {
-					style['src'] = 'modules/android/res/' + module.image.slice(6) + '.png';
+				var image = processText(module.image);
+				if (image.slice(0, 6) === 'local:') {
+					style['src'] = 'modules/android/res/' + image.slice(6) + '.png';
 				} else {
-					style['src'] = 'modules/android/res/' + module.image + '.png';
+					style['src'] = 'modules/android/res/' + image + '.png';
 				}
 			}
 		}
@@ -268,7 +272,7 @@ device.factory("styleService", function($rootScope, $timeout, dataService, proto
         }
 
         if (module.hint) {
-        	style['placeholder'] = module.hint;
+        	style['placeholder'] = processText(module.hint);
         }
 
         if (module.type === 'button') {
@@ -286,7 +290,119 @@ device.factory("styleService", function($rootScope, $timeout, dataService, proto
         }
 
         style['background-size'] = style.width + ' ' + style.height;
+
+        if (parent) {
+        	childStyleChange(elementId, parentId);
+        }
 	};
+
+	var childStyleChange = function(elementId, parentId) {
+		var parent = dataService.findHierarchyItem(parentId);
+		var parentStyle = widgetStyleMap[parentId];
+		var newMinWidth = 0;
+
+		var styleItem = parentStyle['padding-left'];
+		if (styleItem) {
+			var index = styleItem.indexOf('px');
+			if (index > 0) {
+				var value = parseInt(styleItem.substring(0, index));
+				if (value) {
+					newMinWidth += value;
+				}
+			}
+		}
+		var styleItem = parentStyle['padding-right'];
+		if (styleItem) {
+			var index = styleItem.indexOf('px');
+			if (index > 0) {
+				var value = parseInt(styleItem.substring(0, index));
+				if (value) {
+					newMinWidth += value;
+				}
+			}
+		}
+		var styleItem = parentStyle['margin-left'];
+		if (styleItem) {
+			var index = styleItem.indexOf('px');
+			if (index > 0) {
+				var value = parseInt(styleItem.substring(0, index));
+				if (value) {
+					newMinWidth += value;
+				}
+			}
+		}
+		var styleItem = parentStyle['margin-right'];
+		if (styleItem) {
+			var index = styleItem.indexOf('px');
+			if (index > 0) {
+				var value = parseInt(styleItem.substring(0, index));
+				if (value) {
+					newMinWidth += value;
+				}
+			}
+		}
+					
+		parent.childs.forEach(function(item) {
+			var childStyle = widgetStyleMap[item.id];
+				if (childStyle) {
+				var styleItem = childStyle['width'];
+				if (styleItem) {
+					var index = styleItem.indexOf('px');
+					if (index > 0) {
+						var value = parseInt(styleItem.substring(0, index));
+						if (value) {
+							newMinWidth += value;
+						}
+					}
+				}
+				var styleItem = childStyle['padding-left'];
+				if (styleItem) {
+					var index = styleItem.indexOf('px');
+					if (index > 0) {
+						var value = parseInt(styleItem.substring(0, index));
+						if (value) {
+							newMinWidth += value;
+						}
+					}
+				}
+				var styleItem = childStyle['padding-right'];
+				if (styleItem) {
+					var index = styleItem.indexOf('px');
+					if (index > 0) {
+						var value = parseInt(styleItem.substring(0, index));
+						if (value) {
+							newMinWidth += value;
+						}
+					}
+				}
+				var styleItem = childStyle['margin-left'];
+				if (styleItem) {
+					var index = styleItem.indexOf('px');
+					if (index > 0) {
+						var value = parseInt(styleItem.substring(0, index));
+						if (value) {
+							newMinWidth += value;
+						}
+					}
+				}
+				var styleItem = childStyle['margin-right'];
+				if (styleItem) {
+					var index = styleItem.indexOf('px');
+					if (index > 0) {
+						var value = parseInt(styleItem.substring(0, index));
+						if (value) {
+							newMinWidth += value;
+						}
+					}
+				}
+			}
+		});
+		if (newMinWidth > 100) {
+			console.log('ffff');
+		}
+		parentStyle['min-width'] = newMinWidth + 'px';
+	};
+
 	var highlightWidget = function(elementId) {
 		if (priviousHighlishtElement) {
 			if (elementId === priviousHighlishtElement) {
@@ -332,6 +448,7 @@ device.factory("styleService", function($rootScope, $timeout, dataService, proto
         return style;
     };
 
+    var containerMinWidthMap = {};
 	var widgetStyleMap = {};
 	var priviousHighlishtElement;
 	var priviousHighlishtElementBorder;
@@ -347,8 +464,13 @@ device.factory("styleService", function($rootScope, $timeout, dataService, proto
 		refreshActionbar: function() {
 			var actionbar = dataService.getActionbar();
 			if (actionbar) {
-				widgetStyleMap['actionbar'] = actionbar;
-				return actionbar;
+				var style = {};
+				jQuery.extend(style, actionbar);
+				for (var key in style) {
+					style[key] = processText(style[key]);
+				}
+				widgetStyleMap['actionbar'] = style;
+				return style;
 			} else {
 				delete widgetStyleMap['actionbar'];
 			}
@@ -356,7 +478,7 @@ device.factory("styleService", function($rootScope, $timeout, dataService, proto
 		getWidgetStyle: function(elementId) {
 			var style = widgetStyleMap[elementId];
 			if (!style) {
-				style = {'box-sizing': 'border-box'};
+				style = {'-webkit-box-sizing': 'border-box'};
 				widgetStyleMap[elementId] = style;
 				if (elementId != 'root') {
 					updateStyle(elementId);

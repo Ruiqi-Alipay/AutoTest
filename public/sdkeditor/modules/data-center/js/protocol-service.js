@@ -219,8 +219,19 @@ dataCenter.factory("protocolService", function() {
 			return module;
 		},
 		parseBackground: function(style, imageCode) {
-			var normalCode = imageCode.indexOf('local:normal');
-			if (normalCode >= 0) {
+			if (imageCode.indexOf('local:normal_second') >= 0 &&
+				imageCode.indexOf('local:disable_second') >= 0 &&
+				imageCode.indexOf('local:hover_second') >= 0) {
+				style['-webkit-border-radius'] = 4;
+				style['-moz-border-radius'] = 4;
+				style['border-radius'] = '4px';
+				style['color'] = '#000000';
+				style['background'] = 'rgb(255, 255, 255)';
+				style['text-decoration'] = 'none';
+				style['border'] = 'solid #c2c2c2 1px';
+			} else if (imageCode.indexOf('local:normal') >= 0 &&
+				imageCode.indexOf('local:disable') >= 0 &&
+				imageCode.indexOf('local:hover') >= 0) {
 				style['-webkit-border-radius'] = 4;
 				style['-moz-border-radius'] = 4;
 				style['border-radius'] = '4px';
@@ -230,10 +241,9 @@ dataCenter.factory("protocolService", function() {
 				style['border'] = 'solid #c2c2c2 1px';
 			} else if (imageCode === 'local:middle_line') {
 				style['background'] = '#C0C0C0';
-			} else if (imageCode === 'local:normal_second;local:hover_second;local:disable_second') {
-				style['background'] = 'rgb(255, 255, 255)';
 			} else if (imageCode.slice(0, 6) === 'local:') {
 				style['background'] = 'url(modules/android/res/' + imageCode.slice(6) + '.png) no-repeat';
+				style['background-size'] = '100%';
 			} else {
 				style['background'] = imageCode;
 			}

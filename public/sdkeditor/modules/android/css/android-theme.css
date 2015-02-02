@@ -12,9 +12,14 @@
 }
 
 .screen {
-	overflow: auto;
 	background: #eee;
 	position: relative;
+	width: 360px;
+	height: 634px;
+}
+
+.inner-screen {
+	overflow-y: scroll;
 	width: 360px;
 	height: 634px;
 }

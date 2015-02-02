@@ -1,5 +1,5 @@
 
-var app = angular.module("editorApp", ['ngRoute', 'console', 'mobile-simulater']);
+var app = angular.module("editorApp", ['ngRoute', 'ngSanitize', 'console', 'mobile-simulater']);
 
 app.config(function($routeProvider) {
         $routeProvider
