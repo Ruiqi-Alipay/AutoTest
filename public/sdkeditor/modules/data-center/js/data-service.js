@@ -217,6 +217,7 @@ dataCenter.factory("dataService", function($rootScope, $timeout, protocolService
 		loadNewScript: function(script) {
 			loadNewScript(script);
 			$rootScope.$broadcast('dataService:newScriptLoaded');
+			$rootScope.$broadcast('display:refresh');
 		},
 		newModule: function(parentId, module, position, broadcast) {
 			var newItemId = newEelementId();
