@@ -1,0 +1,86 @@
+<div>
+	<div class="col-sm-8 col-sm-offset-2" style="padding-top: 20px;">
+		<div class="row" style="padding-right: 10px;">
+		  <button type="button" class="btn btn-info pull-right" data-toggle="modal" data-target="#folderDialog" ng-click="newFolder()" style="margin-bottom: 10px">新建文件夹</button>
+		</div>
+		<div class="panel-group" id="root" role="tablist" aria-multiselectable="true">
+		  <div class="panel panel-default" ng-repeat="(folderIndex, folder) in folderList">
+		    <div class="panel-heading" role="tab" id="{{folder._id + '-header'}}" data-toggle="collapse" data-parent="#root" href="{{'#' + folder._id  + '-collpase'}}" aria-expanded="false" aria-controls="{{folder._id  + '-collpase'}}">
+		      <h4 class="panel-title">
+		        <a>
+		          {{folder.title}}
+		        </a>
+		        <span class="label label-success">{{scriptByFolder[folder._id].length}}</span>
+		      </h4>
+		    </div>
+		    <div id="{{folder._id + '-collpase'}}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="{{folder._id + '-header'}}">
+		      <div class="panel-body">
+		      	<div ng-show="folder._id != 'UNFORDERED'">
+		      		<button type="button" class="btn btn-info btn-sm pull-right" data-toggle="modal" data-target="#folderDialog" ng-click="editFolder(folderIndex)" style="margin-bottom: 10px">编辑文件夹</button>
+					<button type="button" class="btn btn-danger btn-sm pull-right" data-toggle="modal" data-target="#deleteDialog" ng-click="deleteScript(folderIndex)" style="margin-bottom: 10px;margin-right: 10px;">删除文件夹</button>
+		      	</div>
+				<table class="table table-striped">
+					<tr class="active">
+						<td>#</td>
+						<td>模板标示</td>
+						<td>最近修改</td>
+						<td>操作</td>
+						<td>删除</td>
+					</tr>
+					<tr ng-repeat="script in scriptByFolder[folder._id]">
+						<td>{{$index + 1}}</td>
+						<td>{{script.title}}</td>
+						<td>{{script.readableDate}}</td>
+						<td>
+							<button type="button" class="btn btn-sm btn-success" ng-click="editScript(folder._id, $index)">编辑</button>
+						</td>
+						<td>
+							<button type="button" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#deleteDialog" ng-click="deleteScript(folderIndex, $index)">删除</button>
+						</td>
+					</tr>
+				</table>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="folderDialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	        <h4 class="modal-title">{{selectFolder._id ? '编辑文件夹' : '新建文件夹'}}</h4>
+	      </div>
+	      <div class="modal-body">
+		      <div class="input-group">
+		        <span class="input-group-addon">文件夹名称</span>
+		        <input type="text" class="form-control" ng-model="tempTitle">
+		      </div>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+	        <button type="button" class="btn btn-primary" data-dismiss="modal" ng-disabled="!tempTitle" ng-click="saveFolder()">保存</button>
+	      </div>
+	    </div><!-- /.modal-content -->
+	  </div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+
+	<div class="modal fade" id="deleteDialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	        <h4 class="modal-title">{{configTitle}}</h4>
+	      </div>
+	      <div class="modal-body">
+		      <p>{{configMessage}}</p>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+	        <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="confirmDeleteScript()">删除</button>
+	      </div>
+	    </div><!-- /.modal-content -->
+	  </div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+</div>

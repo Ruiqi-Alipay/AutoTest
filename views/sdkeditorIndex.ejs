@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app="editorApp">
+<html ng-app="sdkApp">
   <head>
     <meta charset="utf-8">
     <link rel="shortcut icon" href="res/favicon.ico">
@@ -21,12 +21,14 @@
 
     <script src="angularApp.js"></script>
 
+    <script src="modules/manage-panel/manage-panel.js"></script>
+
     <script src="modules/data-center/data-center.js"></script>
     <script src="modules/data-center/js/data-service.js"></script>
     <script src="modules/data-center/js/protocol-service.js"></script>
-
+    <script src="modules/data-center/js/rest-service.js"></script>
+    
     <script src="modules/console/console.js"></script>
-    <script src="modules/console/js/rest-service.js"></script>
 
     <script src="modules/property-panel/property-panel.js"></script>
     <script src="modules/property-panel/js/property-list-item.js"></script>
@@ -64,15 +66,11 @@
 
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-          <ul class="nav navbar-nav" ng-init="appState.tabSelect=1">
-           <li ng-click="appState.tabSelect=1"
-                  ng-class="{'active' : appState.tabSelect==1}"><a href="#/">模板编辑</a></li>
-             <li ng-click="appState.tabSelect=2;onMainFormSelected();"
-                  ng-class="{'active' : appState.tabSelect==2}"><a href="#manage">模板管理</a></li>
-             <li ng-click="appState.tabSelect=3;onMainFormSelected();"
-                  ng-class="{'active' : appState.tabSelect==3}"><a href="#protocol">协议配置</a></li>
-             <li ng-click="appState.tabSelect=4;onMainFormSelected();"
-                  ng-class="{'active' : appState.tabSelect==4}"><a href="#manual">使用手册</a></li>
+          <ul class="nav navbar-nav" ng-init="appContext.tabSelect = 1">
+             <li ng-class="{'active' : appContext.tabSelect==1}"><a href="#/">模板编辑</a></li>
+             <li ng-class="{'active' : appContext.tabSelect==2}"><a href="#manage">模板管理</a></li>
+             <li ng-class="{'active' : appContext.tabSelect==3}"><a href="#protocol">协议配置</a></li>
+             <li ng-class="{'active' : appContext.tabSelect==4}"><a href="#guide">使用手册</a></li>
           </ul>
         </div><!-- /.navbar-collapse -->
       </div><!-- /.container-fluid -->

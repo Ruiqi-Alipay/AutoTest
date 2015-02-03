@@ -3,6 +3,8 @@ var mongoose = require('mongoose');
 var ScriptSchema = new mongoose.Schema({
   title: String,
   content: String,
+  date: Date,
+  folder: String,
   count: {type: Number, default: 0}
 });
 

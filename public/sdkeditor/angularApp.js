@@ -1,34 +1,43 @@
+var editor = angular.module("editorPage", ['console', 'mobile-simulater']);
+var manager = angular.module("managerPage", ['manage-panel']);
 
-var app = angular.module("editorApp", ['ngRoute', 'ngSanitize', 'console', 'mobile-simulater']);
+var app = angular.module("sdkApp", ['ngRoute', 'ngSanitize', 'editorPage', 'managerPage']);
 
 app.config(function($routeProvider) {
         $routeProvider
             .when('/', {
-                templateUrl : 'templates/editor-page.html'
+                templateUrl : 'templates/editor-page.html',
+                controller: 'EditorController'
+            })
+            .when('/manage', {
+                templateUrl : 'templates/manage-page.html',
+                controller: 'ManageController'
+            })
+            .when('/configure', {
+                templateUrl : 'templates/configure-page.html',
+                controller: 'ConfigureController'
+            })
+            .when('/guide', {
+                templateUrl : 'templates/guide-page.html',
+                controller: 'GuideController'
             })
             .otherwise({
                 redirectTo: '/'
             });
     });
 
-app.controller("mainController", function($scope, $rootScope, $http, dataService) {
+app.controller('EditorController', function($scope) {
+    $scope.appContext.tabSelect = 1;
+});
 
-	$scope.onMainFormSelected = function() {
-		dataService.selectForm(-1);
-	};
-	$scope.onActionSelected = function(index) {
-		dataService.selectForm(index);
-	};
-	$scope.onNewAction = function() {
-		dataService.createNewAction();
-	};
-	$scope.$on('sdk:newScriptLoaded', function(event) {
-		$scope.appState.tabSelect = 1;
-	});
-	$scope.deleteAction = function() {
-		dataService.deleteAction();
-	};
-    $scope.$on('sdk:panelSelectionChange', function(event) {
-        $scope.selectedIndex = dataService.getSelectedFormIndex();
-    });
+app.controller('ManageController', function($scope) {
+    $scope.appContext.tabSelect = 2;
+});
+
+app.controller('ConfigureController', function($scope) {
+    $scope.appContext.tabSelect = 3;
+});
+
+app.controller('GuideController', function($scope) {
+    $scope.appContext.tabSelect = 4;
 });

@@ -136,11 +136,11 @@ dataCenter.factory("dataService", function($rootScope, $timeout, protocolService
 				})
 			}
 
-			if (script.form) {
-				extractActions(actionFragmentList, script);
+			// if (script.form) {
+				// extractActions(actionFragmentList, script);
 				mainFragment = script;
 				selectFragment = mainFragment;
-			}
+			// }
 		}
 
 		propertyDataMap['root'] = mainFragment;
@@ -296,11 +296,17 @@ dataCenter.factory("dataService", function($rootScope, $timeout, protocolService
 		getOverallScript: function() {
 			var script = {};
 			jQuery.extend(script, mainFragment);
-			for (var index in actionFragmentList) {
-				var actionCopy = {};
-				jQuery.extend(actionCopy, actionFragmentList[index]);
-				var parentObject = findItemParent(script, actionCopy.name);
-				parentObject.action = actionCopy;
+			// for (var index in actionFragmentList) {
+			// 	var actionCopy = {};
+			// 	jQuery.extend(actionCopy, actionFragmentList[index]);
+			// 	var parentObject = findItemParent(script, actionCopy.name);
+			// 	parentObject.action = actionCopy;
+			// }
+			if (variables) {
+				script.variables = {};
+				variables.forEach(function(item) {
+					script.variables[item.name] = item.value;
+				});
 			}
 			return script;
 		},

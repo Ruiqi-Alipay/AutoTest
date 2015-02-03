@@ -12,6 +12,14 @@ variablePanel.directive("variablePanel", function($compile, $rootScope, dataServ
             scope.$watch('variables', function(newValue, oldValue) {
                 $rootScope.$broadcast('display:variable:change');
             }, true);
+
+            scope.deleteItem = function(index) {
+                scope.variables.splice(index, 1);
+            };
+
+            scope.addItem = function() {
+                scope.variables.splice(0, 0, {});
+            };
         }
     };
 });

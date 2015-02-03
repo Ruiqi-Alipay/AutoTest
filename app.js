@@ -14,6 +14,7 @@ require('./models/TestReport');
 require('./models/Scripts');
 require('./models/ScriptParameter');
 require('./models/TestApp');
+require('./models/ScriptsFolder');
 
 var rootRoutes = require('./routes/rootIndex')
 var autotestRoutes = require('./routes/autotestIndex');

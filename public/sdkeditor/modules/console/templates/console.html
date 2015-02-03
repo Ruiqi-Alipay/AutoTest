@@ -1,6 +1,6 @@
 <div id="consoleId">
-  <div class="btn-group btn-group-justified" role="group" style="background: white; z-index: 99; position: fixed; width: 52%; padding-top: 20px;" aria-label="...">
-    <div class="btn-group" role="group">
+  <div class="btn-group btn-group-justified" role="group" style="padding: 0px 10px; background: white; z-index: 99; position: fixed; width: 60%; padding-top: 20px;" aria-label="...">
+<!--     <div class="btn-group" role="group">
       <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
         Select Script
         <span class="caret"></span>
@@ -12,7 +12,7 @@
         <li class="divider"></li>
         <li><a ng-click="newAction()">New action</a></li>
       </ul>
-    </div>
+    </div> -->
     <div class="btn-group" role="group">
       <button type="button" class="btn btn-default" ng-click="displayPanel='property'">Script Root</button>
     </div>
@@ -23,7 +23,7 @@
       <button type="button" class="btn btn-default" ng-click="displayPanel='blocks'">Blocks</button>
     </div>
     <div class="btn-group" role="group">
-      <button type="button" class="btn btn-success" ng-click="saveScript()">保存</button>
+      <button type="button" class="btn btn-success" data-toggle="modal" data-target="#saveDialog" ng-click="onSaveButtonClicked()">保存</button>
     </div>
     <div class="btn-group" role="group">
       <button type="button" class="btn btn-primary" ng-click="downloadScript()">下载</button>
@@ -33,18 +33,48 @@
         导入 <span class="caret"></span>
       </button>
       <ul class="dropdown-menu" role="menu">
-        <li role="presentation" class="dropdown-header">服务器脚本</li>
-        <li ng-repeat="item in scripts"><a ng-click="loadFromServer($index)">{{item.title}}</a></li>
-        <li class="divider"></li>
-        <li><a ng-click="loadFromLocal()">从本地导入</a></li>
+        <li><a ng-click="loadFromLocal()">本地导入</a></li>
         <li class="divider"></li>
         <li><a ng-click="newScript()">新建</a></li>
       </ul>
     </div>
   </div>
-  <div style="padding: 80px 0px 0px 10px;">
+  <div style="padding: 80px 20px 0px 20px;">
     <div ng-show="displayPanel=='property'" property-panel></div>
     <div ng-show="displayPanel=='blocks'" module-panel></div>
     <div ng-show="displayPanel=='variables'" variable-panel></div>
   </div>
+
+  <div class="modal fade" id="saveDialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">保存</h4>
+        </div>
+        <div class="modal-body">
+          <div class="input-group" style="margin-bottom: 10px;">
+            <span class="input-group-addon">模板标识</span>
+            <input type="text" class="form-control" ng-model="tempName">
+          </div>
+          <div class="input-group">
+            <span class="input-group-addon">选择文件夹</span>
+            <div class="dropdown">
+              <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+                {{selectedFolder ? selectedFolder.title : '未选择'}}
+                <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+                <li role="presentation" ng-repeat="folder in folderList"><a role="menuitem" ng-click="selectFolder(folder)">{{folder.title}}</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal" ng-disabled="!selectedFolder || !tempName" ng-click="saveScript(selectedFolder, tempName)">保存</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
 </div>

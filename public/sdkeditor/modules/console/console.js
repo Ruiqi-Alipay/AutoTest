@@ -1,50 +1,50 @@
 var consoleModule = angular.module('console', ['data-center', 'property-panel', 'module-panel', 'variable-panel']);
 
-consoleModule.directive('console', function ($rootScope, restService, dataService) {
+consoleModule.directive('console', function ($rootScope, $location, restService, dataService) {
 	return {
 		restrict: 'A',
 		replace: true,
 		scope: true,
 		templateUrl: 'modules/console/templates/console.html',
 		link: function(scope, element, attr) {
-			scope.scripts = [];
-			scope.actionList = dataService.getActionFragments();
-
-			restService.listServerScripts(
-				function(array) {
-					scope.scripts = array;
-				},
-				function(error) {
-					$rootScope.$broadcast('notification:toast', '错误:' + error);
-				}
-			);
+			var serverScript;
 
 			scope.$on('dataService:newScriptLoaded', function(event) {
 				scope.displayPanel = 'property';
 			});
 
-			scope.saveScript = function() {
-				if (!scope.scriptName) {
-					$rootScope.$broadcast('notification:toast', '脚本名不可为空');
-					return;
-				}
+			scope.selectFolder = function(folder) {
+				scope.selectedFolder = folder;
+			};
 
-				var script = scope.selectScript;
-				if (!script) {
-					script = {};
-				}
-				
-				script.title = scope.scriptName,
-				script.content = JSON.stringify(dataService.assembleScript());
+			restService.listServerScripts(function(folderList) {
+				scope.folderList = folderList;
+			});
 
-				restService.saveScript(
+			scope.onSaveButtonClicked = function() {
+				scope.tempName = '';
+				scope.selectedFolder = undefined;
+				if (serverScript) {
+					scope.tempName = serverScript.title;
+					for (var index in scope.folderList) {
+						var folder = scope.folderList[index];
+						if (folder._id == serverScript.folder) {
+							scope.selectedFolder = folder;
+							break;
+						}
+					}
+				}
+			};
+
+			scope.saveScript = function(folder, name) {
+				var content = dataService.getOverallScript();
+				var script = serverScript ? serverScript : {};
+				script.title = name,
+				script.content = JSON.stringify(content);
+				script.folder = folder._id;
+
+				restService.saveScript(script,
 					function(data) {
-				    	if (data) {
-				    		if (!scope.selectScript) {
-				    			scope.scripts.push(data);
-				    			scope.selectScript = data;
-				    		}
-				    	}
 				    	$rootScope.$broadcast('notification:toast', '保存成功');
 					},
 					function(error) {
@@ -65,16 +65,7 @@ consoleModule.directive('console', function ($rootScope, restService, dataServic
 					}
 				);
 			};
-			scope.loadFromServer = function(index) {
-				scope.selectScript = scope.scripts[index];
-				scope.scriptName = scope.selectScript.title;
-			    var jsonObject = JSON.parse(scope.selectScript.content);
-			    if (jsonObject) {
-			        dataService.loadNewScript(jsonObject);
-			    }
-			};
 			scope.loadFromLocal = function() {
-				scope.selectScript = undefined;
 				var pom = document.createElement('input');
 				pom.setAttribute('type', 'file');
 				pom.setAttribute('accept', '.json');
@@ -82,8 +73,7 @@ consoleModule.directive('console', function ($rootScope, restService, dataServic
 				pom.click();
 			};
 			scope.newScript = function() {
-				scope.selectScript = undefined;
-				scope.scriptName = '';
+				serverScript = undefined;
 				dataService.loadNewScript();
 			};
 			scope.downloadScript = function() {
@@ -107,8 +97,8 @@ consoleModule.directive('console', function ($rootScope, restService, dataServic
 			        var result = evt.target.result;
 			        var jsonObject = JSON.parse(result);
 			        if (jsonObject) {
-			        	scope.scriptName = file.name;
 				        scope.$apply(function() {
+				        	serverScript = undefined;
 			        		dataService.loadNewScript(jsonObject);
 			        	});
 			        }
@@ -117,6 +107,18 @@ consoleModule.directive('console', function ($rootScope, restService, dataServic
 
 			    reader.readAsText(file);
 			};
+
+			var param = $location.search();
+			if (param && param.id) {
+				restService.loadScript(param.id, function(script) {
+					dataService.loadNewScript(JSON.parse(script.content));
+					delete script.content;
+					serverScript = script;
+				});
+			} else {
+				serverScript = undefined;
+				dataService.loadNewScript();
+			}
 		}
 	};
 });

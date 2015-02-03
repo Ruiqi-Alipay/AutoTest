@@ -162,6 +162,9 @@ device.factory("styleService", function($rootScope, $timeout, dataService, proto
 		}
 		delete style['regex'];
 		var module = dataService.getModule(elementId);
+		if (!module) {
+			return;
+		}
 
 		var hvAlign = processAlign(module.align, module['vertical-align']);
 		var parentId = dataService.findParentIdInHierarchy(elementId);
