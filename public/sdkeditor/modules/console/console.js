@@ -73,8 +73,7 @@ consoleModule.directive('console', function ($rootScope, $location, restService,
 				pom.click();
 			};
 			scope.newScript = function() {
-				serverScript = undefined;
-				dataService.loadNewScript();
+				$location.url('/').search({date: new Date});
 			};
 			scope.downloadScript = function() {
 				if (!scope.scriptName) {

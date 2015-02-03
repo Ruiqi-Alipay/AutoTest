@@ -114,9 +114,6 @@ dataCenter.factory("dataService", function($rootScope, $timeout, protocolService
 		}
 	};
 	var loadNewScript = function(script) {
-		actionFragmentList.length = 0;
-		mainFragment = {};
-		selectFragment = mainFragment;
 		moduleHierarchy = [{id: 'root'}];
 		propertyHierarchy = [{id: 'root'}];
 		moduleDataMap = {};
@@ -135,15 +132,12 @@ dataCenter.factory("dataService", function($rootScope, $timeout, protocolService
 					value: script.variables[key]
 				})
 			}
-
-			// if (script.form) {
-				// extractActions(actionFragmentList, script);
-				mainFragment = script;
-				selectFragment = mainFragment;
-			// }
+		} else {
+			script = {};
 		}
+		loadedScript = script;
 
-		propertyDataMap['root'] = mainFragment;
+		propertyDataMap['root'] = script;
 	};
 	var findItemParent = function(script, name) {
 		if (script instanceof Array) {
@@ -187,17 +181,24 @@ dataCenter.factory("dataService", function($rootScope, $timeout, protocolService
 			$rootScope.$broadcast('module:open-' + elementId + '-finished');
 	    }, 500);
 	};
-		
+	var assembleBlocks = function(array) {
+		for (var index in array) {
+			var item = array[index];
+			array[index] = moduleDataMap[item.id];
+			if (item.childs) {
+				assembleBlocks(item.childs);
+				array[index].value = item.childs;
+			}
+		}
+	};
+
    	var moduleHierarchy = [{id: 'root'}];
    	var moduleDataMap = {};
 
    	var propertyDataMap = {};
    	var propertyHierarchy = [{id: 'root'}];
-
-   	var mainFragment = {};
-   	var actionFragmentList = [];
-   	var selectFragment = mainFragment;
    	var variables = [];
+   	var loadedScript;
 
    	loadNewScript();
 
@@ -295,7 +296,13 @@ dataCenter.factory("dataService", function($rootScope, $timeout, protocolService
 		},
 		getOverallScript: function() {
 			var script = {};
-			jQuery.extend(script, mainFragment);
+			jQuery.extend(script, loadedScript);
+			var blocks = [];
+			jQuery.extend(blocks, moduleHierarchy[0].childs);
+			assembleBlocks(blocks);
+			if (blocks) {
+				script.form.blocks = blocks;
+			}
 			// for (var index in actionFragmentList) {
 			// 	var actionCopy = {};
 			// 	jQuery.extend(actionCopy, actionFragmentList[index]);
@@ -311,7 +318,7 @@ dataCenter.factory("dataService", function($rootScope, $timeout, protocolService
 			return script;
 		},
 		getSelectFragment: function() {
-			return selectFragment;
+			return loadedScript;
 		},
 		getModule: function(elementId) {
 			return moduleDataMap[elementId];
@@ -346,8 +353,8 @@ dataCenter.factory("dataService", function($rootScope, $timeout, protocolService
 			return hierarchyColor[hierarchy + 1];
 		},
 		getActionbar: function() {
-			if (mainFragment && mainFragment.form && mainFragment.form.actionBar) {
-				return mainFragment.form.actionBar;
+			if (loadedScript && loadedScript.form && loadedScript.form.actionBar) {
+				return loadedScript.form.actionBar;
 			}
 		},
 		onSelectPanel: function(elementId) {
