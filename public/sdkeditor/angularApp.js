@@ -13,7 +13,7 @@ app.config(function($routeProvider) {
                 templateUrl : 'templates/manage-page.html',
                 controller: 'ManageController'
             })
-            .when('/configure', {
+            .when('/protocol', {
                 templateUrl : 'templates/configure-page.html',
                 controller: 'ConfigureController'
             })

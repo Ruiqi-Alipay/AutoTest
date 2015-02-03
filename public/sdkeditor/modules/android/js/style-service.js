@@ -185,6 +185,9 @@ device.factory("styleService", function($rootScope, $timeout, dataService, proto
 		style['text-align'] = module['text-align'];
 
 		var width = processWidth(module.width, module.type);
+		if (module.type == 'button' && dataService.getScriptRoot().form.type == 'popupwin') {
+			width = '100%';
+		}
 		var height = processHeight(module.height, module.type);
 		var margin = processPadding(module.margin);
         style['margin-top'] = margin[0];
@@ -459,10 +462,18 @@ device.factory("styleService", function($rootScope, $timeout, dataService, proto
 	return {
 		refreshActivity: function(compile, scope, target) {
 			var actionBar = dataService.getActionbar();
-			widgetStyleMap = {'root': newActivityStyle(actionBar, false)};
+			var scriptRoot = dataService.getScriptRoot();
+			var popupWin = (scriptRoot.form && scriptRoot.form.type == 'popupwin') ? true : false;
+			widgetStyleMap = {'root': newActivityStyle(actionBar, popupWin)};
 			var root = dataService.findHierarchyItem('root');
 			branchCreateWidget(compile, scope, target, root.childs);
-			return widgetStyleMap['root'];
+
+			return {
+				activityStyle: widgetStyleMap['root'],
+				containerStyle: {
+					'justify-content': popupWin ? 'center' : 'flex-start'
+				}
+			};
 		},
 		refreshActionbar: function() {
 			var actionbar = dataService.getActionbar();

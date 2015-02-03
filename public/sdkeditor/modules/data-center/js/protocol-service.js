@@ -47,7 +47,9 @@ dataCenter.factory("protocolService", function() {
 			wapintercept: 'object',
 			scroll: ['true', 'false'],
 			syncScrollState: 'text',
-			type: ['fullscreen', 'popupwin']
+			type: ['fullscreen', 'popupwin'],
+			fn: 'text',
+			bodyColor: 'color'
 		},
 		blocks: {
 			type: ["block", "component", "button", "checkbox", "label", "img", "icon", "link", "line", "expandableSelector", "spassword"],
@@ -241,6 +243,9 @@ dataCenter.factory("protocolService", function() {
 				style['border'] = 'solid #c2c2c2 1px';
 			} else if (imageCode === 'local:middle_line') {
 				style['background'] = '#C0C0C0';
+			} else if (imageCode === 'local:dialog_button') {
+				style['background'] = 'rgb(255, 255, 255)';
+				style['border'] = 'solid #c2c2c2 1px';
 			} else if (imageCode.slice(0, 6) === 'local:') {
 				style['background'] = 'url(modules/android/res/' + imageCode.slice(6) + '.png) no-repeat';
 				style['background-size'] = '100%';

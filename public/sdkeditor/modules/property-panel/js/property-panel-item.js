@@ -64,6 +64,21 @@ propertyPanel.directive("propertyPanelItem", function($compile, $rootScope, data
                     propertyService.resetPanelPropreties(scope.panel.properties, scope.panel.unuseProperties, scope.module, attr.propertyname);
                 });
 
+                if (attr.propertyname == 'form' || attr.propertyname == 'actionBar') {
+                    scope.$watch('module', function(newValue, oldValue) {
+                        if (attr.propertyname == 'form') {
+                            if (newValue.type != oldValue.type) {
+                                $rootScope.$broadcast('display:refresh');
+                            }
+                        } else {
+                            if (newValue.title != oldValue.title ||
+                                    newValue.left != oldValue.left) {
+                                $rootScope.$broadcast('display:refresh');
+                            }
+                        }
+                    }, true);
+                }
+
                 propertyService.branchCreateChildPanel($compile, element, scope, attr.propertyname, attr.propertyid, scope.module);
                 propertyService.resetPanelPropreties(scope.panel.properties, scope.panel.unuseProperties, scope.module, attr.propertyname);
             };

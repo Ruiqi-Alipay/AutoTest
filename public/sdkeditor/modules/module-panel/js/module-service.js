@@ -39,9 +39,9 @@ blockPanel.factory('moduleService', function ($rootScope, dataService, protocolS
 
 	return {
 		onNewScriptLoaded: function(compile, scope, container) {
-        	var selectFragment = dataService.getSelectFragment();
-            if (selectFragment.form && selectFragment.form.blocks) {
-            	banchCreateModulePanel(compile, scope, container, 'root', selectFragment.form.blocks);
+        	var scriptRoot = dataService.getScriptRoot();
+            if (scriptRoot.form && scriptRoot.form.blocks) {
+            	banchCreateModulePanel(compile, scope, container, 'root', scriptRoot.form.blocks);
             }
 		},
 		branchCreateModulePanel: function(compile, scope, container, parentId, values) {

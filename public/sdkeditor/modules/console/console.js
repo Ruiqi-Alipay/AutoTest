@@ -79,9 +79,11 @@ consoleModule.directive('console', function ($rootScope, $location, restService,
 				if (!scope.scriptName) {
 					scope.scriptName = 'new_script.json';
 				}
-				var saveFileContent = JSON.stringify(dataService.getOverallScript());
+				var script = dataService.getOverallScript();
+				var saveFileContent = JSON.stringify(script);
 				var pom = document.createElement('a');
-				pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(saveFileContent));
+				console.log(script);
+				pom.setAttribute('href', 'data:text/json;charset=utf8,' + encodeURIComponent(saveFileContent));
 				pom.setAttribute('download', scope.scriptName);
 				pom.click();
 			};

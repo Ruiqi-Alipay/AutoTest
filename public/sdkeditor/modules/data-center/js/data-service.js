@@ -301,7 +301,12 @@ dataCenter.factory("dataService", function($rootScope, $timeout, protocolService
 			jQuery.extend(blocks, moduleHierarchy[0].childs);
 			assembleBlocks(blocks);
 			if (blocks) {
+				if (!script.form) {
+					script.form = {};
+				}
 				script.form.blocks = blocks;
+			} else if (script.form) {
+				delete script.form.blocks;
 			}
 			// for (var index in actionFragmentList) {
 			// 	var actionCopy = {};
@@ -317,7 +322,7 @@ dataCenter.factory("dataService", function($rootScope, $timeout, protocolService
 			}
 			return script;
 		},
-		getSelectFragment: function() {
+		getScriptRoot: function() {
 			return loadedScript;
 		},
 		getModule: function(elementId) {

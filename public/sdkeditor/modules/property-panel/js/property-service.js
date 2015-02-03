@@ -20,7 +20,7 @@ propertyPanel.factory('propertyService', function (protocolService, dataService)
 	        unuseProperties.length = 0;
 	        var fullProperties = protocolService.getProtocol(propertyName);
 	        for (var name in fullProperties) {
-	            if (name === 'type' || name === 'value' || name === 'blocks') {
+	            if (name === 'value' || name === 'blocks') {
 	                continue;
 	            }
 

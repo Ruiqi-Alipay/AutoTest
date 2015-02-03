@@ -12,18 +12,18 @@ device.directive("android", function($compile, $rootScope, styleService) {
             styleService.setupViewListener($compile, scope, element.find(".activity"), 'root', 'block');
             scope.$on('display:refresh', function(event) {
                 activity.html('');
-                scope.style = styleService.refreshActivity($compile, scope, activity);
+                var result = styleService.refreshActivity($compile, scope, activity);
+                scope.style = result.activityStyle;
+                scope.containerStyle = result.containerStyle;
                 scope.actionbar = styleService.refreshActionbar();
             });
             scope.$on('display:highlisht', function(event, elementId) {
                 styleService.highlightWidget(elementId);
             });
-            scope.$on('display:actionbar:change', function(event) {
-                scope.style = styleService.refreshActivity($compile, scope, activity);
-                scope.actionbar = styleService.refreshActionbar();
-            });
 
-            scope.style = styleService.refreshActivity($compile, scope, activity);
+            var result = styleService.refreshActivity($compile, scope, activity);
+            scope.style = result.activityStyle;
+            scope.containerStyle = result.containerStyle;
             scope.actionbar = styleService.refreshActionbar();
 	    }
   	};
