@@ -76,15 +76,16 @@ consoleModule.directive('console', function ($rootScope, $location, restService,
 				$location.url('/').search({date: new Date});
 			};
 			scope.downloadScript = function() {
-				if (!scope.scriptName) {
-					scope.scriptName = 'new_script.json';
+				var fileName = 'new-script';
+				if (serverScript) {
+					fileName = serverScript.title;
 				}
 				var script = dataService.getOverallScript();
 				var saveFileContent = JSON.stringify(script);
 				var pom = document.createElement('a');
 				console.log(script);
 				pom.setAttribute('href', 'data:text/json;charset=utf8,' + encodeURIComponent(saveFileContent));
-				pom.setAttribute('download', scope.scriptName);
+				pom.setAttribute('download', fileName + '.json');
 				pom.click();
 			};
 
