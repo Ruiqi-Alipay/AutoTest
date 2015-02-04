@@ -111,33 +111,46 @@ router.get('/api/getscripts', function(req, res, next) {
       TestScript.find({'_id': {'$in' : idArray}}, function(err, scripts) {
         if(err){ return next(err); }
 
-        var clientScripts = [];
-        scripts.forEach(function(script) {
-          clientScripts.push(JSON.parse(script.content));
-        });
+        TestScriptFolder.find(function(err, folders){
+          if(err){ return next(err); }
 
-        var configIds = [];
-        clientScripts.forEach(function(script) {
-          if (script.configRef) {
-            configIds.push(script.configRef);
-          }
-        });
+          var folderNameMap = {};
+          folders.forEach(function(item) {
+            folderNameMap[item._id] = item.title;
+          });
 
-        TestScript.find({$or: [{'_id': {'$in' : configIds}}, {'title': 'ROLLBACK_ACTIONS'}]}, function(err, configs) {
-            if(err){ return next(err); }
+          var clientScripts = [];
+          scripts.forEach(function(script) {
+            var item = JSON.parse(script.content);
+            item.title = item.title + '-' + folderNameMap[script.folder];
+            clientScripts.push(item);
+          });
 
-            var clientConfigs = [];
-            configs.forEach(function(config) {
-              var item = JSON.parse(config.content);
-              item.id = config._id;
-              clientConfigs.push(item);
-            });
+          var configIds = [];
+          clientScripts.forEach(function(script) {
+            if (script.configRef) {
+              configIds.push(script.configRef);
+            }
+          });
 
-            res.json({
-              scripts: clientScripts,
-              configs: clientConfigs,
-              params: params
-            });
+
+          TestScript.find({$or: [{'_id': {'$in' : configIds}}, {'title': 'ROLLBACK_ACTIONS'}]}, function(err, configs) {
+              if(err){ return next(err); }
+
+              var clientConfigs = [];
+              configs.forEach(function(config) {
+                var item = JSON.parse(config.content);
+                item.id = config._id;
+                clientConfigs.push(item);
+              });
+
+              res.json({
+                scripts: clientScripts,
+                configs: clientConfigs,
+                params: params
+              });
+          });
+
         });
       });
     });
@@ -155,6 +168,7 @@ router.post('/api/testapp', function(req, res) {
     var newItem = new TestApp();
     newItem.name = file.name;
     newItem.path = file.path;
+    newItem.type = file.type;
     newItem.description = req.body.description;
     newItem.save(function(err, item){
       if(err){ return next(err); }

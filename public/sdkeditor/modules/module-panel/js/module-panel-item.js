@@ -96,8 +96,11 @@ blockPanel.directive("moduleItem", function ($compile, $rootScope, $location, $a
                     element.find('#' + attr.elementId + '-body').collapse('show');
                 });
                 scope.$on('module:open-' + attr.elementId + '-finished', function(event) {
-                    //$location.hash(attr.elementId + '-body');
-                    //$anchorScroll();
+                    // var newHash = attr.elementId + '-body';
+                    // if ($location.hash() !== newHash) {
+                    //     $location.hash(newHash);
+                    // }
+                    // $anchorScroll();
                 });
 
                 if (scope.block.value instanceof Array && scope.block.value) {

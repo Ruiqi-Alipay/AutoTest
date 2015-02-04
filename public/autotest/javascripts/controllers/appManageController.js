@@ -27,7 +27,10 @@ autotestApp.controller("appManageController", function($scope, $rootScope, $uplo
 		$upload.upload({
 		  url: '/autotest/api/testapp',
 		  method: 'POST',
-		  data: {description: $scope.app.description},
+		  data: {
+		  	description: $scope.app.description,
+		  	type: $scope.app.type
+		  },
 		  file: $scope.app.selectFile
 		}).progress(function (evt) {
            $rootScope.$broadcast('toastMessage', 'APP上传中... ' + parseInt(100.0 * evt.loaded / evt.total) + ' %');

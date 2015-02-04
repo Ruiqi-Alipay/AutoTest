@@ -419,7 +419,9 @@ device.factory("styleService", function($rootScope, $timeout, dataService, proto
 				return;
 			}
 			var previousStyle = widgetStyleMap[priviousHighlishtElement];
-			previousStyle.border = priviousHighlishtElementBorder;
+			if (previousStyle) {
+				previousStyle.border = priviousHighlishtElementBorder;
+			}
 		}
 
 		var style = widgetStyleMap[elementId];
