@@ -132,13 +132,19 @@ dataCenter.factory("dataService", function($rootScope, $timeout, protocolService
 				}
 			}
 		}
-		delete script['action'];
 	};
 	var assembleActions = function(script) {
 		var action;
 		for (var key in script) {
-			if (script[key] instanceof Object) {
-				extractActions(script[key]);
+			var content = script[key];
+			if (content instanceof Array) {
+				content.forEach(function(value) {
+					if (typeof value == 'object') {
+						assembleActions(value);
+					}
+				});
+			} else if (typeof content == 'object') {
+				assembleActions(content);
 			} else if (key == 'action.name') {
 				if (!action) {
 					action = {};
@@ -180,7 +186,6 @@ dataCenter.factory("dataService", function($rootScope, $timeout, protocolService
 		if (script) {
 			if (script.templates) {
 				script.form = script.templates;
-				delete script.templates;
 			}
 
 			for (var key in script.variables) {
@@ -244,7 +249,9 @@ dataCenter.factory("dataService", function($rootScope, $timeout, protocolService
 	var assembleBlocks = function(array) {
 		for (var index in array) {
 			var item = array[index];
-			array[index] = moduleDataMap[item.id];
+			var module = jQuery.extend(true, {}, moduleDataMap[item.id]);
+			jQuery.extend(module, moduleDataMap[item.id]);
+			array[index] = module;
 			if (item.childs) {
 				assembleBlocks(item.childs);
 				array[index].value = item.childs;
@@ -356,10 +363,9 @@ dataCenter.factory("dataService", function($rootScope, $timeout, protocolService
 			}
 		},
 		getOverallScript: function() {
-			var script = {};
-			jQuery.extend(script, loadedScript);
-			var blocks = [];
-			jQuery.extend(blocks, moduleHierarchy[0].childs);
+			var script = jQuery.extend(true, {}, loadedScript);
+			var blocks = jQuery.extend(true, [], moduleHierarchy[0].childs);
+
 			assembleBlocks(blocks);
 			if (blocks) {
 				if (!script.form) {
@@ -370,19 +376,22 @@ dataCenter.factory("dataService", function($rootScope, $timeout, protocolService
 				delete script.form.blocks;
 			}
 
+			if (script.templates) {
+				script.templates = script.form;
+				delete script.form;
+			}
+
 			assembleActions(script);
-			// for (var index in actionFragmentList) {
-			// 	var actionCopy = {};
-			// 	jQuery.extend(actionCopy, actionFragmentList[index]);
-			// 	var parentObject = findItemParent(script, actionCopy.name);
-			// 	parentObject.action = actionCopy;
-			// }
+
 			if (variables) {
 				script.variables = {};
 				variables.forEach(function(item) {
 					script.variables[item.name] = item.value;
 				});
+			} else {
+				delete script.variables;
 			}
+
 			return script;
 		},
 		getScriptRoot: function() {

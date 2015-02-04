@@ -482,8 +482,7 @@ device.factory("styleService", function($rootScope, $timeout, dataService, proto
 		refreshActionbar: function() {
 			var actionbar = dataService.getActionbar();
 			if (actionbar) {
-				var style = {};
-				jQuery.extend(style, actionbar);
+				var style = jQuery.extend(true, {}, actionbar);
 				for (var key in style) {
 					style[key] = processText(style[key]);
 				}
