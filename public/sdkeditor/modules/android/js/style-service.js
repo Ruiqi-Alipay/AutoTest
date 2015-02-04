@@ -172,14 +172,18 @@ device.factory("styleService", function($rootScope, $timeout, dataService, proto
 		var parentStyle = widgetStyleMap[parentId];
 		if (parentId == 'root' || parent.type === 'block') {
 			style['align-self'] = hvAlign[0];
-			parentStyle['justify-content'] = hvAlign[1];
+			if (parentStyle) {
+				parentStyle['justify-content'] = hvAlign[1];
+			}
 		} else if (parent.type === 'component') {
 			style['align-self'] = hvAlign[1];
-			if ((parentStyle['justify-content'] === 'space-between') || (parentStyle['justify-content'] === 'flex-start' && hvAlign[0] === 'flex-end')
-				|| (parentStyle['justify-content'] === 'flex-end' && hvAlign[0] === 'flex-start')) {
-				parentStyle['justify-content'] = 'space-between';
-			} else {
-				parentStyle['justify-content'] = hvAlign[0];
+			if (parentStyle) {
+				if ((parentStyle['justify-content'] === 'space-between') || (parentStyle['justify-content'] === 'flex-start' && hvAlign[0] === 'flex-end')
+					|| (parentStyle['justify-content'] === 'flex-end' && hvAlign[0] === 'flex-start')) {
+					parentStyle['justify-content'] = 'space-between';
+				} else {
+					parentStyle['justify-content'] = hvAlign[0];
+				}
 			}
 		}
 		style['text-align'] = module['text-align'];

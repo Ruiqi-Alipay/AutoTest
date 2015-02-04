@@ -11,6 +11,37 @@ module.exports = router;
 var mongoose = require('mongoose');
 var Script = mongoose.model('Script');
 var ScriptsFolder = mongoose.model('ScriptsFolder')
+var SDKProtocol = mongoose.model('SDKProtocol');
+
+router.get('/api/sdkprotocol', function(req, res, next) {
+  SDKProtocol.find(function(err, protocol){
+    if(err || protocol.length == 0){ return next(err); }
+
+    res.json(protocol[0]);
+  });
+});
+
+router.post('/api/sdkprotocol', function(req, res, next) {
+    if (req.body._id) {
+      var query = SDKProtocol.findById(req.body._id);
+      query.exec(function (err, script){
+        if (err) { return next(err); }
+        if (!script) { return next(new Error("can't find script")); }
+        script.content = req.body.content;
+
+        script.save(function(err, script){
+          if(err){ return next(err); }
+          res.json(script);
+        });
+      });
+    } else {
+      var script = new SDKProtocol(req.body);
+      script.save(function(err, script){
+        if(err){ return next(err); }
+        res.json(script);
+      });
+    }
+});
 
 router.get('/api/scripts', function(req, res, next) {
   if (req.query && req.query.id) {

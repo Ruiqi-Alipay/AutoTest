@@ -81,7 +81,7 @@ consoleModule.directive('console', function ($rootScope, $location, restService,
 					fileName = serverScript.title;
 				}
 				var script = dataService.getOverallScript();
-				var saveFileContent = JSON.stringify(script);
+				var saveFileContent = JSON.stringify(script, null, 2);
 				var pom = document.createElement('a');
 				console.log(script);
 				pom.setAttribute('href', 'data:text/json;charset=utf8,' + encodeURIComponent(saveFileContent));

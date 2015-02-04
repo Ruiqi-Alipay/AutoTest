@@ -34,8 +34,25 @@ app.controller('ManageController', function($scope) {
     $scope.appContext.tabSelect = 2;
 });
 
-app.controller('ConfigureController', function($scope) {
+app.controller('ConfigureController', function($scope, $rootScope, dynamicProtocolService) {
     $scope.appContext.tabSelect = 3;
+
+    $scope.panelIsArray = function() {
+        var parentId = dynamicProtocolService.getNewProtocolParent();
+        var parent = dynamicProtocolService.getProtocol(parentId);
+        if (parent) {
+            return parent.type == 'Array';
+        }
+    };
+
+    $scope.saveProtocol = function() {
+        dynamicProtocolService.saveProtocol();
+    };
+
+    $scope.saveNewProcotolItem = function(newProtocol) {
+        var parentId = dynamicProtocolService.getNewProtocolParent();
+        $rootScope.$broadcast('protocol:change:' + parentId, newProtocol);
+    };
 });
 
 app.controller('GuideController', function($scope) {

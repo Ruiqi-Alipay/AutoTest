@@ -1,0 +1,29 @@
+<div class="panel panel-default">
+  <div class="panel-heading block-header" role="tab" id="header">
+      <p class="panel-title"><a ><strong>{{panel.title}} ({{panel.type}})</strong></a></p>
+  </div>
+  <div id="body" class="panel-collapse collapse in" role="tabpanel" ng-style="{'background': panel.background}">
+    <div class="panel-body">
+      <div class="row block-item">
+      	<div class="block-item col-sm-4" ng-repeat="property in module.childs | filter: {type: 'Text' || 'Color'}">
+          <div class="input-group">
+            <div class="input-group-btn">
+              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">{{property.type}} <span class="caret"></span></button>
+              <ul class="dropdown-menu" role="menu">
+                <li role="presentation" class="dropdown-header">Click to delete '{{property.type}}'</li>
+                <li><a ng-click="deleteProperty(property.name)">Delete</a></li>
+              </ul>
+            </div>
+            <input type="text" name="value" class="form-control" ng-model="property.name">
+          </div>
+      	</div>
+      </div>
+      <div id="container" class="panel-group" role="tablist" aria-multiselectable="true" style="padding-top: 8px">
+      </div>
+      <div class="row" style="padding: 0px 14px 0px 14px">
+        <button type="button" class="btn btn-sm btn-danger" ng-click="deletePanel()" ng-show="panel.title!='root'">Delete</button>
+        <button type="button" class="btn btn-sm btn-default pull-right" data-toggle="modal" data-target="#insertDialog" ng-click="launchNewProtocolDialog()">New protocol</button>
+      </div>
+    </div>
+  </div>
+</div>

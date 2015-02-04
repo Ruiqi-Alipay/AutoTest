@@ -113,6 +113,63 @@ dataCenter.factory("dataService", function($rootScope, $timeout, protocolService
 			}
 		}
 	};
+	var extractActions = function(script) {
+		for (var key in script) {
+			if (script[key] instanceof Object) {
+				if (key == 'action') {
+					var action = script[key];
+					if (action.name) {
+						script['action.name'] = action.name;
+					}
+					if (action.params && action.params.result) {
+						script['action.params.result'] = action.params.result;
+					}
+					if (action.params && action.params.code) {
+						script['action.params.code'] = action.params.code;
+					}
+				} else {
+					extractActions(script[key]);
+				}
+			}
+		}
+		delete script['action'];
+	};
+	var assembleActions = function(script) {
+		var action;
+		for (var key in script) {
+			if (script[key] instanceof Object) {
+				extractActions(script[key]);
+			} else if (key == 'action.name') {
+				if (!action) {
+					action = {};
+				}
+				action.name = script[key];
+			} else if (key == 'action.params.result') {
+				if (!action) {
+					action = {};
+				}
+				if (!action.params) {
+					action.params = {};
+				}
+				action.params.result = script[key];
+			} else if (key == 'action.params.code') {
+				if (!action) {
+					action = {};
+				}
+				if (!action.params) {
+					action.params = {};
+				}
+				action.params.code = script[key];
+			}
+		}
+
+		if (action) {
+			delete script['action.name'];
+			delete script['action.params.result'];
+			delete script['action.params.code'];
+			script.action = action;
+		}
+	};
 	var loadNewScript = function(script) {
 		moduleHierarchy = [{id: 'root'}];
 		propertyHierarchy = [{id: 'root'}];
@@ -135,6 +192,9 @@ dataCenter.factory("dataService", function($rootScope, $timeout, protocolService
 		} else {
 			script = {};
 		}
+
+		extractActions(script);
+
 		loadedScript = script;
 
 		propertyDataMap['root'] = script;
@@ -309,6 +369,8 @@ dataCenter.factory("dataService", function($rootScope, $timeout, protocolService
 			} else if (script.form) {
 				delete script.form.blocks;
 			}
+
+			assembleActions(script);
 			// for (var index in actionFragmentList) {
 			// 	var actionCopy = {};
 			// 	jQuery.extend(actionCopy, actionFragmentList[index]);

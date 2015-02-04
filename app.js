@@ -15,6 +15,7 @@ require('./models/Scripts');
 require('./models/ScriptParameter');
 require('./models/TestApp');
 require('./models/ScriptsFolder');
+require('./models/SDKProtocol');
 
 var rootRoutes = require('./routes/rootIndex')
 var autotestRoutes = require('./routes/autotestIndex');

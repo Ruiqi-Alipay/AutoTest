@@ -57,7 +57,7 @@ dataCenter.factory("protocolService", function() {
 						'image', 'filter', 'css', 'display', 'content'],
 			component: ['width','height', 'align', 'vertical-align', 'margin', 'padding',
 						'image', 'filter', 'css', 'display', 'content'],
-			button: ['action', 'width','height', 'align', 'vertical-align', 'margin', 'padding', 'color', 'size',
+			button: ['action.name', 'action.params.code', 'action.params.result', 'width','height', 'align', 'vertical-align', 'margin', 'padding', 'color', 'size',
 						'image', 'text', 'filter', 'css', 'display', 'submit', 'checkInput'],
 			label: ['width','height', 'align', 'vertical-align', 'margin', 'padding', 'color', 'size',
 						'image', 'text', 'text-align', 'filter', 'html', 'underline', 'css', 'display'],
@@ -143,7 +143,9 @@ dataCenter.factory("protocolService", function() {
 		css: 'text',
 		display: ['true', 'false'],
 		content: ['bottomView'],
-		action: 'text',
+		'action.name': 'text',
+		'action.params.result': 'text',
+		'action.params.code': 'text',
 		imeAct: ['next', 'done'],
 		hint: 'text',
 		empty_msg: 'text',
@@ -153,10 +155,9 @@ dataCenter.factory("protocolService", function() {
 		must: ['true', 'false'],
 		format_msg: 'text',
 		submit: ['true', 'false'],
-		checkInput: ['true', 'false'],
-		format_msg: 'text'
+		checkInput: ['true', 'false']
 	};
-
+	
 	return {
 		isModuleProperty: function(name) {
 			return name in moduleProtocol;
