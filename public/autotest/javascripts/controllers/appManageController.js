@@ -23,13 +23,23 @@ autotestApp.controller("appManageController", function($scope, $rootScope, $uplo
 	};
 
 	$scope.uplaodApp = function() {
+		var type;
+		if ($scope.app.title.indexOf('.apk') > 0) {
+			type = 'Android';
+		} else if ($scope.app.title.indexOf('.ipa') > 0) {
+			type = 'iOS';
+		} else {
+			$rootScope.$broadcast('toastMessage', 'Incorrect formated app file!');
+			return;
+		}
+
 		$rootScope.$broadcast('toastMessage', '报告上传中...');
 		$upload.upload({
 		  url: '/autotest/api/testapp',
 		  method: 'POST',
 		  data: {
 		  	description: $scope.app.description,
-		  	type: $scope.app.type
+		  	type: type
 		  },
 		  file: $scope.app.selectFile
 		}).progress(function (evt) {

@@ -42,18 +42,6 @@
 		        <span class="input-group-addon">应用描述</span>
 		        <input type="text" class="form-control" ng-model="app.description">
 		      </div>
-		      <div class="input-group">
-		        <span class="input-group-addon">应用类型</span>
-		        <div class="dropdown">
-		          <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-		            {{app.type ? app.type : '未选择'}}
-		            <span class="caret"></span>
-		          </button>
-		          <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-		            <li role="presentation" ng-repeat="type in ['Android', 'iOS']"><a role="menuitem" ng-click="$parent.app.type=type">{{type}}</a></li>
-		          </ul>
-		        </div>
-		      </div>
       		</div>
       		<div class="col-sm-2">
 				<button type="button" class="btn btn-success upload-button"
@@ -63,7 +51,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-        <button type="button" class="btn btn-primary" data-dismiss="modal" ng-disabled="!app.title || !app.description || !app.selectFile || !app.type" ng-click="uplaodApp()">上传</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal" ng-disabled="!app.title || !app.description || !app.selectFile" ng-click="uplaodApp()">上传</button>
       </div>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
