@@ -400,7 +400,12 @@ router.delete('/api/testscript/:testscript', function(req, res) {
 
 /* Test Report */
 router.post('/api/report', function(req, res, next) {
-    var file = req.files.file;
+  var file = req.files ? req.files.file : undefined;
+  var success = false;
+  try {
+    if (!file) {
+      return next(new Error("can't find report")); 
+    }
 
     var compress = new targz().extract(file.path, './reports/' + file.name, function(err){
         if(err) {
@@ -409,34 +414,38 @@ router.post('/api/report', function(req, res, next) {
         }
 
         fs.readFile('./reports/' + file.name + '/performance.report', function(err, data) {
-          if (err) {
-            console.log(err);
-            return next(err);
-          } else {
-            try {
-              var records = JSON.parse(data);
-              records.forEach(function(value, index) {
-                delete value['data'];
-              });
+          if (err) {return next(err);}
 
-              var report = new TestReport();
-              report.title = file.name;
-              report.content = JSON.stringify(records);
-              report.date = moment();
-              report.save(function(err, report){
-                if(err){
-                  console.log('Report save error: ' + err);
-                  return next(err);
-                } else {
-                  res.json(report);
-                }
-              });
-            } catch (err) {
+          var records = JSON.parse(data);
+          records.forEach(function(value, index) {
+            delete value['data'];
+          });
+
+          var report = new TestReport();
+          report.title = file.name;
+          report.content = JSON.stringify(records);
+          report.date = moment();
+          report.save(function(err, report){
+            if(err){
               return next(err);
+            } else {
+              success = true;
+              res.json(report);
             }
-          }
+          });
         });
     });
+  } catch (err) {
+    return next(err);
+  } finally {
+    if (file) {
+      var fs = require('fs-extra')
+      fs.remove(file.path);
+      if (!success) {
+        fs.remove('./reports/' + file.name);
+      }
+    }
+  }
 });
 
 router.param('testreport', function(req, res, next, id) {

@@ -26,7 +26,7 @@ autotestApp.controller("appManageController", function($scope, $rootScope, $uplo
 		var type;
 		if ($scope.app.title.indexOf('.apk') > 0) {
 			type = 'Android';
-		} else if ($scope.app.title.indexOf('.zip') > 0) {
+		} else if ($scope.app.title.indexOf('.app') > 0) {
 			type = 'iOS';
 		} else {
 			$rootScope.$broadcast('toastMessage', 'Incorrect formated app file!');
