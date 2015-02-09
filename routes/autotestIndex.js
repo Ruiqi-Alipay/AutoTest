@@ -168,7 +168,7 @@ router.post('/api/testapp', function(req, res) {
     var newItem = new TestApp();
     newItem.name = file.name;
     newItem.path = file.path;
-    newItem.type = file.type;
+    newItem.type = req.body.type;
     newItem.description = req.body.description;
     newItem.save(function(err, item){
       if(err){ return next(err); }
@@ -177,7 +177,8 @@ router.post('/api/testapp', function(req, res) {
 });
 
 router.get('/api/testapp', function(req, res, next) {
-  TestApp.find(function(err, items){
+  var platform = req.param('platform');
+  TestApp.find(platform ? {'type': platform} : undefined, function(err, items){
     if(err){ return next(err); }
 
     res.json(items);
