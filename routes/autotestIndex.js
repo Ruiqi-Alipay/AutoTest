@@ -436,6 +436,7 @@ router.post('/api/report', function(req, res, next) {
         });
     });
   } catch (err) {
+    console.log(err);
     return next(err);
   } finally {
     if (file) {
